@@ -1,17 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-onyx-bg: #000000;
-  --color-onyx-purple: #FFC107;
+  --color-onyx-bg: #050505;
+  --color-onyx-purple: #FFC107; /* Legacy alias, now Amber */
   --color-onyx-accent: #FFC107;
-  --color-onyx-secondary: #3B82F6;
-  --color-onyx-muted: #71717A;
+  --color-onyx-secondary: #A1A1AA;
+  --color-onyx-muted: #52525B;
+  --color-onyx-text: #E4E4E7;
   --font-outfit: "Outfit", sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-onyx-bg text-white font-outfit antialiased selection:bg-onyx-purple/30;
+    @apply bg-onyx-bg text-onyx-text font-outfit antialiased selection:bg-onyx-accent/30;
     overflow-x: hidden;
   }
 
@@ -32,7 +33,7 @@
   }
 
   .onyx-label {
-    @apply text-[10px] font-black text-onyx-purple uppercase tracking-[0.5em] mb-4 flex items-center gap-2;
+    @apply text-[10px] font-black text-onyx-accent uppercase tracking-[0.5em] mb-4 flex items-center gap-2;
   }
 
   .onyx-data-row {
@@ -56,8 +57,8 @@
   inset: 0;
   pointer-events: none;
   z-index: 1001;
-  opacity: 0.02;
+  opacity: 0.015;
   background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.02));
   background-size: 100% 2px, 3px 100%;
 }
