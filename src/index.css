@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-onyx-bg: #000000;
+  --color-onyx-purple: #FFC107;
+  --color-onyx-accent: #FFC107;
+  --color-onyx-secondary: #3B82F6;
+  --color-onyx-muted: #71717A;
+  --font-outfit: "Outfit", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-onyx-bg text-white font-outfit antialiased selection:bg-onyx-purple/30;
+    overflow-x: hidden;
+  }
+
+  /* Force no scrollbars for the PWA feel */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer components {
+  .onyx-grid-item {
+    @apply p-8 border-b border-zinc-900/50 relative overflow-hidden transition-all duration-500 hover:bg-white/[0.01];
+  }
+
+  .onyx-label {
+    @apply text-[10px] font-black text-onyx-purple uppercase tracking-[0.5em] mb-4 flex items-center gap-2;
+  }
+
+  .onyx-data-row {
+    @apply flex items-center gap-4 text-[13px] text-onyx-muted font-bold uppercase tracking-widest mb-3 last:mb-0;
+  }
+}
+
+/* Atmospheric Effects */
+.onyx-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+}
+
+.onyx-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1001;
+  opacity: 0.02;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+}
