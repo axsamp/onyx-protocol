@@ -316,7 +316,7 @@ export default function App() {
           )}
         </div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           {activeTab === 'home' && (
             <motion.div
               key="home"
