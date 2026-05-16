@@ -111,6 +111,12 @@ export default function App() {
     const saved = localStorage.getItem('onyx_wallet');
     return saved ? JSON.parse(saved) : { liquid: 585000, suica: 12450 };
   });
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [tempWallet, setTempWallet] = useState(wallet);
+
+  useEffect(() => {
+    if (isWalletModalOpen) setTempWallet(wallet);
+  }, [isWalletModalOpen, wallet]);
 
   useEffect(() => {
     const handleStorage = (e) => {
@@ -317,15 +323,8 @@ export default function App() {
               {/* Digital Wallet Card */}
               <div 
                 onClick={() => {
-                  const type = prompt("Update (L)iquid Cash or (S)uica Balance? (L/S)").toUpperCase();
-                  if (type === 'L') {
-                    const val = prompt("Enter new Liquid Cash balance:", wallet.liquid);
-                    if (val !== null) setWallet(prev => ({ ...prev, liquid: parseInt(val) }));
-                  } else if (type === 'S') {
-                    const val = prompt("Enter new Suica balance:", wallet.suica);
-                    if (val !== null) setWallet(prev => ({ ...prev, suica: parseInt(val) }));
-                  }
-                  triggerHaptic('heavy');
+                  triggerHaptic('medium');
+                  setIsWalletModalOpen(true);
                 }}
                 className="relative w-full h-48 rounded-[24px] overflow-hidden p-6 flex flex-col justify-between shadow-elevation-2 aluminium-gradient ripple cursor-pointer active:scale-[0.98] transition-transform"
               >
@@ -611,7 +610,74 @@ export default function App() {
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Setup</span>
           </button>
-        </nav>
+          <AnimatePresence>
+          {isWalletModalOpen && (
+            <div className="fixed inset-0 z-[600] flex items-end justify-center">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsWalletModalOpen(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+              <motion.div 
+                initial={{ y: "100%" }} 
+                animate={{ y: 0 }} 
+                exit={{ y: "100%" }} 
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="relative w-full max-w-md bg-white rounded-t-[32px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl"
+              >
+                <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-8" />
+                <div className="flex justify-between items-center mb-10">
+                  <div>
+                    <h3 className="text-2xl font-bold text-g-text tracking-tight">Mission Funds</h3>
+                    <p className="text-xs font-medium text-g-text-variant mt-1">Manual node balance sync</p>
+                  </div>
+                  <button onClick={() => setIsWalletModalOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium text-g-text ripple"><X size={20} /></button>
+                </div>
+
+                <div className="space-y-10">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between px-1">
+                      <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em]">Liquid Cash</label>
+                      <span className="text-[10px] font-mono text-g-primary">NODE_LIQUID</span>
+                    </div>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
+                      <input 
+                        type="number" 
+                        value={tempWallet.liquid} 
+                        onChange={(e) => setTempWallet({...tempWallet, liquid: parseInt(e.target.value) || 0})}
+                        className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-4 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between px-1">
+                      <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em]">Suica Balance</label>
+                      <span className="text-[10px] font-mono text-g-primary">NFC_CHIP_V2</span>
+                    </div>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
+                      <input 
+                        type="number" 
+                        value={tempWallet.suica} 
+                        onChange={(e) => setTempWallet({...tempWallet, suica: parseInt(e.target.value) || 0})}
+                        className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-4 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    setWallet(tempWallet);
+                    setIsWalletModalOpen(false);
+                    triggerHaptic('heavy');
+                  }}
+                  className="w-full h-16 bg-g-primary text-white font-bold uppercase tracking-widest rounded-2xl shadow-elevation-2 mt-12 active:scale-[0.98] transition-transform ripple"
+                >
+                  Sync New Balances
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Node Registry Bottom Sheet */}
