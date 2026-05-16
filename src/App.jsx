@@ -103,17 +103,71 @@ const AppLauncher = ({ app, delay }) => (
 
 export default function App() {
   const [time, setTime] = useState(new Date());
-  const [isLauncherOpen, setIsLauncherOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [activeTab, setActiveTab] = useState('hub');
+  const [isLauncherOpen, setIsLauncherOpen] = useState(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [isStealthMode, setIsStealthMode] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
   const [wallet, setWallet] = useState(() => {
-    const saved = localStorage.getItem('onyx_wallet');
-    return saved ? JSON.parse(saved) : { liquid: 585000, suica: 12450 };
+    const saved = localStorage.getItem('onyx_wallet_v2');
+    return saved ? JSON.parse(saved) : { liquid: 24500, suica: 12840 };
   });
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [activeNode, setActiveNode] = useState('fujisawa');
+
+  // Node Coordinates for Geofencing
+  const MISSION_NODES = {
+    fujisawa: { lat: 35.3362, lng: 139.4870, name: 'Fujisawa Hub' },
+    tokyo: { lat: 35.6895, lng: 139.6917, name: 'Tokyo Ops' },
+    chiba: { lat: 35.6131, lng: 140.1132, name: 'Chiba Station' },
+    shibuya: { lat: 35.6580, lng: 139.7016, name: 'Shibuya Crossing' }
+  };
+
+  // Haversine formula to calculate distance in KM
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      const watchId = navigator.geolocation.watchPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+        setCurrentLocation({ lat: latitude, lng: longitude });
+
+        // Find closest node
+        let closestDist = Infinity;
+        let closestId = 'fujisawa';
+        
+        Object.entries(MISSION_NODES).forEach(([id, node]) => {
+          const dist = calculateDistance(latitude, longitude, node.lat, node.lng);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestId = id;
+          }
+        });
+        
+        // If within 5km, activate the node
+        if (closestDist < 5) {
+          setActiveNode(closestId);
+        } else {
+          setActiveNode(null); // No active node in immediate vicinity
+        }
+      }, (err) => console.warn(err), { enableHighAccuracy: true });
+
+      return () => navigator.geolocation.clearWatch(watchId);
+    }
+  }, []);
+
   const [tempWallet, setTempWallet] = useState(wallet);
 
   useEffect(() => {
@@ -392,34 +446,53 @@ export default function App() {
               {/* Itinerary Timeline */}
               <section>
                 <div className="flex justify-between items-center mb-4 px-2">
-                  <h3 className="text-lg font-bold text-g-text">Timeline</h3>
-                  <span className="text-[10px] font-bold uppercase text-g-primary bg-g-primary-container px-2 py-1 rounded-md">Active</span>
+                  <h3 className="text-lg font-bold text-g-text">Mission Timeline</h3>
+                  <div className="flex items-center gap-2">
+                    <div className={cn("w-2 h-2 rounded-full", currentLocation ? "bg-green-500 animate-pulse" : "bg-g-outline")} />
+                    <span className="text-[10px] font-bold uppercase text-g-text-variant tracking-wider">{currentLocation ? 'GPS Linked' : 'GPS Standby'}</span>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="material-card bg-g-primary-container p-4 flex items-center gap-4 border-none ripple">
-                    <div className="w-12 h-12 rounded-full bg-g-primary text-white flex items-center justify-center shrink-0">
+                  {/* Fujisawa Node */}
+                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'fujisawa' ? "bg-g-primary-container border-none" : "bg-white")}>
+                    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors", activeNode === 'fujisawa' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant")}>
                       <Activity size={20} />
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-0.5">
-                        <h4 className="font-bold text-g-primary text-base">Fujisawa Hub</h4>
-                        <span className="text-xs font-bold text-g-primary">Active</span>
+                        <h4 className={cn("font-bold text-base", activeNode === 'fujisawa' ? "text-g-primary" : "text-g-text")}>Fujisawa Hub</h4>
+                        <span className={cn("text-xs font-bold uppercase tracking-wider", activeNode === 'fujisawa' ? "text-g-primary" : "text-g-outline")}>{activeNode === 'fujisawa' ? 'Active' : 'Standby'}</span>
                       </div>
-                      <p className="text-sm font-medium text-g-primary/80">Almont Inn Deployment</p>
+                      <p className={cn("text-sm font-medium", activeNode === 'fujisawa' ? "text-g-primary/80" : "text-g-text-variant")}>Almont Inn Deployment</p>
                     </div>
                   </div>
 
-                  <div className="material-card p-4 flex items-center gap-4 ripple">
-                    <div className="w-12 h-12 rounded-full bg-g-aluminium text-g-text-variant flex items-center justify-center shrink-0">
+                  {/* Tokyo Node */}
+                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'tokyo' ? "bg-g-primary-container border-none" : "bg-white")}>
+                    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors", activeNode === 'tokyo' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant")}>
                       <ShoppingBag size={20} />
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-0.5">
-                        <h4 className="font-bold text-g-text text-base">Onitsuka Tigers</h4>
-                        <span className="text-xs font-bold text-g-text-variant">Pending</span>
+                        <h4 className={cn("font-bold text-base", activeNode === 'tokyo' ? "text-g-primary" : "text-g-text")}>Tokyo Ops</h4>
+                        <span className={cn("text-xs font-bold uppercase tracking-wider", activeNode === 'tokyo' ? "text-g-primary" : "text-g-outline")}>{activeNode === 'tokyo' ? 'Active' : 'Pending'}</span>
                       </div>
-                      <p className="text-sm font-medium text-g-text-variant">Shopping • Tokyo</p>
+                      <p className={cn("text-sm font-medium", activeNode === 'tokyo' ? "text-g-primary/80" : "text-g-text-variant")}>Onitsuka Tigers • Shinjuku</p>
+                    </div>
+                  </div>
+
+                  {/* Shibuya Node */}
+                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'shibuya' ? "bg-g-primary-container border-none" : "bg-white")}>
+                    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors", activeNode === 'shibuya' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant")}>
+                      <MapPin size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <h4 className={cn("font-bold text-base", activeNode === 'shibuya' ? "text-g-primary" : "text-g-text")}>Shibuya Point</h4>
+                        <span className={cn("text-xs font-bold uppercase tracking-wider", activeNode === 'shibuya' ? "text-g-primary" : "text-g-outline")}>{activeNode === 'shibuya' ? 'Active' : 'Scheduled'}</span>
+                      </div>
+                      <p className={cn("text-sm font-medium", activeNode === 'shibuya' ? "text-g-primary/80" : "text-g-text-variant")}>Crossing Intelligence</p>
                     </div>
                   </div>
                 </div>
