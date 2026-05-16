@@ -264,7 +264,7 @@ export default function App() {
   return (
     <div className={cn(
       "h-screen w-screen max-w-md mx-auto overflow-hidden relative selection:bg-g-primary-container flex flex-col transition-colors duration-700",
-      isStealthMode ? "bg-[#E0E0E0] grayscale" : "bg-g-bg"
+      isStealthMode ? "dark bg-g-bg" : "bg-g-bg"
     )}>
       {/* Dynamic Island Spacer */}
       <div className="h-14 w-full shrink-0"></div>
@@ -396,28 +396,28 @@ export default function App() {
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] opacity-[0.03] pointer-events-none" />
                 <div className="relative z-10 flex justify-between items-start">
                   <div>
-                    <div className="text-gray-800 font-bold text-2xl tracking-tight flex items-center gap-2">
-                      <Wallet size={24} className="text-gray-700" />
+                    <div className="text-g-text font-bold text-2xl tracking-tight flex items-center gap-2">
+                      <Wallet size={24} className="text-g-text-variant" />
                       Apple Wallet
                     </div>
-                    <div className="text-xs font-medium text-gray-500 mt-1">Mission Funds & Transit</div>
+                    <div className="text-xs font-medium text-g-text-variant mt-1">Mission Funds & Transit</div>
                   </div>
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 21.3c-2.3-2.6-3.5-5.8-3.5-9.3s1.2-6.7 3.5-9.3M12 18.5c-1.6-1.8-2.5-4-2.5-6.5s.9-4.7 2.5-6.5M15.5 15.7c-.8-1-1.3-2.3-1.3-3.7s.5-2.7 1.3-3.7M19 13.4c-.3-.4-.5-.9-.5-1.4s.2-1 .5-1.4" /></svg>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-g-text-variant"><path d="M8.5 21.3c-2.3-2.6-3.5-5.8-3.5-9.3s1.2-6.7 3.5-9.3M12 18.5c-1.6-1.8-2.5-4-2.5-6.5s.9-4.7 2.5-6.5M15.5 15.7c-.8-1-1.3-2.3-1.3-3.7s.5-2.7 1.3-3.7M19 13.4c-.3-.4-.5-.9-.5-1.4s.2-1 .5-1.4" /></svg>
                 </div>
 
                 <div className="relative z-10 flex justify-between items-end">
                   <div>
-                    <div className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Liquid Cash</div>
-                    <div className="text-3xl font-bold tracking-tight text-gray-900 font-sans flex items-baseline gap-1">
-                      <span className="text-xl text-gray-500">¥</span>{wallet.liquid.toLocaleString()}
+                    <div className="text-xs font-bold text-g-text-variant mb-1 uppercase tracking-wider">Liquid Cash</div>
+                    <div className="text-3xl font-bold tracking-tight text-g-text font-sans flex items-baseline gap-1">
+                      <span className="text-xl text-g-text-variant">¥</span>{wallet.liquid.toLocaleString()}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider flex items-center justify-end gap-1">
-                      Suica <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 14.899A7 7 0 1 1 15.69 8.13c-1.28.819-2.77 1.275-4.5 1.275a8.84 8.84 0 0 1-5.089-1.528A7 7 0 0 0 4 14.899Z" /><path d="M17.857 5.703a6 6 0 0 0-8.967 8.967 6 6 0 0 0 8.967-8.967Z" /></svg>
+                    <div className="text-[10px] font-bold text-g-text-variant mb-1 uppercase tracking-wider flex items-center justify-end gap-1">
+                      Suica <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-g-text-variant"><path d="M4 14.899A7 7 0 1 1 15.69 8.13c-1.28.819-2.77 1.275-4.5 1.275a8.84 8.84 0 0 1-5.089-1.528A7 7 0 0 0 4 14.899Z" /><path d="M17.857 5.703a6 6 0 0 0-8.967 8.967 6 6 0 0 0 8.967-8.967Z" /></svg>
                     </div>
-                    <div className="text-xl font-bold tracking-tight text-gray-800 font-sans flex items-baseline gap-1 justify-end">
-                      <span className="text-sm text-gray-500">¥</span>{wallet.suica.toLocaleString()}
+                    <div className="text-xl font-bold tracking-tight text-g-text font-sans flex items-baseline gap-1 justify-end">
+                      <span className="text-sm text-g-text-variant">¥</span>{wallet.suica.toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -455,7 +455,7 @@ export default function App() {
 
                 <div className="space-y-3">
                   {/* Fujisawa Node */}
-                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'fujisawa' ? "bg-g-primary-container border-none" : "bg-white")}>
+                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'fujisawa' ? "bg-g-primary-container border-none" : "bg-g-surface")}>
                     <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors", activeNode === 'fujisawa' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant")}>
                       <Activity size={20} />
                     </div>
@@ -469,7 +469,7 @@ export default function App() {
                   </div>
 
                   {/* Tokyo Node */}
-                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'tokyo' ? "bg-g-primary-container border-none" : "bg-white")}>
+                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'tokyo' ? "bg-g-primary-container border-none" : "bg-g-surface")}>
                     <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors", activeNode === 'tokyo' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant")}>
                       <ShoppingBag size={20} />
                     </div>
@@ -483,7 +483,7 @@ export default function App() {
                   </div>
 
                   {/* Shibuya Node */}
-                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'shibuya' ? "bg-g-primary-container border-none" : "bg-white")}>
+                  <div className={cn("material-card p-4 flex items-center gap-4 transition-all duration-500 ripple", activeNode === 'shibuya' ? "bg-g-primary-container border-none" : "bg-g-surface")}>
                     <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors", activeNode === 'shibuya' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant")}>
                       <MapPin size={20} />
                     </div>
@@ -599,7 +599,7 @@ export default function App() {
                     </div>
                     <div className="text-left">
                       <div className="text-base font-bold text-g-text">Stealth Mode</div>
-                      <div className="text-sm font-medium text-g-text-variant">Grayscale visuals</div>
+                      <div className="text-sm font-medium text-g-text-variant">Google Dark Theme</div>
                     </div>
                   </div>
                   <div className={cn("w-12 h-6 rounded-full relative transition-colors border", isStealthMode ? "bg-g-primary border-g-primary" : "bg-g-aluminium border-g-outline")}>
