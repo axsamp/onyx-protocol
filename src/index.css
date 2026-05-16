@@ -1,22 +1,38 @@
 @import "tailwindcss";
 
 @theme {
-  --color-onyx-bg: #050505;
-  --color-onyx-purple: #FFC107; /* Legacy alias, now Amber */
-  --color-onyx-accent: #FFC107;
-  --color-onyx-secondary: #A1A1AA;
-  --color-onyx-muted: #52525B;
-  --color-onyx-text: #E4E4E7;
-  --font-outfit: "Outfit", sans-serif;
+  --color-g-bg: #F0F4F8;
+  --color-g-surface: #FFFFFF;
+  --color-g-primary: #0B57D0;
+  --color-g-primary-container: #D3E3FD;
+  --color-g-text: #1F1F1F;
+  --color-g-text-variant: #444746;
+  --color-g-outline: #C4C7C5;
+  --color-g-aluminium: #E8EAED;
+
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+
+  --shadow-elevation-1: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --shadow-elevation-2: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --shadow-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
+
+  --animate-slide-up: slideUp 0.6s cubic-bezier(0.2, 0, 0, 1) forwards;
+
+  @keyframes slideUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
 }
 
 @layer base {
   body {
-    @apply bg-onyx-bg text-onyx-text font-outfit antialiased selection:bg-onyx-accent/30;
+    @apply bg-g-bg text-g-text font-sans antialiased;
     overflow-x: hidden;
+    /* Support for iPhone 16 Pro Dynamic Island and Home Bar */
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
-  /* Force no scrollbars for the PWA feel */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -28,37 +44,57 @@
 }
 
 @layer components {
-  .onyx-grid-item {
-    @apply p-8 border-b border-zinc-900/50 relative overflow-hidden transition-all duration-500 hover:bg-white/[0.01];
+  /* Material Card Style */
+  .material-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.05); /* Very soft shadow */
+    border: 1px solid rgba(0,0,0,0.03);
   }
 
-  .onyx-label {
-    @apply text-[10px] font-black text-onyx-accent uppercase tracking-[0.5em] mb-4 flex items-center gap-2;
+  .label-text {
+    @apply text-[11px] font-bold text-g-text-variant uppercase tracking-[0.1em];
   }
 
-  .onyx-data-row {
-    @apply flex items-center gap-4 text-[13px] text-onyx-muted font-bold uppercase tracking-widest mb-3 last:mb-0;
+  /* Material 3 Bottom Nav Indicator */
+  .nav-item.nav-active .nav-icon-container {
+    @apply bg-g-primary-container text-g-primary;
   }
-}
+  .nav-item.nav-active span {
+    @apply text-g-text font-bold;
+  }
+  
+  /* Metallic gradient for Suica to fit "Aluminium" prompt */
+  .aluminium-gradient {
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    border: 1px solid #D1D5DB;
+  }
 
-/* Atmospheric Effects */
-.onyx-grain {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0.03;
-  mix-blend-mode: overlay;
-  background-image: url('https://grainy-gradients.vercel.app/noise.svg');
-}
-
-.onyx-scanlines {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1001;
-  opacity: 0.015;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.02));
-  background-size: 100% 2px, 3px 100%;
+  /* Material Ripple effect simulation */
+  .ripple {
+    position: relative;
+    overflow: hidden;
+    transform: translate3d(0, 0, 0);
+  }
+  .ripple::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #000 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform .5s, opacity 1s;
+  }
+  .ripple:active::after {
+    transform: scale(0, 0);
+    opacity: .1;
+    transition: 0s;
+  }
 }

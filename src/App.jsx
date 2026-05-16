@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  RefreshCcw, Wallet, MapPin, ArrowRight, Download, Wifi, Calendar, ChevronUp, X, Clock, Activity
+  RefreshCcw, Wallet, MapPin, ArrowRight, Download, Calendar, X, Activity, Terminal, ShoppingBag, Search, Plus, Shield, Settings, User, ChevronDown, Phone, Waves, Eye, EyeOff, Check
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -26,108 +26,109 @@ const APPS = [
   { id: 'signal', name: 'Onyx Signal', url: 'https://axsamp.github.io/onyx-recorder/', version: 'V1.0.2', node: '05' },
 ];
 
-const BudgetRing = ({ budget }) => {
-  const radius = 50;
-  const circumference = 2 * Math.PI * radius;
-  // Calculate remaining percentage. For now, we'll show 100% since we are at start of mission,
-  // or we could mock a small initial spend.
-  const total = parseInt(budget) || 585000;
-  const remaining = total; // In a future update, we can subtract aggregated expenses
-  const percentage = 100; 
-  const strokeDashoffset = 0; // Full circle
+const PHRASES = [
+  { jp: 'Sumimasen', en: 'Excuse me', kana: 'すみません' },
+  { jp: 'Arigato', en: 'Thank you', kana: 'ありがとう' },
+  { jp: 'Oishii', en: 'Delicious', kana: 'おいしい' },
+  { jp: 'Kore Onegaishimasu', en: 'This please', kana: 'これ おねがいします' },
+  { jp: 'Toire wa doko desu ka?', en: 'Where is the toilet?', kana: 'トイレはどこですか？' },
+];
 
-  return (
-    <div className="relative w-full aspect-square flex items-center justify-center p-6 bg-onyx-text/[0.02] backdrop-blur-3xl border border-onyx-text/5 rounded-[32px] shadow-2xl overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-br from-onyx-accent/5 to-transparent opacity-50" />
-      <svg className="w-full h-full -rotate-90 transform drop-shadow-[0_0_15px_rgba(255,193,7,0.1)]">
-        <circle cx="50%" cy="50%" r={radius} stroke="currentColor" strokeWidth="6" fill="transparent" className="text-onyx-text/5" />
-        <motion.circle
-          cx="50%" cy="50%" r={radius}
-          stroke="currentColor" strokeWidth="6" fill="transparent"
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: 0 }}
-          transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
-          className="text-onyx-accent"
-          strokeLinecap="round"
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <Activity size={16} className="text-onyx-accent mb-1 opacity-80" />
-        <span className="text-[9px] font-mono text-onyx-text/40 tracking-widest uppercase">Liquid</span>
-        <span className="text-xl font-black text-onyx-text tracking-tighter tabular-nums mt-1">{percentage}%</span>
-      </div>
-    </div>
-  );
-};
+const EXPLORE_SPOTS = [
+  { name: 'Meiji Jingu', type: 'Shrine', distance: '4.2km', img: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=800' },
+  { name: 'Akihabara', type: 'Tech District', distance: '8.5km', img: 'https://images.unsplash.com/photo-1554797589-7241bb691973?q=80&w=800' },
+  { name: 'Gyoen Park', type: 'Garden', distance: '1.8km', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800' },
+  { name: 'Tsukiji Outer Market', type: 'Food', distance: '12km', img: 'https://images.unsplash.com/photo-1534073737927-85f1ebff1f5d?q=80&w=800' },
+];
 
-const LogisticsCard = ({ budget }) => (
-  <div className="col-span-2 w-full h-full flex flex-col justify-between p-6 bg-onyx-text/[0.02] backdrop-blur-3xl border border-onyx-text/5 rounded-[32px] shadow-2xl relative overflow-hidden">
-    <div className="absolute -top-10 -right-10 w-32 h-32 bg-onyx-secondary/10 blur-3xl rounded-full" />
-    <div className="flex justify-between items-start z-10">
-      <div className="flex flex-col">
-        <span className="text-[9px] font-black text-onyx-secondary uppercase tracking-[0.4em]">Deployment</span>
-        <span className="text-3xl font-black text-onyx-text tracking-tighter mt-1">DAY 1 <span className="text-onyx-text/30">/ 26</span></span>
-      </div>
-      <Calendar size={18} className="text-onyx-secondary/80" />
-    </div>
-    <div className="flex flex-col gap-2 z-10 mt-6">
-      <div className="flex justify-between text-[9px] font-mono text-onyx-text/40 uppercase tracking-widest">
-        <span>Liquid Pool</span>
-        <span className="text-onyx-accent">¥{parseInt(budget).toLocaleString()}</span>
-      </div>
-      <div className="w-full h-1 bg-onyx-text/10 rounded-full overflow-hidden">
-        <motion.div initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 1.5, delay: 0.2 }} className="h-full bg-onyx-accent" />
-      </div>
-    </div>
-  </div>
-);
-
-const LocationNode = () => (
-  <div className="col-span-1 w-full aspect-square flex flex-col justify-between p-6 bg-onyx-text/[0.02] backdrop-blur-3xl border border-onyx-text/5 rounded-[32px] shadow-2xl relative overflow-hidden">
-    <MapPin size={18} className="text-onyx-text/40" />
-    <div className="flex flex-col z-10 mt-4">
-      <span className="text-[9px] font-black text-onyx-text/40 uppercase tracking-[0.4em]">Sector 01</span>
-      <span className="text-xl font-black text-onyx-text tracking-tighter leading-none mt-1">Fujisawa<br/>Base</span>
-    </div>
-  </div>
-);
+const HIGHLIGHTS = [
+  {
+    title: 'Shibuya Crossing',
+    subtitle: "3.2km away • World's busiest intersection",
+    tag: 'Trending',
+    density: 'High',
+    img: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=1000&auto=format&fit=crop',
+    link: 'https://www.google.com/maps/search/Shibuya+Crossing'
+  },
+  {
+    title: 'Tokyo Dome',
+    subtitle: "10.5km away • Major events & entertainment",
+    tag: 'Priority',
+    density: 'Medium',
+    img: import.meta.env.BASE_URL + 'tokyo_dome.png',
+    link: 'https://www.google.com/maps/search/Tokyo+Dome'
+  },
+  {
+    title: 'Yokohama Minatomirai',
+    subtitle: "20m Transit • Futuristic port city skyline",
+    tag: 'Intel',
+    density: 'Medium',
+    img: import.meta.env.BASE_URL + 'yokohama.png',
+    link: 'https://www.google.com/maps/search/Yokohama+Minatomirai'
+  },
+  {
+    title: 'Kyoto Temples',
+    subtitle: "Future Deployment • Historic capital",
+    tag: 'Planned',
+    density: 'High',
+    img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop',
+    link: 'https://www.google.com/maps/search/Kyoto'
+  }
+];
 
 const AppLauncher = ({ app, delay }) => (
   <motion.a
     href={app.url}
     onPointerDown={() => triggerHaptic('medium')}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 10 }}
-    transition={{ delay, type: "spring", stiffness: 400, damping: 25 }}
-    className="flex items-center justify-between p-5 bg-onyx-text/[0.03] border border-onyx-text/10 rounded-2xl active:scale-[0.98] transition-all"
+    initial={{ opacity: 0, x: -10 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -10 }}
+    transition={{ delay, type: "tween", duration: 0.2, ease: "easeOut" }}
+    className="group flex items-center justify-between py-5 px-6 hover:bg-g-primary-container transition-all relative rounded-xl mx-2 ripple"
   >
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2">
-        <span className="text-[8px] font-black text-onyx-secondary uppercase tracking-[0.4em]">Node_{app.node}</span>
-        <span className="text-[8px] font-mono text-onyx-text/40">{app.version}</span>
+    <div className="flex flex-col gap-1 pl-4">
+      <div className="flex items-center gap-3">
+        <span className="text-[9px] font-mono text-g-primary uppercase tracking-[0.3em]">Node::{app.node}</span>
+        <span className="text-[9px] font-mono text-g-text-variant">[{app.version}]</span>
       </div>
-      <span className="text-xl font-black uppercase tracking-tighter text-onyx-text">{app.name}</span>
+      <span className="text-lg font-mono font-bold uppercase tracking-tight text-g-text">{app.name}</span>
     </div>
-    <div className="w-10 h-10 rounded-full bg-onyx-text/10 flex items-center justify-center">
-      <ArrowRight size={16} className="text-onyx-text/60" />
+    <div className="pr-4">
+      <ArrowRight size={14} className="text-g-primary" />
     </div>
   </motion.a>
 );
 
 export default function App() {
-  const [systemBudget, setSystemBudget] = useState(() => localStorage.getItem('onyx_total_budget') || '585000');
   const [time, setTime] = useState(new Date());
   const [isLauncherOpen, setIsLauncherOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('home');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [copiedIndex, setCopiedIndex] = useState(null);
+  const [isStealthMode, setIsStealthMode] = useState(false);
+  const [highlightIndex, setHighlightIndex] = useState(0);
+
+  useEffect(() => {
+    if (activeTab !== 'home') return;
+    const highlightInterval = setInterval(() => {
+      setHighlightIndex((prev) => (prev + 1) % HIGHLIGHTS.length);
+    }, 6000);
+    return () => clearInterval(highlightInterval);
+  }, [activeTab]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setSystemBudget(localStorage.getItem('onyx_total_budget') || '585000');
       setTime(new Date());
     }, 2000);
     return () => clearInterval(interval);
   }, []);
+
+  const copyToClipboard = (text, index) => {
+    triggerHaptic('medium');
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   const forceRefresh = useCallback(() => {
     triggerHaptic('heavy');
@@ -163,119 +164,470 @@ export default function App() {
     URL.revokeObjectURL(url);
   }, []);
 
+  const filteredApps = useMemo(() => {
+    if (!searchQuery) return APPS;
+    return APPS.filter(app => app.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [searchQuery]);
+
+  const filteredSpots = useMemo(() => {
+    if (!searchQuery) return EXPLORE_SPOTS;
+    return EXPLORE_SPOTS.filter(spot => spot.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [searchQuery]);
+
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#050505] text-onyx-text font-['Outfit'] relative">
-      {/* Morphing Mesh Gradient Background */}
-      <div className="absolute inset-0 pointer-events-none opacity-30">
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1], rotate: [0, 45, 0] }} 
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[20%] -left-[20%] w-[140%] h-[140%] bg-[radial-gradient(ellipse_at_center,rgba(255,193,7,0.08)_0%,transparent_50%)] blur-[120px]" 
-        />
-        <motion.div 
-          animate={{ scale: [1.1, 1, 1.1], rotate: [45, 0, 45] }} 
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[30%] right-[10%] w-[100%] h-[100%] bg-[radial-gradient(ellipse_at_center,rgba(161,161,170,0.05)_0%,transparent_50%)] blur-[120px]" 
-        />
-      </div>
+    <div className={cn(
+      "h-screen w-screen max-w-md mx-auto overflow-hidden relative selection:bg-g-primary-container flex flex-col transition-colors duration-700",
+      isStealthMode ? "bg-[#E0E0E0] grayscale" : "bg-g-bg"
+    )}>
+      {/* Dynamic Island Spacer */}
+      <div className="h-14 w-full shrink-0"></div>
 
-      <div className="onyx-grain" />
-
-      {/* Dynamic Island Header (Top 60px Clearance) */}
-      <header className="absolute top-0 left-0 w-full pt-14 pb-4 px-8 flex justify-between items-center z-40">
-        <div className="flex items-center gap-2 opacity-60">
-          <Clock size={12} className="text-onyx-text" />
-          <span className="text-[10px] font-mono tracking-widest">
-            {time.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
-          </span>
+      {/* Header Section */}
+      <header className="px-6 py-4 flex justify-between items-center z-20 shrink-0 bg-g-bg/90 backdrop-blur-xl">
+        <div>
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <span className="text-xs font-mono font-medium text-g-text-variant">
+              Fujisawa Base • {time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-g-text flex items-center gap-2">
+            {activeTab === 'home' ? 'Fujisawa, Japan' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            <ChevronDown size={20} className="text-g-primary mt-1" />
+          </h1>
         </div>
-        <div className="flex items-center gap-2 opacity-60">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-onyx-accent">Link Active</span>
-          <Wifi size={12} className="text-onyx-accent" />
-        </div>
+        <button className="w-10 h-10 rounded-full overflow-hidden border border-g-outline/30 shadow-sm active:scale-95 transition-transform ripple shrink-0">
+          <div className="w-full h-full bg-g-primary text-white flex items-center justify-center font-bold text-lg">O</div>
+        </button>
       </header>
 
-      {/* Main Dashboard View */}
-      <main className="h-full w-full pt-28 px-6 pb-32 flex flex-col gap-6 relative z-10">
-        
-        {/* Massive Greeting */}
-        <div className="flex flex-col mb-4">
-          <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-black text-onyx-secondary uppercase tracking-[0.4em] mb-2">Protocol Online</motion.span>
-          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-5xl font-black uppercase tracking-tighter leading-none">
-            Onyx <span className="text-onyx-accent">Command</span>
-          </motion.h1>
+      <main className="flex-1 overflow-y-auto no-scrollbar px-6 pb-32 pt-4 relative z-10">
+
+        {/* Tactical Search */}
+        <div className="relative group mb-8">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search nodes, destinations, or intel..."
+            className="w-full bg-g-surface border border-g-outline/20 shadow-elevation-1 rounded-full py-4 px-12 text-sm text-g-text focus:outline-none focus:border-g-primary/40 focus:ring-2 focus:ring-g-primary/20 transition-all"
+          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-g-text-variant" size={20} />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-g-text-variant hover:text-g-text">
+              <X size={18} />
+            </button>
+          )}
         </div>
 
-        {/* Widget Cluster */}
-        <div className="grid grid-cols-2 gap-4">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
-             <BudgetRing budget={systemBudget} />
-          </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
-             <LocationNode />
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="col-span-2 h-40">
-             <LogisticsCard budget={systemBudget} />
-          </motion.div>
-        </div>
+        <AnimatePresence mode="wait">
+          {activeTab === 'home' && (
+            <motion.div
+              key="home"
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+              className="space-y-8"
+            >
+              {/* Recommended Section */}
+              {!searchQuery && (
+                <section>
+                  <div className="label-text mb-3 ml-2">Recommended for you</div>
+                  <div className="relative aspect-[4/3] rounded-[24px] overflow-hidden group shadow-elevation-2">
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={highlightIndex}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        src={HIGHLIGHTS[highlightIndex].img}
+                        alt={HIGHLIGHTS[highlightIndex].title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    </AnimatePresence>
 
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 pointer-events-none"></div>
+
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm flex items-center gap-2 z-20">
+                      <MapPin size={14} className="text-g-primary" />
+                      <span className="text-[11px] font-bold text-g-text">Density: {HIGHLIGHTS[highlightIndex].density}</span>
+                    </div>
+
+                    <div className="absolute bottom-4 left-4 right-4 z-20 text-white">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={`text-${highlightIndex}`}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex justify-between items-end mb-2"
+                        >
+                          <div>
+                            <span className="px-2 py-0.5 rounded text-g-primary bg-white/90 text-[10px] font-bold uppercase tracking-wider mb-1 inline-block">{HIGHLIGHTS[highlightIndex].tag}</span>
+                            <h2 className="text-2xl font-bold">{HIGHLIGHTS[highlightIndex].title}</h2>
+                            <p className="text-sm font-medium opacity-90">{HIGHLIGHTS[highlightIndex].subtitle}</p>
+                          </div>
+                          <a
+                            href={HIGHLIGHTS[highlightIndex].link}
+                            target="_blank"
+                            onClick={() => triggerHaptic('medium')}
+                            className="w-12 h-12 rounded-full bg-g-primary flex items-center justify-center shadow-elevation-2 active:scale-90 transition-transform cursor-pointer ripple"
+                          >
+                            <ArrowRight size={20} className="text-white" />
+                          </a>
+                        </motion.div>
+                      </AnimatePresence>
+
+                      {/* Pagination Dots */}
+                      <div className="flex gap-1.5 items-center justify-center mt-2">
+                        {HIGHLIGHTS.map((_, i) => (
+                          <div
+                            key={i}
+                            onClick={() => {
+                              triggerHaptic('light');
+                              setHighlightIndex(i);
+                            }}
+                            className={cn("h-1.5 rounded-full transition-all cursor-pointer", i === highlightIndex ? "w-4 bg-white" : "w-1.5 bg-white/40")}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* Digital Wallet Card */}
+              <div className="relative w-full h-48 rounded-[24px] overflow-hidden p-6 flex flex-col justify-between shadow-elevation-2 aluminium-gradient ripple cursor-pointer active:scale-[0.98] transition-transform">
+                <div className="relative z-10 flex justify-between items-start">
+                  <div>
+                    <div className="text-gray-800 font-bold text-2xl tracking-tight flex items-center gap-2">
+                      <Wallet size={24} className="text-gray-700" />
+                      Apple Wallet
+                    </div>
+                    <div className="text-xs font-medium text-gray-500 mt-1">Mission Funds & Transit</div>
+                  </div>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 21.3c-2.3-2.6-3.5-5.8-3.5-9.3s1.2-6.7 3.5-9.3M12 18.5c-1.6-1.8-2.5-4-2.5-6.5s.9-4.7 2.5-6.5M15.5 15.7c-.8-1-1.3-2.3-1.3-3.7s.5-2.7 1.3-3.7M19 13.4c-.3-.4-.5-.9-.5-1.4s.2-1 .5-1.4" /></svg>
+                </div>
+
+                <div className="relative z-10 flex justify-between items-end">
+                  <div>
+                    <div className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Liquid Cash</div>
+                    <div className="text-3xl font-bold tracking-tight text-gray-900 font-sans flex items-baseline gap-1">
+                      <span className="text-xl text-gray-500">¥</span>585,000
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider flex items-center justify-end gap-1">
+                      Suica <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 14.899A7 7 0 1 1 15.69 8.13c-1.28.819-2.77 1.275-4.5 1.275a8.84 8.84 0 0 1-5.089-1.528A7 7 0 0 0 4 14.899Z" /><path d="M17.857 5.703a6 6 0 0 0-8.967 8.967 6 6 0 0 0 8.967-8.967Z" /></svg>
+                    </div>
+                    <div className="text-xl font-bold tracking-tight text-gray-800 font-sans flex items-baseline gap-1 justify-end">
+                      <span className="text-sm text-gray-500">¥</span>12,450
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Essential Phrases */}
+              <section>
+                <div className="label-text mb-3 ml-2">Essential Phrases</div>
+                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                  {PHRASES.map((phrase, i) => (
+                    <button
+                      key={phrase.jp}
+                      onClick={() => copyToClipboard(phrase.jp, i)}
+                      className="shrink-0 material-card px-5 py-3 flex flex-col items-start gap-1 ripple active:scale-95 transition-transform"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-g-text">{phrase.jp}</span>
+                        {copiedIndex === i && <Check size={14} className="text-g-primary" />}
+                      </div>
+                      <span className="text-xs font-medium text-g-text-variant">{phrase.en}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {/* Itinerary Timeline */}
+              <section>
+                <div className="flex justify-between items-center mb-4 px-2">
+                  <h3 className="text-lg font-bold text-g-text">Timeline</h3>
+                  <span className="text-[10px] font-bold uppercase text-g-primary bg-g-primary-container px-2 py-1 rounded-md">Active</span>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="material-card bg-g-primary-container p-4 flex items-center gap-4 border-none ripple">
+                    <div className="w-12 h-12 rounded-full bg-g-primary text-white flex items-center justify-center shrink-0">
+                      <Activity size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <h4 className="font-bold text-g-primary text-base">Fujisawa Hub</h4>
+                        <span className="text-xs font-bold text-g-primary">Active</span>
+                      </div>
+                      <p className="text-sm font-medium text-g-primary/80">Almont Inn Deployment</p>
+                    </div>
+                  </div>
+
+                  <div className="material-card p-4 flex items-center gap-4 ripple">
+                    <div className="w-12 h-12 rounded-full bg-g-aluminium text-g-text-variant flex items-center justify-center shrink-0">
+                      <ShoppingBag size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <h4 className="font-bold text-g-text text-base">Onitsuka Tigers</h4>
+                        <span className="text-xs font-bold text-g-text-variant">Pending</span>
+                      </div>
+                      <p className="text-sm font-medium text-g-text-variant">Shopping • Tokyo</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </motion.div>
+          )}
+
+          {activeTab === 'explore' && (
+            <motion.div
+              key="explore"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              <div className="label-text ml-2">Regional Intel</div>
+              <div className="grid grid-cols-1 gap-4">
+                {filteredSpots.map((spot) => (
+                  <div key={spot.name} className="material-card overflow-hidden ripple cursor-pointer group pb-4">
+                    <img src={spot.img} alt={spot.name} className="w-full h-40 object-cover" />
+                    <div className="px-4 pt-3 flex justify-between items-center">
+                      <div>
+                        <h3 className="text-lg font-bold text-g-text">{spot.name}</h3>
+                        <p className="text-sm font-medium text-g-text-variant">{spot.type} • {spot.distance}</p>
+                      </div>
+                      <a 
+                        href={`https://www.google.com/maps/search/${encodeURIComponent(spot.name)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => { e.stopPropagation(); triggerHaptic('medium'); }}
+                        className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors ripple"
+                      >
+                        <ArrowRight size={18} />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'safety' && (
+            <motion.div
+              key="safety"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              <section className="material-card p-6 space-y-5">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                    <Shield size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-g-text">Safety Protocol</h2>
+                    <p className="text-sm text-g-text-variant font-medium">Emergency services</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 bg-g-bg rounded-2xl">
+                    <div className="flex items-center gap-3">
+                      <Phone size={20} className="text-g-primary" />
+                      <span className="text-base font-bold text-g-text">Police (Emergency)</span>
+                    </div>
+                    <span className="text-xl font-mono font-bold text-g-primary">110</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-g-bg rounded-2xl">
+                    <div className="flex items-center gap-3">
+                      <Phone size={20} className="text-g-primary" />
+                      <span className="text-base font-bold text-g-text">Ambulance / Fire</span>
+                    </div>
+                    <span className="text-xl font-mono font-bold text-g-primary">119</span>
+                  </div>
+                </div>
+              </section>
+
+              <section className="material-card p-6 bg-g-primary-container border-none">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-g-primary text-white flex items-center justify-center">
+                    <Waves size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-g-primary">Rainy Season Protocol</h3>
+                    <p className="text-sm font-medium text-g-primary/80">Status: ACTIVE • Increased prep required.</p>
+                  </div>
+                </div>
+              </section>
+            </motion.div>
+          )}
+
+          {activeTab === 'settings' && (
+            <motion.div
+              key="settings"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              <div className="label-text ml-2">System Registry</div>
+              <div className="space-y-3">
+                <button
+                  onClick={() => setIsStealthMode(!isStealthMode)}
+                  className="w-full material-card p-5 flex justify-between items-center ripple"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-g-aluminium flex items-center justify-center text-g-text">
+                      {isStealthMode ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </div>
+                    <div className="text-left">
+                      <div className="text-base font-bold text-g-text">Stealth Mode</div>
+                      <div className="text-sm font-medium text-g-text-variant">Grayscale visuals</div>
+                    </div>
+                  </div>
+                  <div className={cn("w-12 h-6 rounded-full relative transition-colors border", isStealthMode ? "bg-g-primary border-g-primary" : "bg-g-aluminium border-g-outline")}>
+                    <div className={cn("absolute top-1 w-4 h-4 rounded-full bg-white transition-all", isStealthMode ? "right-1" : "left-1 shadow-sm")} />
+                  </div>
+                </button>
+
+                <button
+                  onClick={exportMissionData}
+                  className="w-full material-card p-5 flex justify-between items-center ripple"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
+                      <Download size={20} />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-base font-bold text-g-text">Export Intel</div>
+                      <div className="text-sm font-medium text-g-text-variant">Backup data to JSON</div>
+                    </div>
+                  </div>
+                  <ArrowRight size={20} className="text-g-text-variant" />
+                </button>
+
+                <button
+                  onClick={forceRefresh}
+                  className="w-full material-card p-5 flex justify-between items-center ripple"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
+                      <RefreshCcw size={20} />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-base font-bold text-g-text">Force Sync</div>
+                      <div className="text-sm font-medium text-g-text-variant">Clear cache</div>
+                    </div>
+                  </div>
+                  <ArrowRight size={20} className="text-g-text-variant" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      {/* The Dock (Default visible state) */}
-      <div className="fixed bottom-0 left-0 w-full z-40 pb-8 pt-4 px-6 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none">
-        <div className="max-w-md mx-auto pointer-events-auto flex items-center justify-between bg-onyx-text/[0.05] backdrop-blur-3xl border border-onyx-text/10 rounded-full p-2 pr-6 shadow-2xl">
-          <button 
-            onClick={() => { triggerHaptic('heavy'); setIsLauncherOpen(true); }}
-            className="flex items-center gap-3 bg-onyx-accent text-black px-6 py-4 rounded-full font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-transform shadow-[0_0_20px_rgba(255,193,7,0.3)]"
+      {/* Material 3 Bottom Nav */}
+      <div className="fixed bottom-0 left-0 w-full z-40 bg-g-surface border-t border-g-outline/20 pt-2 pb-safe px-2 pb-6">
+        <nav className="w-full flex justify-around items-center max-w-sm mx-auto">
+
+          <button
+            onClick={() => { triggerHaptic('light'); setActiveTab('home'); }}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'home' && "nav-active")}
           >
-            <ChevronUp size={16} />
-            <span>Launchpad</span>
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+              <Activity size={22} className={cn(activeTab === 'home' && "fill-current")} />
+            </div>
+            <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Home</span>
           </button>
 
-          <div className="flex items-center gap-2">
-            <button onClick={exportMissionData} className="w-12 h-12 flex items-center justify-center rounded-full bg-onyx-text/10 hover:bg-onyx-text/20 transition-colors active:scale-95 text-onyx-text/60">
-              <Download size={16} />
-            </button>
-            <button onClick={forceRefresh} className="w-12 h-12 flex items-center justify-center rounded-full bg-onyx-text/10 hover:bg-onyx-text/20 transition-colors active:scale-95 text-onyx-text/60">
-              <RefreshCcw size={16} />
-            </button>
-          </div>
-        </div>
+          <button
+            onClick={() => { triggerHaptic('light'); setActiveTab('explore'); }}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'explore' && "nav-active")}
+          >
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+              <MapPin size={22} className={cn(activeTab === 'explore' && "fill-current")} />
+            </div>
+            <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Explore</span>
+          </button>
+
+          {/* Central FAB aligned with Material Design */}
+          <button
+            onClick={() => { triggerHaptic('heavy'); setIsLauncherOpen(true); }}
+            className="relative -top-4 w-14 h-14 rounded-2xl bg-g-primary text-white flex items-center justify-center shadow-elevation-3 hover:bg-blue-700 active:bg-blue-800 transition-colors ripple mx-2"
+          >
+            <Plus size={28} />
+          </button>
+
+          <button
+            onClick={() => { triggerHaptic('light'); setActiveTab('safety'); }}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'safety' && "nav-active")}
+          >
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+              <Shield size={22} className={cn(activeTab === 'safety' && "fill-current")} />
+            </div>
+            <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Safety</span>
+          </button>
+
+          <button
+            onClick={() => { triggerHaptic('light'); setActiveTab('settings'); }}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'settings' && "nav-active")}
+          >
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+              <Settings size={22} className={cn(activeTab === 'settings' && "fill-current")} />
+            </div>
+            <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Setup</span>
+          </button>
+        </nav>
       </div>
 
-      {/* The Tactical Bottom Sheet (Launcher) */}
+      {/* Node Registry Bottom Sheet */}
       <AnimatePresence>
         {isLauncherOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsLauncherOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
             />
-            <motion.div 
+            <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 w-full h-[85vh] bg-[#050505]/95 backdrop-blur-3xl border-t border-onyx-text/10 rounded-t-[40px] z-50 flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.8)]"
+              transition={{ type: "tween", duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-surface z-50 flex flex-col shadow-elevation-3 rounded-t-[28px] overflow-hidden"
             >
-              <div className="w-full flex justify-center pt-4 pb-6" onClick={() => setIsLauncherOpen(false)}>
-                <div className="w-16 h-1.5 bg-onyx-text/20 rounded-full" />
+              {/* Material Drag Handle */}
+              <div className="w-full flex justify-center pt-4 pb-2">
+                <div className="w-10 h-1.5 rounded-full bg-g-outline/50"></div>
               </div>
-              
-              <div className="px-8 pb-4 flex justify-between items-center">
-                <span className="text-2xl font-black uppercase tracking-tighter">Registry</span>
-                <button onClick={() => setIsLauncherOpen(false)} className="w-10 h-10 rounded-full bg-onyx-text/10 flex items-center justify-center active:scale-95">
-                  <X size={16} className="text-onyx-text/60" />
+
+              <div className="px-6 py-4 flex justify-between items-center bg-g-surface">
+                <div>
+                  <h2 className="text-2xl font-bold text-g-text">Node Registry</h2>
+                  <p className="text-sm font-medium text-g-text-variant">System protocol apps</p>
+                </div>
+                <button
+                  onClick={() => setIsLauncherOpen(false)}
+                  className="w-10 h-10 rounded-full bg-g-aluminium flex items-center justify-center text-g-text hover:bg-g-outline/30 transition-colors ripple"
+                >
+                  <X size={20} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-6 pb-20 flex flex-col gap-3 no-scrollbar">
-                {APPS.map((app, i) => <AppLauncher key={app.id} app={app} delay={0.1 + (i * 0.05)} />)}
+              <div className="flex-1 overflow-y-auto flex flex-col gap-2 px-4 pb-20 pt-2 no-scrollbar">
+                {filteredApps.length > 0 ? (
+                  filteredApps.map((app, i) => <AppLauncher key={app.id} app={app} delay={i * 0.05} />)
+                ) : (
+                  <div className="px-10 py-20 text-center">
+                    <div className="text-sm font-mono uppercase text-g-text-variant">No matching nodes found</div>
+                  </div>
+                )}
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-
     </div>
   );
 }
