@@ -207,8 +207,10 @@ export default function App() {
   // Preload next image to prevent white flash
   useEffect(() => {
     const nextIndex = (highlightIndex + 1) % HIGHLIGHTS.length;
-    const img = new Image();
-    img.src = HIGHLIGHTS[nextIndex].img;
+    if (HIGHLIGHTS[nextIndex].img.startsWith('http')) {
+      const img = new Image();
+      img.src = HIGHLIGHTS[nextIndex].img;
+    }
   }, [highlightIndex]);
 
   useEffect(() => {
@@ -341,7 +343,7 @@ export default function App() {
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 pointer-events-none"></div>
 
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm flex items-center gap-2 z-20">
+                    <div className="absolute top-4 left-4 bg-g-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm flex items-center gap-2 z-20">
                       <MapPin size={14} className="text-g-primary" />
                       <span className="text-[11px] font-bold text-g-text">Density: {HIGHLIGHTS[highlightIndex].density}</span>
                     </div>
@@ -357,7 +359,7 @@ export default function App() {
                           className="flex justify-between items-end mb-2"
                         >
                           <div>
-                            <span className="px-2 py-0.5 rounded text-g-primary bg-white/90 text-[10px] font-bold uppercase tracking-wider mb-1 inline-block">{HIGHLIGHTS[highlightIndex].tag}</span>
+                            <span className="px-2 py-0.5 rounded text-g-primary bg-g-surface/90 text-[10px] font-bold uppercase tracking-wider mb-1 inline-block">{HIGHLIGHTS[highlightIndex].tag}</span>
                             <h2 className="text-2xl font-bold">{HIGHLIGHTS[highlightIndex].title}</h2>
                             <p className="text-sm font-medium opacity-90">{HIGHLIGHTS[highlightIndex].subtitle}</p>
                           </div>
@@ -381,7 +383,7 @@ export default function App() {
                               triggerHaptic('light');
                               setHighlightIndex(i);
                             }}
-                            className={cn("h-1.5 rounded-full transition-all cursor-pointer", i === highlightIndex ? "w-4 bg-white" : "w-1.5 bg-white/40")}
+                            className={cn("h-1.5 rounded-full transition-all cursor-pointer", i === highlightIndex ? "w-4 bg-g-primary" : "w-1.5 bg-g-text/20")}
                           />
                         ))}
                       </div>
