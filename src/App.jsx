@@ -105,7 +105,7 @@ export default function App() {
   const [time, setTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedIndex, setCopiedIndex] = useState(null);
-  const [activeTab, setActiveTab] = useState('hub');
+  const [activeTab, setActiveTab] = useState('home');
   const [isLauncherOpen, setIsLauncherOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [isStealthMode, setIsStealthMode] = useState(false);
