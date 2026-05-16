@@ -316,7 +316,7 @@ export default function App() {
           )}
         </div>
 
-        <AnimatePresence mode="wait" initial={false}>
+        <div className="relative">
           {activeTab === 'home' && (
             <motion.div
               key="home"
@@ -650,7 +650,7 @@ export default function App() {
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
+        </div>
       </main>
 
       {/* Material 3 Bottom Nav */}
