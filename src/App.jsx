@@ -88,7 +88,7 @@ const AppLauncher = ({ app, delay }) => (
   >
     <div className="flex flex-col gap-1 pl-2">
       <div className="flex items-center gap-2">
-        <span className="text-[10px] font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">Node {app.node}</span>
+        <span className="text-[10px] font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">ID: {app.node}</span>
         <span className="text-[10px] font-medium text-g-text-variant">{app.version}</span>
       </div>
       <span className="text-xl font-bold text-g-text tracking-tight mt-0.5">{app.name}</span>
@@ -242,7 +242,7 @@ export default function App() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search nodes, destinations, or intel..."
+            placeholder="Search apps, destinations, or intel..."
             className="w-full bg-g-surface border border-g-outline/20 shadow-elevation-1 rounded-full py-4 px-12 text-sm text-g-text focus:outline-none focus:border-g-primary/40 focus:ring-2 focus:ring-g-primary/20 transition-all"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-g-text-variant" size={20} />
@@ -713,8 +713,8 @@ export default function App() {
 
               <div className="px-6 py-4 flex justify-between items-center bg-g-bg mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-g-text tracking-tight">Node Registry</h2>
-                  <p className="text-sm font-medium text-g-text-variant mt-0.5">System protocol apps</p>
+                  <h2 className="text-2xl font-bold text-g-text tracking-tight">Mission Apps</h2>
+                  <p className="text-sm font-medium text-g-text-variant mt-0.5">Deployment ready modules</p>
                 </div>
                 <button
                   onClick={() => setIsLauncherOpen(false)}
@@ -729,7 +729,7 @@ export default function App() {
                   filteredApps.map((app, i) => <AppLauncher key={app.id} app={app} delay={i * 0.04} />)
                 ) : (
                   <div className="px-10 py-20 text-center">
-                    <div className="text-sm font-bold uppercase tracking-widest text-g-text-variant">No matching nodes found</div>
+                    <div className="text-sm font-bold uppercase tracking-widest text-g-text-variant">No matching apps found</div>
                   </div>
                 )}
               </div>
