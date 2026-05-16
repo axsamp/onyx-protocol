@@ -27,11 +27,11 @@ const APPS = [
 ];
 
 const PHRASES = [
-  { jp: 'Sumimasen', en: 'Excuse me', kana: 'すみません' },
-  { jp: 'Arigato', en: 'Thank you', kana: 'ありがとう' },
-  { jp: 'Oishii', en: 'Delicious', kana: 'おいしい' },
-  { jp: 'Kore Onegaishimasu', en: 'This please', kana: 'これ おねがいします' },
-  { jp: 'Toire wa doko desu ka?', en: 'Where is the toilet?', kana: 'トイレはどこですか？' },
+  { jp: 'すみません', en: 'Excuse me' },
+  { jp: 'ありがとうございます', en: 'Thank you' },
+  { jp: '美味しい', en: 'Delicious' },
+  { jp: 'これ、お願いします', en: 'This please' },
+  { jp: 'トイレはどこですか？', en: 'Where is the toilet?' },
 ];
 
 const EXPLORE_SPOTS = [
