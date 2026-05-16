@@ -66,8 +66,9 @@
   
   /* Metallic gradient for Suica to fit "Aluminium" prompt */
   .aluminium-gradient {
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    background: linear-gradient(110deg, #FFFFFF 0%, #F5F7FA 40%, #E4E7EB 75%, #D8DEE4 100%);
     border: 1px solid #D1D5DB;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05);
   }
 
   /* Material Ripple effect simulation */

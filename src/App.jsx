@@ -337,6 +337,9 @@ export default function App() {
                 }}
                 className="relative w-full h-48 rounded-[24px] overflow-hidden p-6 flex flex-col justify-between shadow-elevation-2 aluminium-gradient ripple cursor-pointer active:scale-[0.98] transition-transform"
               >
+                {/* Brushed Sheen Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none -skew-x-12 transform translate-x-1/2 opacity-50" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] opacity-[0.03] pointer-events-none" />
                 <div className="relative z-10 flex justify-between items-start">
                   <div>
                     <div className="text-gray-800 font-bold text-2xl tracking-tight flex items-center gap-2">
