@@ -610,8 +610,11 @@ export default function App() {
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Setup</span>
           </button>
-          <AnimatePresence>
-          {isWalletModalOpen && (
+        </nav>
+      </div>
+
+      <AnimatePresence>
+        {isWalletModalOpen && (
             <div className="fixed inset-0 z-[600] flex items-end justify-center">
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsWalletModalOpen(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
               <motion.div 
@@ -678,7 +681,7 @@ export default function App() {
             </div>
           )}
         </AnimatePresence>
-      </div>
+
 
       {/* Node Registry Bottom Sheet */}
       <AnimatePresence>
