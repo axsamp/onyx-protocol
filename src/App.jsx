@@ -35,10 +35,10 @@ const PHRASES = [
 ];
 
 const EXPLORE_SPOTS = [
-  { name: 'Meiji Jingu', type: 'Shrine', distance: '4.2km', img: 'https://images.unsplash.com/photo-1720783199805-bf399ed5173c?q=80&w=800&v=1' },
-  { name: 'Akihabara', type: 'Tech District', distance: '8.5km', img: 'https://images.unsplash.com/photo-1571497245719-ce3e7f16db1f?q=80&w=800&v=1' },
-  { name: 'Gyoen Park', type: 'Garden', distance: '1.8km', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800' },
-  { name: 'Tsukiji Outer Market', type: 'Food', distance: '12km', img: 'https://images.unsplash.com/photo-1534073737927-85f1ebff1f5d?q=80&w=800' },
+  { name: 'Meiji Jingu', type: 'Shrine', distance: '53m • 51km', img: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?q=80&w=800&v=1' },
+  { name: 'Akihabara', type: 'Tech District', distance: '59m • 53km', img: 'https://images.unsplash.com/photo-1571497245719-ce3e7f16db1f?q=80&w=800&v=1' },
+  { name: 'Shinjuku Gyoen', type: 'Garden', distance: '1h 4m • 54km', img: 'https://images.unsplash.com/photo-1545601445-4d6a0a0565f0?q=80&w=800&v=1' },
+  { name: 'Tsukiji Market', type: 'Food', distance: '1h 7m • 55km', img: 'https://images.unsplash.com/photo-1534073737927-85f1ebff1f5d?q=80&w=800' },
 ];
 
 const HIGHLIGHTS = [
