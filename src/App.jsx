@@ -107,6 +107,24 @@ export default function App() {
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [isStealthMode, setIsStealthMode] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const [wallet, setWallet] = useState(() => {
+    const saved = localStorage.getItem('onyx_wallet');
+    return saved ? JSON.parse(saved) : { liquid: 585000, suica: 12450 };
+  });
+
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'onyx_wallet') {
+        setWallet(JSON.parse(e.newValue));
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('onyx_wallet', JSON.stringify(wallet));
+  }, [wallet]);
 
   useEffect(() => {
     if (activeTab !== 'home') return;
@@ -297,7 +315,20 @@ export default function App() {
               )}
 
               {/* Digital Wallet Card */}
-              <div className="relative w-full h-48 rounded-[24px] overflow-hidden p-6 flex flex-col justify-between shadow-elevation-2 aluminium-gradient ripple cursor-pointer active:scale-[0.98] transition-transform">
+              <div 
+                onClick={() => {
+                  const type = prompt("Update (L)iquid Cash or (S)uica Balance? (L/S)").toUpperCase();
+                  if (type === 'L') {
+                    const val = prompt("Enter new Liquid Cash balance:", wallet.liquid);
+                    if (val !== null) setWallet(prev => ({ ...prev, liquid: parseInt(val) }));
+                  } else if (type === 'S') {
+                    const val = prompt("Enter new Suica balance:", wallet.suica);
+                    if (val !== null) setWallet(prev => ({ ...prev, suica: parseInt(val) }));
+                  }
+                  triggerHaptic('heavy');
+                }}
+                className="relative w-full h-48 rounded-[24px] overflow-hidden p-6 flex flex-col justify-between shadow-elevation-2 aluminium-gradient ripple cursor-pointer active:scale-[0.98] transition-transform"
+              >
                 <div className="relative z-10 flex justify-between items-start">
                   <div>
                     <div className="text-gray-800 font-bold text-2xl tracking-tight flex items-center gap-2">
@@ -313,7 +344,7 @@ export default function App() {
                   <div>
                     <div className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Liquid Cash</div>
                     <div className="text-3xl font-bold tracking-tight text-gray-900 font-sans flex items-baseline gap-1">
-                      <span className="text-xl text-gray-500">¥</span>585,000
+                      <span className="text-xl text-gray-500">¥</span>{wallet.liquid.toLocaleString()}
                     </div>
                   </div>
                   <div className="text-right">
@@ -321,7 +352,7 @@ export default function App() {
                       Suica <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 14.899A7 7 0 1 1 15.69 8.13c-1.28.819-2.77 1.275-4.5 1.275a8.84 8.84 0 0 1-5.089-1.528A7 7 0 0 0 4 14.899Z" /><path d="M17.857 5.703a6 6 0 0 0-8.967 8.967 6 6 0 0 0 8.967-8.967Z" /></svg>
                     </div>
                     <div className="text-xl font-bold tracking-tight text-gray-800 font-sans flex items-baseline gap-1 justify-end">
-                      <span className="text-sm text-gray-500">¥</span>12,450
+                      <span className="text-sm text-gray-500">¥</span>{wallet.suica.toLocaleString()}
                     </div>
                   </div>
                 </div>
