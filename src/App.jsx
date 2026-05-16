@@ -80,10 +80,10 @@ const AppLauncher = ({ app, delay }) => (
   <motion.a
     href={app.url}
     onPointerDown={() => triggerHaptic('medium')}
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 8 }}
-    transition={{ delay: delay + 0.15, type: "spring", damping: 25, stiffness: 200 }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.2, delay: delay * 0.02 }}
     className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-all relative rounded-2xl mx-1 ripple bg-g-surface border border-g-outline/10 shadow-sm mb-3"
   >
     <div className="flex flex-col gap-1 pl-2">
@@ -786,12 +786,12 @@ export default function App() {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsLauncherOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/50 z-50"
             />
             <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 32, stiffness: 280 }}
-              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[32px] overflow-hidden"
+              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[32px] overflow-hidden will-change-transform"
             >
               {/* Material Drag Handle */}
               <div className="w-full flex justify-center pt-4 pb-2 bg-g-bg">
