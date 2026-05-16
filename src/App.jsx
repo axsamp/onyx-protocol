@@ -171,6 +171,14 @@ export default function App() {
   const [tempWallet, setTempWallet] = useState(wallet);
 
   useEffect(() => {
+    if (isStealthMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isStealthMode]);
+
+  useEffect(() => {
     if (isWalletModalOpen) setTempWallet(wallet);
   }, [isWalletModalOpen, wallet]);
 
@@ -263,8 +271,7 @@ export default function App() {
 
   return (
     <div className={cn(
-      "h-screen w-screen max-w-md mx-auto overflow-hidden relative selection:bg-g-primary-container flex flex-col transition-colors duration-700",
-      isStealthMode ? "dark bg-g-bg" : "bg-g-bg"
+      "h-screen w-screen max-w-md mx-auto overflow-hidden relative selection:bg-g-primary-container flex flex-col transition-colors duration-700 bg-g-bg"
     )}>
       {/* Dynamic Island Spacer */}
       <div className="h-14 w-full shrink-0"></div>
