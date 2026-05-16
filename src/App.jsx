@@ -80,21 +80,23 @@ const AppLauncher = ({ app, delay }) => (
   <motion.a
     href={app.url}
     onPointerDown={() => triggerHaptic('medium')}
-    initial={{ opacity: 0, x: -10 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -10 }}
-    transition={{ delay, type: "tween", duration: 0.2, ease: "easeOut" }}
-    className="group flex items-center justify-between py-5 px-6 hover:bg-g-primary-container transition-all relative rounded-xl mx-2 ripple"
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 10 }}
+    transition={{ delay, type: "spring", damping: 20, stiffness: 200 }}
+    className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-all relative rounded-2xl mx-1 ripple bg-g-surface border border-g-outline/10 shadow-sm mb-3"
   >
-    <div className="flex flex-col gap-1 pl-4">
-      <div className="flex items-center gap-3">
-        <span className="text-[9px] font-mono text-g-primary uppercase tracking-[0.3em]">Node::{app.node}</span>
-        <span className="text-[9px] font-mono text-g-text-variant">[{app.version}]</span>
+    <div className="flex flex-col gap-1 pl-2">
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">Node {app.node}</span>
+        <span className="text-[10px] font-medium text-g-text-variant">{app.version}</span>
       </div>
-      <span className="text-lg font-mono font-bold uppercase tracking-tight text-g-text">{app.name}</span>
+      <span className="text-xl font-bold text-g-text tracking-tight mt-0.5">{app.name}</span>
     </div>
-    <div className="pr-4">
-      <ArrowRight size={14} className="text-g-primary" />
+    <div className="pr-2">
+      <div className="w-10 h-10 rounded-full bg-g-primary-container flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors text-g-primary">
+        <ArrowRight size={18} />
+      </div>
     </div>
   </motion.a>
 );
@@ -701,18 +703,18 @@ export default function App() {
             />
             <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "tween", duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-surface z-50 flex flex-col shadow-elevation-3 rounded-t-[28px] overflow-hidden"
+              transition={{ type: "spring", damping: 28, stiffness: 250 }}
+              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[32px] overflow-hidden"
             >
               {/* Material Drag Handle */}
-              <div className="w-full flex justify-center pt-4 pb-2">
-                <div className="w-10 h-1.5 rounded-full bg-g-outline/50"></div>
+              <div className="w-full flex justify-center pt-4 pb-2 bg-g-bg">
+                <div className="w-12 h-1.5 rounded-full bg-g-outline/30"></div>
               </div>
 
-              <div className="px-6 py-4 flex justify-between items-center bg-g-surface">
+              <div className="px-6 py-4 flex justify-between items-center bg-g-bg mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-g-text">Node Registry</h2>
-                  <p className="text-sm font-medium text-g-text-variant">System protocol apps</p>
+                  <h2 className="text-2xl font-bold text-g-text tracking-tight">Node Registry</h2>
+                  <p className="text-sm font-medium text-g-text-variant mt-0.5">System protocol apps</p>
                 </div>
                 <button
                   onClick={() => setIsLauncherOpen(false)}
@@ -722,12 +724,12 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto flex flex-col gap-2 px-4 pb-20 pt-2 no-scrollbar">
+              <div className="flex-1 overflow-y-auto flex flex-col px-4 pb-24 pt-2 no-scrollbar">
                 {filteredApps.length > 0 ? (
-                  filteredApps.map((app, i) => <AppLauncher key={app.id} app={app} delay={i * 0.05} />)
+                  filteredApps.map((app, i) => <AppLauncher key={app.id} app={app} delay={i * 0.04} />)
                 ) : (
                   <div className="px-10 py-20 text-center">
-                    <div className="text-sm font-mono uppercase text-g-text-variant">No matching nodes found</div>
+                    <div className="text-sm font-bold uppercase tracking-widest text-g-text-variant">No matching nodes found</div>
                   </div>
                 )}
               </div>
