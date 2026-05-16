@@ -80,10 +80,10 @@ const AppLauncher = ({ app, delay }) => (
   <motion.a
     href={app.url}
     onPointerDown={() => triggerHaptic('medium')}
-    initial={{ opacity: 0, y: 10 }}
+    initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 10 }}
-    transition={{ delay, type: "spring", damping: 20, stiffness: 200 }}
+    exit={{ opacity: 0, y: 8 }}
+    transition={{ delay: delay + 0.15, type: "spring", damping: 25, stiffness: 200 }}
     className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-all relative rounded-2xl mx-1 ripple bg-g-surface border border-g-outline/10 shadow-sm mb-3"
   >
     <div className="flex flex-col gap-1 pl-2">
@@ -790,7 +790,7 @@ export default function App() {
             />
             <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 250 }}
+              transition={{ type: "spring", damping: 32, stiffness: 280 }}
               className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[32px] overflow-hidden"
             >
               {/* Material Drag Handle */}
