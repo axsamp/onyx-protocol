@@ -35,7 +35,7 @@ const PHRASES = [
 ];
 
 const EXPLORE_SPOTS = [
-  { name: 'Meiji Jingu', type: 'Shrine', distance: '4.2km', img: 'https://images.unsplash.com/photo-1583256082404-f6d35703f885?q=80&w=800' },
+  { name: 'Meiji Jingu', type: 'Shrine', distance: '4.2km', img: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?q=80&w=800' },
   { name: 'Akihabara', type: 'Tech District', distance: '8.5km', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800' },
   { name: 'Gyoen Park', type: 'Garden', distance: '1.8km', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800' },
   { name: 'Tsukiji Outer Market', type: 'Food', distance: '12km', img: 'https://images.unsplash.com/photo-1534073737927-85f1ebff1f5d?q=80&w=800' },
