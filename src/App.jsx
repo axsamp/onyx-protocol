@@ -716,7 +716,7 @@ export default function App() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-md bg-white rounded-t-[32px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl"
+              className="relative w-full max-w-md bg-g-bg rounded-t-[32px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl"
             >
               <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-8" />
               <div className="flex justify-between items-center mb-10">
@@ -737,8 +737,9 @@ export default function App() {
                     <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
                     <input
                       type="number"
-                      value={tempWallet.liquid}
-                      onChange={(e) => setTempWallet({ ...tempWallet, liquid: parseInt(e.target.value) || 0 })}
+                      value={tempWallet.liquid === 0 ? '' : tempWallet.liquid}
+                      onChange={(e) => setTempWallet({ ...tempWallet, liquid: e.target.value === '' ? 0 : parseInt(e.target.value) || 0 })}
+                      placeholder="0"
                       className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-4 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors"
                     />
                   </div>
@@ -753,8 +754,9 @@ export default function App() {
                     <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
                     <input
                       type="number"
-                      value={tempWallet.suica}
-                      onChange={(e) => setTempWallet({ ...tempWallet, suica: parseInt(e.target.value) || 0 })}
+                      value={tempWallet.suica === 0 ? '' : tempWallet.suica}
+                      onChange={(e) => setTempWallet({ ...tempWallet, suica: e.target.value === '' ? 0 : parseInt(e.target.value) || 0 })}
+                      placeholder="0"
                       className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-4 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors"
                     />
                   </div>
