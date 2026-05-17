@@ -34,6 +34,34 @@ const CATEGORIES = {
   Other: { icon: MoreHorizontal, color: 'text-g-text-variant', bg: 'bg-g-aluminium dark:bg-g-aluminium/20' },
 };
 
+const MISSION_NODES = {
+  fujisawa: { lat: 35.3362, lng: 139.4870, name: 'Fujisawa Hub' },
+  shibuya: { lat: 35.6580, lng: 139.7016, name: 'Shibuya Crossing' },
+  shinjuku: { lat: 35.6895, lng: 139.7004, name: 'Shinjuku Node' },
+  tokyo: { lat: 35.6812, lng: 139.7671, name: 'Tokyo Ops' },
+  chiba: { lat: 35.6133, lng: 140.1130, name: 'Chiba Station' }
+};
+
+const FARE_MATRIX = {
+  'fujisawa-shibuya': 990,
+  'fujisawa-shinjuku': 990,
+  'fujisawa-tokyo': 990,
+  'fujisawa-chiba': 1340,
+  'shibuya-tokyo': 210,
+  'shibuya-shinjuku': 160,
+  'shinjuku-tokyo': 210,
+  'shinjuku-chiba': 820,
+  'tokyo-chiba': 650,
+  'shibuya-chiba': 820
+};
+
+const getRouteFare = (fromId, toId) => {
+  if (!fromId || !toId || fromId === toId) return null;
+  const key1 = `${fromId}-${toId}`;
+  const key2 = `${toId}-${fromId}`;
+  return FARE_MATRIX[key1] || FARE_MATRIX[key2] || null;
+};
+
 const formatCurrency = (amount) => new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(Math.round(amount));
 
 const formatDateSafely = (dateString, offset = 0) => {
@@ -156,6 +184,29 @@ export default function App() {
     return saved ? parseInt(saved) : 0;
   });
 
+  const [lastKnownNode, setLastKnownNode] = useState(() => {
+    return localStorage.getItem('onyx_last_known_node') || 'fujisawa';
+  });
+
+  const [pendingTransitPrompt, setPendingTransitPrompt] = useState(() => {
+    const saved = localStorage.getItem('onyx_pending_transit_prompt');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  useEffect(() => {
+    if (lastKnownNode) {
+      localStorage.setItem('onyx_last_known_node', lastKnownNode);
+    }
+  }, [lastKnownNode]);
+
+  useEffect(() => {
+    if (pendingTransitPrompt) {
+      localStorage.setItem('onyx_pending_transit_prompt', JSON.stringify(pendingTransitPrompt));
+    } else {
+      localStorage.removeItem('onyx_pending_transit_prompt');
+    }
+  }, [pendingTransitPrompt]);
+
   const [isAddingExpense, setIsAddingExpense] = useState(false);
   const [newExpense, setNewExpense] = useState({ amount: '', category: 'Food', note: '', paymentMethod: 'cash' });
 
@@ -275,16 +326,117 @@ export default function App() {
     });
   }, []);
 
-  const [currentLocation, setCurrentLocation] = useState(null);
-  const [activeNode, setActiveNode] = useState('fujisawa');
+  const [customFareInput, setCustomFareInput] = useState('');
 
-  // Node Coordinates for Geofencing
-  const MISSION_NODES = {
-    fujisawa: { lat: 35.3362, lng: 139.4870, name: 'Fujisawa Hub' },
-    tokyo: { lat: 35.6895, lng: 139.6917, name: 'Tokyo Ops' },
-    chiba: { lat: 35.6131, lng: 140.1132, name: 'Chiba Station' },
-    shibuya: { lat: 35.6580, lng: 139.7016, name: 'Shibuya Crossing' }
+  // Sync custom fare input with the active prompt fare
+  useEffect(() => {
+    if (pendingTransitPrompt) {
+      setCustomFareInput(pendingTransitPrompt.fare.toString());
+    }
+  }, [pendingTransitPrompt]);
+
+  const handleLogTransit = () => {
+    if (!pendingTransitPrompt) return;
+    triggerHaptic('medium');
+    
+    const finalFare = Number(customFareInput) || pendingTransitPrompt.fare;
+    const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
+    const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
+
+    // Add to ledger
+    const expense = {
+      id: Date.now().toString(),
+      amount: -finalFare,
+      category: 'Transit',
+      note: `${fromName} ➔ ${toName}`,
+      paymentMethod: 'suica',
+      date: new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-')
+    };
+    
+    setExpenses(prev => [expense, ...prev]);
+    
+    // Deduct from Suica
+    setWallet(prev => {
+      const next = { ...prev };
+      next.suica = Math.max(0, next.suica - finalFare);
+      return next;
+    });
+    
+    // Clear prompt
+    setPendingTransitPrompt(null);
   };
+
+  const renderTransitPrompt = () => {
+    if (!pendingTransitPrompt) return null;
+    const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
+    const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+        className="w-full material-card border-2 border-g-primary/30 p-5 space-y-4 relative overflow-hidden bg-g-primary/5 dark:bg-g-primary/10 shadow-lg"
+      >
+        {/* Animated Radio-Pulse Indicator */}
+        <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-g-primary/10 dark:bg-g-primary/20 px-2 py-0.5 rounded-full">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-g-primary opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-g-primary"></span>
+          </span>
+          <span className="text-[8px] font-bold font-mono tracking-widest text-g-primary uppercase">Transit Telemetry</span>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center shrink-0">
+            <Bus size={20} />
+          </div>
+          <div className="space-y-1 pr-16">
+            <h4 className="text-sm font-bold text-g-text leading-none tracking-tight">Active Commute Detected</h4>
+            <p className="text-[11px] font-medium text-g-text-variant leading-relaxed">
+              Did you ride the rail from <span className="font-bold text-g-text">{fromName}</span> to <span className="font-bold text-g-text">{toName}</span>?
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4 pt-1 border-t border-g-outline/10">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider">Suggested Fare:</span>
+            <div className="relative flex items-center shrink-0 w-24">
+              <span className="absolute left-2.5 text-xs font-bold text-g-text-variant">¥</span>
+              <input
+                type="number"
+                value={customFareInput}
+                onChange={(e) => setCustomFareInput(e.target.value)}
+                className="w-full py-1.5 pl-6 pr-2 bg-g-aluminium/40 dark:bg-g-aluminium/10 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-colors text-center"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-2 w-full justify-end text-right">
+            <button
+              onClick={() => { triggerHaptic('light'); setPendingTransitPrompt(null); }}
+              className="px-4 py-2 rounded-xl border border-g-outline/20 hover:bg-g-aluminium/30 dark:hover:bg-g-aluminium/5 text-[10px] font-bold uppercase tracking-wider text-g-text-variant transition-all ripple"
+            >
+              Dismiss
+            </button>
+            <button
+              onClick={handleLogTransit}
+              className="px-4 py-2 rounded-xl bg-g-primary hover:bg-g-primary-hover text-[10px] font-bold uppercase tracking-wider text-white shadow-sm transition-all ripple flex items-center gap-1.5"
+            >
+              <Check size={12} />
+              Log Suica
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [activeNode, setActiveNode] = useState(() => {
+    return localStorage.getItem('onyx_last_known_node') || 'fujisawa';
+  });
 
   // Haversine formula to calculate distance in KM
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -304,7 +456,7 @@ export default function App() {
         const { latitude, longitude } = pos.coords;
         setCurrentLocation({ lat: latitude, lng: longitude });
 
-        // Find closest node
+        // Find closest node (Nearest-Neighbor)
         let closestDist = Infinity;
         let closestId = 'fujisawa';
         
@@ -316,17 +468,49 @@ export default function App() {
           }
         });
         
-        // If within 5km, activate the node
-        if (closestDist < 5) {
+        // Broad regional threshold: 15km
+        if (closestDist < 15) {
           setActiveNode(closestId);
+          
+          // Check for transition
+          if (lastKnownNode && lastKnownNode !== closestId) {
+            const fare = getRouteFare(lastKnownNode, closestId);
+            if (fare) {
+              setPendingTransitPrompt({
+                from: lastKnownNode,
+                to: closestId,
+                fare: fare,
+                type: 'standard'
+              });
+            } else {
+              const routeDist = calculateDistance(
+                MISSION_NODES[lastKnownNode].lat,
+                MISSION_NODES[lastKnownNode].lng,
+                MISSION_NODES[closestId].lat,
+                MISSION_NODES[closestId].lng
+              );
+              if (routeDist > 3) {
+                setPendingTransitPrompt({
+                  from: lastKnownNode,
+                  to: closestId,
+                  fare: 200, // editable fallback JPY
+                  type: 'custom',
+                  distance: routeDist
+                });
+              }
+            }
+            setLastKnownNode(closestId);
+          } else if (!lastKnownNode) {
+            setLastKnownNode(closestId);
+          }
         } else {
-          setActiveNode(null); // No active node in immediate vicinity
+          setActiveNode(null); // Far out, let current state bridge
         }
       }, (err) => console.warn(err), { enableHighAccuracy: false, maximumAge: 60000, timeout: 15000 });
 
       return () => navigator.geolocation.clearWatch(watchId);
     }
-  }, []);
+  }, [lastKnownNode]);
 
   const [tempWallet, setTempWallet] = useState(wallet);
 
@@ -468,6 +652,9 @@ export default function App() {
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
               className="space-y-8"
             >
+              {/* Geofence Transit Prompt Card */}
+              {pendingTransitPrompt && renderTransitPrompt()}
+
               {/* Recommended Section */}
               {!searchQuery && (
                 <section>
@@ -692,6 +879,9 @@ export default function App() {
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
+              {/* Geofence Transit Prompt Card */}
+              {pendingTransitPrompt && renderTransitPrompt()}
+
               {/* Daily Allowance Command Panel */}
               <section className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6">
                 <div className="flex justify-between items-center">
