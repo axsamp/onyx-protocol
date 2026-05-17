@@ -936,7 +936,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Start Date</label>
                       <input 
