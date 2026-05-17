@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-g-bg: var(--theme-g-bg);
   --color-g-surface: var(--theme-g-surface);
@@ -105,7 +107,6 @@
   .ripple {
     position: relative;
     overflow: hidden;
-    transform: translate3d(0, 0, 0);
   }
   .ripple::after {
     content: "";

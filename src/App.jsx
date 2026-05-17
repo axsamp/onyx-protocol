@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  RefreshCcw, Wallet, MapPin, ArrowRight, Download, Calendar, X, Activity, Terminal, ShoppingBag, Search, Plus, Shield, Settings, User, ChevronDown, Phone, Waves, Eye, EyeOff, Check
+  RefreshCcw, Wallet, MapPin, ArrowRight, Download, Calendar, X, Activity, Terminal, ShoppingBag, Search, Plus, Shield, Settings, User, ChevronDown, Phone, Waves, Eye, EyeOff, Check,
+  ChevronLeft, ChevronRight, TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2, Info
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -25,6 +26,25 @@ const APPS = [
   { id: 'stamps', name: 'Stamp Collector', url: 'https://axsamp.github.io/onyx-stamps/', version: 'V1.9.11', node: '04' },
   { id: 'signal', name: 'Onyx Signal', url: 'https://axsamp.github.io/onyx-recorder/', version: 'V1.0.2', node: '05' },
 ];
+
+const CATEGORIES = {
+  Food: { icon: Pizza, color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-950/40' },
+  Transit: { icon: Bus, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-950/40' },
+  Shopping: { icon: ShoppingBag, color: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-100 dark:bg-pink-950/40' },
+  Activity: { icon: Ticket, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-950/40' },
+  Other: { icon: MoreHorizontal, color: 'text-g-text-variant', bg: 'bg-g-aluminium dark:bg-g-aluminium/20' },
+};
+
+const formatCurrency = (amount) => new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(Math.round(amount));
+
+const formatDateSafely = (dateString, offset = 0) => {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '2026-01-01';
+    date.setDate(date.getDate() + offset);
+    return date.toISOString().split('T')[0];
+  } catch (e) { return '2026-01-01'; }
+};
 
 const PHRASES = [
   { jp: 'すみません', en: 'Excuse me' },
@@ -83,8 +103,8 @@ const AppLauncher = ({ app, delay }) => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    transition={{ duration: 0.2, delay: delay * 0.02 }}
-    className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-all relative rounded-2xl mx-1 ripple bg-g-surface border border-g-outline/10 shadow-sm mb-3"
+    transition={{ duration: 0.25, delay: delay, ease: "easeOut" }}
+    className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-colors duration-200 relative rounded-2xl mx-1 bg-g-surface border border-g-outline/10 shadow-sm mb-3 will-change-[opacity]"
   >
     <div className="flex flex-col gap-1 pl-2">
       <div className="flex items-center gap-2">
@@ -114,6 +134,119 @@ export default function App() {
     const saved = localStorage.getItem('onyx_wallet_v2');
     return saved ? JSON.parse(saved) : { liquid: 24500, suica: 12840 };
   });
+
+  const [budgetSettings, setBudgetSettings] = useState(() => {
+    const saved = localStorage.getItem('onyx_budget_settings');
+    const def = { totalBudget: 100000, startDate: '2026-01-01', endDate: '2026-01-07' };
+    if (!saved) return def;
+    try {
+      return JSON.parse(saved);
+    } catch (e) { return def; }
+  });
+
+  const [expenses, setExpenses] = useState(() => {
+    const saved = localStorage.getItem('onyx_budget_expenses');
+    if (!saved) return [];
+    try {
+      return JSON.parse(saved);
+    } catch (e) { return []; }
+  });
+
+  const [currentDayOffset, setCurrentDayOffset] = useState(() => {
+    const saved = localStorage.getItem('onyx_budget_day_offset');
+    return saved ? parseInt(saved) : 0;
+  });
+
+  const [isAddingExpense, setIsAddingExpense] = useState(false);
+  const [newExpense, setNewExpense] = useState({ amount: '', category: 'Food', note: '', paymentMethod: 'cash' });
+
+  // Sync budget settings to localStorage
+  useEffect(() => {
+    localStorage.setItem('onyx_budget_settings', JSON.stringify(budgetSettings));
+  }, [budgetSettings]);
+
+  // Sync budget expenses to localStorage
+  useEffect(() => {
+    localStorage.setItem('onyx_budget_expenses', JSON.stringify(expenses));
+  }, [expenses]);
+
+  // Sync current day offset to localStorage
+  useEffect(() => {
+    localStorage.setItem('onyx_budget_day_offset', currentDayOffset.toString());
+  }, [currentDayOffset]);
+
+  const totalDays = useMemo(() => {
+    const start = new Date(budgetSettings.startDate);
+    const end = new Date(budgetSettings.endDate);
+    return Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1);
+  }, [budgetSettings.startDate, budgetSettings.endDate]);
+
+  const targetDailyBudget = useMemo(() => budgetSettings.totalBudget / totalDays, [budgetSettings.totalBudget, totalDays]);
+  const currentTripDayDate = useMemo(() => formatDateSafely(budgetSettings.startDate, currentDayOffset), [budgetSettings.startDate, currentDayOffset]);
+  const getDayTotal = useCallback((dateStr) => expenses.filter(e => e.date === dateStr).reduce((sum, exp) => sum + Number(exp.amount), 0), [expenses]);
+
+  const cumulativeBuffer = useMemo(() => {
+    let buffer = 0;
+    for (let i = 0; i < currentDayOffset; i++) {
+      buffer += (targetDailyBudget - getDayTotal(formatDateSafely(budgetSettings.startDate, i)));
+    }
+    return buffer;
+  }, [budgetSettings.startDate, targetDailyBudget, getDayTotal, currentDayOffset]);
+
+  const todaySpent = useMemo(() => getDayTotal(currentTripDayDate), [getDayTotal, currentTripDayDate]);
+  const todayAllowance = useMemo(() => targetDailyBudget + cumulativeBuffer, [targetDailyBudget, cumulativeBuffer]);
+  const totalRemaining = useMemo(() => budgetSettings.totalBudget - expenses.reduce((sum, exp) => sum + Number(exp.amount), 0), [budgetSettings.totalBudget, expenses]);
+
+  const handleAddExpense = (e) => {
+    if (e) e.preventDefault();
+    const val = Number(newExpense.amount);
+    if (!newExpense.amount || isNaN(val) || val === 0) return;
+    
+    triggerHaptic('medium');
+    const expense = {
+      id: Date.now(),
+      date: currentTripDayDate,
+      amount: Math.abs(val),
+      category: newExpense.category,
+      note: newExpense.note.trim(),
+      paymentMethod: newExpense.paymentMethod
+    };
+    
+    setExpenses(prev => [expense, ...prev]);
+
+    // Live Wallet Sync
+    setWallet(prev => {
+      const next = { ...prev };
+      if (newExpense.paymentMethod === 'suica') {
+        next.suica = Math.max(0, next.suica - Math.abs(val));
+      } else {
+        next.liquid = Math.max(0, next.liquid - Math.abs(val));
+      }
+      return next;
+    });
+
+    setNewExpense({ amount: '', category: 'Food', note: '', paymentMethod: 'cash' });
+    setIsAddingExpense(false);
+  };
+
+  const handleDeleteExpense = useCallback((id) => {
+    triggerHaptic('light');
+    setExpenses(prev => {
+      const expToDelete = prev.find(e => e.id === id);
+      if (expToDelete) {
+        setWallet(walletPrev => {
+          const next = { ...walletPrev };
+          if (expToDelete.paymentMethod === 'suica') {
+            next.suica += expToDelete.amount;
+          } else {
+            next.liquid += expToDelete.amount;
+          }
+          return next;
+        });
+      }
+      return prev.filter(e => e.id !== id);
+    });
+  }, []);
 
   const [currentLocation, setCurrentLocation] = useState(null);
   const [activeNode, setActiveNode] = useState('fujisawa');
@@ -541,52 +674,159 @@ export default function App() {
             </motion.div>
           )}
 
-          {activeTab === 'safety' && (
+          {activeTab === 'budget' && (
             <motion.div
-              key="safety"
+              key="budget"
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
+              className="space-y-6 animate-in fade-in duration-300"
             >
-              <section className="material-card p-6 space-y-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-                    <Shield size={24} />
+              {/* Daily Allowance Command Panel */}
+              <section className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-6">
+                    <button 
+                      onClick={() => { triggerHaptic(); setCurrentDayOffset(Math.max(0, currentDayOffset - 1)); }} 
+                      className="text-g-text-variant hover:text-g-text w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    <div className="text-center min-w-[100px]">
+                      <p className="text-[10px] font-bold text-g-primary uppercase tracking-[0.2em] mb-0.5">Day {currentDayOffset + 1}</p>
+                      <p className="text-sm font-bold uppercase tracking-tight text-g-text">{new Date(currentTripDayDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                    </div>
+                    <button 
+                      onClick={() => { triggerHaptic(); setCurrentDayOffset(currentDayOffset + 1); }} 
+                      className="text-g-text-variant hover:text-g-text w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
                   </div>
+                  <Calendar size={18} className="text-g-text-variant" />
+                </div>
+
+                <div className="h-[1px] w-full bg-g-outline/10"></div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h2 className="text-xl font-bold text-g-text">Safety Protocol</h2>
-                    <p className="text-sm text-g-text-variant font-medium">Emergency services</p>
+                    <span className="text-[10px] font-bold text-g-text-variant uppercase tracking-widest block mb-1">Daily Cap</span>
+                    <span className="text-2xl font-bold tabular-nums text-g-text">{formatCurrency(todayAllowance)}</span>
                   </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-bold text-g-text-variant uppercase tracking-widest block mb-1">Spent</span>
+                    <span className="text-2xl font-bold tabular-nums text-g-text-variant">{formatCurrency(todaySpent)}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="h-2 w-full bg-g-aluminium dark:bg-g-aluminium/10 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }} 
+                      animate={{ width: `${Math.min(100, (todaySpent / (todayAllowance || 1)) * 100)}%` }} 
+                      className={cn("h-full rounded-full transition-all duration-300", todaySpent > todayAllowance ? 'bg-red-500' : 'bg-g-primary')} 
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] font-medium text-g-text-variant px-1">
+                    <span>{todaySpent > todayAllowance ? 'Over budget' : `${Math.round(Math.max(0, 100 - (todaySpent / (todayAllowance || 1)) * 100))}% safe`}</span>
+                    <span>Remaining: {formatCurrency(Math.max(0, todayAllowance - todaySpent))}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Net Buffer Telemetry Console */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="material-card p-5 flex flex-col justify-between h-28 relative overflow-hidden">
+                  <div className="flex items-center gap-2 text-g-text-variant">
+                    <TrendingUp size={16} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Net Buffer</span>
+                  </div>
+                  <div className="mt-2">
+                    <span className={cn("text-2xl font-bold tracking-tight block", cumulativeBuffer < 0 ? 'text-red-500 dark:text-red-400' : 'text-g-primary')}>
+                      {cumulativeBuffer >= 0 ? '+¥' : '-¥'}{Math.abs(cumulativeBuffer).toLocaleString()}
+                    </span>
+                    <span className="text-[9px] font-medium text-g-text-variant">Cumulative surplus</span>
+                  </div>
+                </div>
+
+                <div className="material-card p-5 flex flex-col justify-between h-28 relative overflow-hidden">
+                  <div className="flex items-center gap-2 text-g-text-variant">
+                    <Wallet size={16} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Total Left</span>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-2xl font-bold tracking-tight text-g-text block">
+                      ¥{totalRemaining.toLocaleString()}
+                    </span>
+                    <span className="text-[9px] font-medium text-g-text-variant">of ¥{budgetSettings.totalBudget.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ledger list */}
+              <section className="space-y-4">
+                <div className="flex justify-between items-center px-1">
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-g-text-variant">Daily Ledger</h3>
+                  <span className="text-[10px] font-mono text-g-primary bg-g-primary-container px-2 py-0.5 rounded-full font-bold">
+                    {expenses.filter(e => e.date === currentTripDayDate).length} entries
+                  </span>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-g-bg rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <Phone size={20} className="text-g-primary" />
-                      <span className="text-base font-bold text-g-text">Police (Emergency)</span>
+                  {expenses.filter(e => e.date === currentTripDayDate).length === 0 ? (
+                    <div className="py-16 text-center border border-dashed border-g-outline/20 rounded-3xl text-g-text-variant text-xs font-medium uppercase tracking-widest bg-g-surface/50">
+                      No transactions recorded
                     </div>
-                    <span className="text-xl font-mono font-bold text-g-primary">110</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-g-bg rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <Phone size={20} className="text-g-primary" />
-                      <span className="text-base font-bold text-g-text">Ambulance / Fire</span>
-                    </div>
-                    <span className="text-xl font-mono font-bold text-g-primary">119</span>
-                  </div>
+                  ) : (
+                    expenses.filter(e => e.date === currentTripDayDate).map((exp, idx) => {
+                      const Cat = CATEGORIES[exp.category] || CATEGORIES.Other;
+                      const IconComponent = Cat.icon;
+                      return (
+                        <motion.div
+                          key={exp.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.03 }}
+                          className="material-card p-4 flex items-center justify-between shadow-elevation-1 hover:shadow-elevation-2 transition-shadow"
+                        >
+                          <div className="flex items-center gap-4 min-w-0 flex-1">
+                            <div className={cn("w-10 h-10 rounded-full flex items-center justify-center shrink-0", Cat.bg, Cat.color)}>
+                              <IconComponent size={18} />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-sm text-g-text truncate">{exp.note || exp.category}</span>
+                                <span className={cn("text-[9px] font-bold uppercase tracking-wider", exp.paymentMethod === 'suica' ? 'text-emerald-600 dark:text-emerald-400' : 'text-g-primary')}>
+                                  {exp.paymentMethod === 'suica' ? 'Suica' : 'Cash'}
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-medium text-g-text-variant">{exp.category}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 ml-4 shrink-0">
+                            <span className="font-bold text-base tabular-nums text-g-text">¥{exp.amount.toLocaleString()}</span>
+                            <button 
+                              onClick={() => handleDeleteExpense(exp.id)} 
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-g-text-variant hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </motion.div>
+                      );
+                    })
+                  )}
                 </div>
               </section>
 
-              <section className="material-card p-6 bg-g-primary-container border-none">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-g-primary text-white flex items-center justify-center">
-                    <Waves size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-g-primary">Rainy Season Protocol</h3>
-                    <p className="text-sm font-medium text-g-primary/80">Status: ACTIVE • Increased prep required.</p>
-                  </div>
-                </div>
-              </section>
+              {/* Float Trigger for Quick Log */}
+              <div className="flex justify-center pt-2">
+                <button
+                  onClick={() => { triggerHaptic('medium'); setIsAddingExpense(true); }}
+                  className="w-full py-4 bg-g-primary text-white font-bold rounded-2xl shadow-elevation-2 active:scale-[0.99] transition-transform flex items-center justify-center gap-2 ripple"
+                >
+                  <Plus size={20} />
+                  Log Transaction
+                </button>
+              </div>
             </motion.div>
           )}
 
@@ -594,59 +834,162 @@ export default function App() {
             <motion.div
               key="settings"
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
+              className="space-y-6 animate-in fade-in duration-300"
             >
-              <div className="label-text ml-2">System Registry</div>
-              <div className="space-y-3">
-                <button
-                  onClick={() => setIsStealthMode(!isStealthMode)}
-                  className="w-full material-card p-5 flex justify-between items-center ripple"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-g-aluminium flex items-center justify-center text-g-text">
-                      {isStealthMode ? <EyeOff size={20} /> : <Eye size={20} />}
+              {/* System Registry */}
+              <div>
+                <div className="label-text ml-2 mb-3">System Registry</div>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setIsStealthMode(!isStealthMode)}
+                    className="w-full material-card p-5 flex justify-between items-center ripple"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-g-aluminium dark:bg-g-aluminium/10 flex items-center justify-center text-g-text">
+                        {isStealthMode ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </div>
+                      <div className="text-left">
+                        <div className="text-base font-bold text-g-text">Stealth Mode</div>
+                        <div className="text-sm font-medium text-g-text-variant">Google Dark Theme</div>
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <div className="text-base font-bold text-g-text">Stealth Mode</div>
-                      <div className="text-sm font-medium text-g-text-variant">Google Dark Theme</div>
+                    <div className={cn("w-12 h-6 rounded-full relative transition-colors border", isStealthMode ? "bg-g-primary border-g-primary" : "bg-g-aluminium border-g-outline")}>
+                      <div className={cn("absolute top-1 w-4 h-4 rounded-full bg-white transition-all", isStealthMode ? "right-1" : "left-1 shadow-sm")} />
                     </div>
-                  </div>
-                  <div className={cn("w-12 h-6 rounded-full relative transition-colors border", isStealthMode ? "bg-g-primary border-g-primary" : "bg-g-aluminium border-g-outline")}>
-                    <div className={cn("absolute top-1 w-4 h-4 rounded-full bg-white transition-all", isStealthMode ? "right-1" : "left-1 shadow-sm")} />
-                  </div>
-                </button>
+                  </button>
 
-                <button
-                  onClick={exportMissionData}
-                  className="w-full material-card p-5 flex justify-between items-center ripple"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
-                      <Download size={20} />
+                  <button
+                    onClick={exportMissionData}
+                    className="w-full material-card p-5 flex justify-between items-center ripple"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
+                        <Download size={20} />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-base font-bold text-g-text">Export Intel</div>
+                        <div className="text-sm font-medium text-g-text-variant">Backup data to JSON</div>
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <div className="text-base font-bold text-g-text">Export Intel</div>
-                      <div className="text-sm font-medium text-g-text-variant">Backup data to JSON</div>
-                    </div>
-                  </div>
-                  <ArrowRight size={20} className="text-g-text-variant" />
-                </button>
+                    <ArrowRight size={20} className="text-g-text-variant" />
+                  </button>
 
-                <button
-                  onClick={forceRefresh}
-                  className="w-full material-card p-5 flex justify-between items-center ripple"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
-                      <RefreshCcw size={20} />
+                  <button
+                    onClick={forceRefresh}
+                    className="w-full material-card p-5 flex justify-between items-center ripple"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
+                        <RefreshCcw size={20} />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-base font-bold text-g-text">Force Sync</div>
+                        <div className="text-sm font-medium text-g-text-variant">Clear cache</div>
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <div className="text-base font-bold text-g-text">Force Sync</div>
-                      <div className="text-sm font-medium text-g-text-variant">Clear cache</div>
+                    <ArrowRight size={20} className="text-g-text-variant" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Trip Budget Parameters */}
+              <div>
+                <div className="label-text ml-2 mb-3">Trip Budget Parameters</div>
+                <section className="material-card p-5 space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Total Trip Budget</label>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-4 text-base font-bold text-g-text-variant">¥</span>
+                      <input 
+                        type="number" 
+                        value={budgetSettings.totalBudget} 
+                        onChange={(e) => setBudgetSettings({...budgetSettings, totalBudget: Number(e.target.value)})} 
+                        className="w-full py-3 pl-8 pr-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-base font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                      />
                     </div>
                   </div>
-                  <ArrowRight size={20} className="text-g-text-variant" />
-                </button>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Start Date</label>
+                      <input 
+                        type="date" 
+                        value={budgetSettings.startDate} 
+                        onChange={(e) => setBudgetSettings({...budgetSettings, startDate: e.target.value})} 
+                        className="w-full py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">End Date</label>
+                      <input 
+                        type="date" 
+                        value={budgetSettings.endDate} 
+                        onChange={(e) => setBudgetSettings({...budgetSettings, endDate: e.target.value})} 
+                        className="w-full py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <button 
+                      onClick={() => { if(confirm('Erase all ledger history? Wallet balances will NOT be reimbursed.')) setExpenses([]); }} 
+                      className="w-full py-3 text-[10px] font-bold text-red-500 uppercase tracking-widest border border-red-500/20 hover:bg-red-500/5 rounded-xl transition-all"
+                    >
+                      Clear Budget Ledger
+                    </button>
+                  </div>
+                </section>
+              </div>
+
+              {/* Emergency & Safety Protocols */}
+              <div>
+                <div className="label-text ml-2 mb-3">Emergency & Safety Protocols</div>
+                <section className="material-card p-5 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/20 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                      <Shield size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-g-text">Japan Quick Dials</h3>
+                      <p className="text-xs text-g-text-variant font-medium">Local emergency hotlines</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <a 
+                      href="tel:110" 
+                      onClick={() => triggerHaptic('medium')}
+                      className="flex items-center justify-between p-4 bg-g-bg hover:bg-g-aluminium/20 rounded-2xl border border-g-outline/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Phone size={16} className="text-red-500" />
+                        <span className="text-xs font-bold text-g-text">Police</span>
+                      </div>
+                      <span className="text-sm font-mono font-bold text-red-500">110</span>
+                    </a>
+                    
+                    <a 
+                      href="tel:119" 
+                      onClick={() => triggerHaptic('medium')}
+                      className="flex items-center justify-between p-4 bg-g-bg hover:bg-g-aluminium/20 rounded-2xl border border-g-outline/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Phone size={16} className="text-red-500" />
+                        <span className="text-xs font-bold text-g-text">Fire/Ambu</span>
+                      </div>
+                      <span className="text-sm font-mono font-bold text-red-500">119</span>
+                    </a>
+                  </div>
+
+                  {/* Rainy Season Banner */}
+                  <div className="flex items-center gap-4 p-4 bg-g-primary-container/40 dark:bg-g-primary-container/10 rounded-2xl border border-g-primary/10">
+                    <Waves size={20} className="text-g-primary shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-g-primary">Rainy Season Protocol</h4>
+                      <p className="text-[10px] font-medium text-g-primary/80">Status: ACTIVE • Increased prep required.</p>
+                    </div>
+                  </div>
+                </section>
               </div>
             </motion.div>
           )}
@@ -686,13 +1029,13 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => { triggerHaptic('light'); setActiveTab('safety'); }}
-            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'safety' && "nav-active")}
+            onClick={() => { triggerHaptic('light'); setActiveTab('budget'); }}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'budget' && "nav-active")}
           >
             <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
-              <Shield size={22} className={cn(activeTab === 'safety' && "fill-current")} />
+              <Wallet size={22} className={cn(activeTab === 'budget' && "fill-current")} />
             </div>
-            <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Safety</span>
+            <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Budget</span>
           </button>
 
           <button
@@ -822,6 +1165,117 @@ export default function App() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Budget Transaction Overlay */}
+      <AnimatePresence>
+        {isAddingExpense && (
+          <div className="fixed inset-0 z-[600] flex items-end justify-center">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAddingExpense(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+            <motion.form 
+              onSubmit={handleAddExpense}
+              initial={{ y: "100%" }} 
+              animate={{ y: 0 }} 
+              exit={{ y: "100%" }} 
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="relative w-full max-w-md bg-g-surface rounded-t-[32px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh]"
+            >
+              <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-6" />
+              
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-g-text">Log Transaction</h3>
+                  <p className="text-xs font-medium text-g-text-variant mt-0.5">Record trip expenses in real-time</p>
+                </div>
+                <button type="button" onClick={() => setIsAddingExpense(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/15 text-g-text ripple">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Amount input */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Amount</label>
+                  <div className="relative flex items-center">
+                    <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
+                    <input 
+                      autoFocus 
+                      inputMode="decimal" 
+                      type="number" 
+                      placeholder="0" 
+                      value={newExpense.amount} 
+                      onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})} 
+                      className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-3 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors" 
+                    />
+                  </div>
+                </div>
+
+                {/* Payment Method Segmented Buttons (Material 3 style) */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Payment Method</label>
+                  <div className="grid grid-cols-2 gap-2 bg-g-aluminium/30 dark:bg-g-aluminium/10 p-1 rounded-xl">
+                    <button 
+                      type="button" 
+                      onClick={() => { triggerHaptic(); setNewExpense({...newExpense, paymentMethod: 'cash'}); }}
+                      className={cn("py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all", newExpense.paymentMethod === 'cash' ? 'bg-g-primary text-white shadow-elevation-1' : 'text-g-text-variant')}
+                    >
+                      Cash (¥{wallet.liquid.toLocaleString()})
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => { triggerHaptic(); setNewExpense({...newExpense, paymentMethod: 'suica'}); }}
+                      className={cn("py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all", newExpense.paymentMethod === 'suica' ? 'bg-g-primary text-white shadow-elevation-1' : 'text-g-text-variant')}
+                    >
+                      Suica (¥{wallet.suica.toLocaleString()})
+                    </button>
+                  </div>
+                </div>
+
+                {/* Category selectors */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Category</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {Object.keys(CATEGORIES).map(cat => {
+                      const CatInfo = CATEGORIES[cat];
+                      const IconComponent = CatInfo.icon;
+                      return (
+                        <button 
+                          key={cat} 
+                          type="button" 
+                          onClick={() => { triggerHaptic(); setNewExpense({...newExpense, category: cat}); }} 
+                          className={cn("py-3 rounded-xl border flex flex-col items-center gap-1.5 transition-all duration-200", newExpense.category === cat ? 'bg-g-primary-container border-g-primary text-g-primary' : 'bg-g-bg border-g-outline/10 text-g-text-variant')}
+                        >
+                          <IconComponent size={16} />
+                          <span className="text-[9px] font-bold uppercase tracking-wider">{cat}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Note input */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Details</label>
+                  <input 
+                    type="text" 
+                    placeholder="E.g. Ichiran Ramen, Train ride" 
+                    value={newExpense.note} 
+                    onChange={(e) => setNewExpense({...newExpense, note: e.target.value})} 
+                    className="w-full py-4 px-5 bg-g-bg border border-g-outline/20 rounded-xl text-g-text font-medium placeholder:text-g-text-variant focus:outline-none focus:border-g-primary transition-colors" 
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="w-full py-4 bg-g-primary text-white font-bold rounded-2xl shadow-elevation-2 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
+                >
+                  Log Expense
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+            </motion.form>
+          </div>
         )}
       </AnimatePresence>
     </div>
