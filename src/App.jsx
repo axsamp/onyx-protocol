@@ -21,10 +21,9 @@ const triggerHaptic = (type = 'light') => {
 
 const APPS = [
   { id: 'itinerary', name: 'Itinerary Command', url: 'https://axsamp.github.io/onyx-itinerary/', version: 'V4.1.5', node: '01' },
-  { id: 'budget', name: 'Budget Buffer', url: 'https://axsamp.github.io/budget-buffer/', version: 'V3.8.2', node: '02' },
-  { id: 'converter', name: 'Unit Converter', url: 'https://axsamp.github.io/onyx-converter/', version: 'V2.5.6', node: '03' },
-  { id: 'stamps', name: 'Stamp Collector', url: 'https://axsamp.github.io/onyx-stamps/', version: 'V1.9.11', node: '04' },
-  { id: 'signal', name: 'Onyx Signal', url: 'https://axsamp.github.io/onyx-recorder/', version: 'V1.0.2', node: '05' },
+  { id: 'converter', name: 'Unit Converter', url: 'https://axsamp.github.io/onyx-converter/', version: 'V2.5.6', node: '02' },
+  { id: 'stamps', name: 'Stamp Collector', url: 'https://axsamp.github.io/onyx-stamps/', version: 'V1.9.11', node: '03' },
+  { id: 'signal', name: 'Onyx Signal', url: 'https://axsamp.github.io/onyx-recorder/', version: 'V1.0.2', node: '04' },
 ];
 
 const CATEGORIES = {
@@ -323,7 +322,7 @@ export default function App() {
         } else {
           setActiveNode(null); // No active node in immediate vicinity
         }
-      }, (err) => console.warn(err), { enableHighAccuracy: true });
+      }, (err) => console.warn(err), { enableHighAccuracy: false, maximumAge: 60000, timeout: 15000 });
 
       return () => navigator.geolocation.clearWatch(watchId);
     }
