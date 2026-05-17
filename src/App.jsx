@@ -118,7 +118,7 @@ const HIGHLIGHTS = [
     subtitle: "1h Shinkansen • Mt. Fuji views & tea slopes",
     tag: 'Nature',
     density: 'Low',
-    img: 'https://images.unsplash.com/photo-1490806862337-875726298d24?q=80&w=1000&auto=format&fit=crop',
+    img: import.meta.env.BASE_URL + 'shizuoka.png',
     link: 'https://www.google.com/maps/search/Shizuoka+Prefecture'
   },
   {
@@ -126,7 +126,7 @@ const HIGHLIGHTS = [
     subtitle: "1.5h Shinkansen • Historic castle & legacy museum",
     tag: 'Priority',
     density: 'Medium',
-    img: 'https://images.unsplash.com/photo-1590253407275-14374ef57a9f?q=80&w=1000&auto=format&fit=crop',
+    img: import.meta.env.BASE_URL + 'nagoya.png',
     link: 'https://www.google.com/maps/search/Nagoya+Castle'
   },
   {
