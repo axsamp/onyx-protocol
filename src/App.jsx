@@ -438,6 +438,46 @@ export default function App() {
     return localStorage.getItem('onyx_last_known_node') || 'fujisawa';
   });
 
+  const simulateNodeArrival = (nodeId) => {
+    triggerHaptic('medium');
+    const node = MISSION_NODES[nodeId];
+    if (node) {
+      setCurrentLocation({ lat: node.lat, lng: node.lng });
+      setActiveNode(nodeId);
+      
+      if (lastKnownNode && lastKnownNode !== nodeId) {
+        const fare = getRouteFare(lastKnownNode, nodeId);
+        if (fare) {
+          setPendingTransitPrompt({
+            from: lastKnownNode,
+            to: nodeId,
+            fare: fare,
+            type: 'standard'
+          });
+        } else {
+          const routeDist = calculateDistance(
+            MISSION_NODES[lastKnownNode].lat,
+            MISSION_NODES[lastKnownNode].lng,
+            node.lat,
+            node.lng
+          );
+          if (routeDist > 3) {
+            setPendingTransitPrompt({
+              from: lastKnownNode,
+              to: nodeId,
+              fare: 200,
+              type: 'custom',
+              distance: routeDist
+            });
+          }
+        }
+        setLastKnownNode(nodeId);
+      } else if (!lastKnownNode) {
+        setLastKnownNode(nodeId);
+      }
+    }
+  };
+
   // Haversine formula to calculate distance in KM
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -1092,6 +1132,35 @@ export default function App() {
                     <ArrowRight size={20} className="text-g-text-variant" />
                   </button>
                 </div>
+              </div>
+
+              {/* GPS Telemetry Simulator */}
+              <div>
+                <div className="label-text ml-2 mb-3">GPS Telemetry Simulator</div>
+                <section className="material-card p-5 space-y-4">
+                  <p className="text-[11px] font-medium text-g-text-variant leading-relaxed">
+                    Test your passive geofencing transit auto-logs from anywhere in the world! Tap a location node to simulate your GPS arrival and trigger transit fare telemetry prompts:
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {Object.entries(MISSION_NODES).map(([id, node]) => {
+                      const isActive = activeNode === id;
+                      return (
+                        <button
+                          key={id}
+                          onClick={() => simulateNodeArrival(id)}
+                          className={cn(
+                            "py-2 px-3 rounded-xl border text-[10px] font-bold uppercase tracking-wider transition-all ripple",
+                            isActive 
+                              ? "bg-g-primary text-white border-g-primary shadow-sm" 
+                              : "bg-g-aluminium/30 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text hover:bg-g-aluminium/50"
+                          )}
+                        >
+                          {node.name.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
               </div>
 
               {/* Trip Budget Parameters */}
