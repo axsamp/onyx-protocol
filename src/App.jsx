@@ -781,7 +781,7 @@ export default function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date());
-    }, 2000);
+    }, 30000); // Optimized 30s interval to prevent idle render cycle battery drain
     return () => clearInterval(interval);
   }, []);
 
