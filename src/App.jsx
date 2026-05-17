@@ -479,11 +479,11 @@ export default function App() {
       return (
         <motion.div
           key="transit-success-pill"
-          initial={{ opacity: 0, scale: 0.9, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: -10 }}
-          transition={{ type: "spring", damping: 25, stiffness: 220 }}
-          className="relative w-full rounded-full py-4 px-6 bg-g-primary-container border border-g-primary/20 shadow-elevation-1 flex items-center justify-center text-g-primary"
+          initial={{ opacity: 0, scale: 0.85, y: 12, filter: 'blur(2px)' }}
+          animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 0.85, y: -12, filter: 'blur(2px)' }}
+          transition={{ type: "spring", damping: 18, stiffness: 220 }}
+          className="relative w-full rounded-full py-4 px-6 bg-g-primary-container border border-g-primary/20 shadow-elevation-1 flex items-center justify-center text-g-primary [will-change:transform,opacity,filter] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu"
         >
           <motion.div 
             initial={{ scale: 0.5, opacity: 0 }}
@@ -503,10 +503,11 @@ export default function App() {
     return (
       <motion.div
         key="transit-prompt-card"
-        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-        className="relative w-full rounded-[28px] rounded-tl-[8px] overflow-hidden p-5 flex flex-col justify-between shadow-elevation-2 border border-g-outline/20 bg-g-surface space-y-3.5"
+        initial={{ opacity: 0, y: -24, scale: 0.92, filter: 'blur(4px)' }}
+        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, y: -18, scale: 0.95, filter: 'blur(2px)' }}
+        transition={{ type: "spring", damping: 20, stiffness: 190 }}
+        className="relative w-full rounded-[28px] rounded-tl-[8px] overflow-hidden p-5 flex flex-col justify-between shadow-elevation-2 border border-g-outline/20 bg-g-surface space-y-3.5 [will-change:transform,opacity,filter] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu"
       >
         {/* Top Header Row */}
         <div className="relative z-10 flex justify-between items-center w-full">
@@ -850,13 +851,13 @@ export default function App() {
               className="space-y-8"
             >
               {/* Geofence Transit Prompt Card */}
-              <AnimatePresence>
+              <AnimatePresence mode="popLayout">
                 {pendingTransitPrompt && renderTransitPrompt()}
               </AnimatePresence>
 
               {/* Recommended Section - Highly Expressive Carousel */}
               {!searchQuery && (
-                <section>
+                <motion.section layout="position" className="[will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                   <div className="label-text mb-3 ml-2">Recommended for you</div>
                   <div className="relative aspect-[4/3] rounded-[36px] rounded-br-[12px] overflow-hidden group shadow-elevation-2 bg-g-aluminium">
                     <AnimatePresence initial={false}>
@@ -876,7 +877,7 @@ export default function App() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent z-10 pointer-events-none"></div>
 
                     {/* Highly Expressive Density Glassmorphism Badge */}
-                    <div className="absolute top-4 left-4 bg-white/20 dark:bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 dark:border-white/5 shadow-sm flex items-center gap-2 z-20">
+                    <div className="absolute top-4 left-4 bg-white/20 dark:bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 dark:border-white/5 shadow-sm flex items-center gap-2 z-25">
                       <MapPin size={14} className="text-white dark:text-g-primary" />
                       <span className="text-[11px] font-bold text-white">Density: {HIGHLIGHTS[highlightIndex].density}</span>
                     </div>
@@ -928,17 +929,18 @@ export default function App() {
                       </div>
                     </div>
                   </div>
-                </section>
+                </motion.section>
               )}
 
               {/* Digital Wallet Card - Highly Expressive */}
               <motion.div
+                layout="position"
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   triggerHaptic('medium');
                   setIsWalletModalOpen(true);
                 }}
-                className="relative w-full h-[210px] rounded-[40px] rounded-tl-[12px] overflow-hidden p-7 flex flex-col justify-between shadow-elevation-2 bg-g-primary dark:bg-g-primary-container text-white cursor-pointer group select-none transition-colors duration-700"
+                className="relative w-full h-[210px] rounded-[40px] rounded-tl-[12px] overflow-hidden p-7 flex flex-col justify-between shadow-elevation-2 bg-g-primary dark:bg-g-primary-container text-white cursor-pointer group select-none transition-colors duration-700 [will-change:transform,opacity] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu"
               >
                 {/* Brushed Sheen & Blur overlays */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none -skew-x-12 transform translate-x-1/2 opacity-45 transition-transform duration-700 group-hover:translate-x-1/3" />
@@ -976,7 +978,7 @@ export default function App() {
               </motion.div>
 
               {/* Essential Japanese Phrases Console */}
-              <section className="space-y-3.5">
+              <motion.section layout="position" className="space-y-3.5 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <div className="flex justify-between items-center px-2">
                   <div className="label-text">Essential Japanese HUD</div>
                   
@@ -1056,7 +1058,7 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-              </section>
+              </motion.section>
 
 
             </motion.div>
@@ -1101,12 +1103,12 @@ export default function App() {
               className="space-y-6"
             >
               {/* Geofence Transit Prompt Card */}
-              <AnimatePresence>
+              <AnimatePresence mode="popLayout">
                 {pendingTransitPrompt && renderTransitPrompt()}
               </AnimatePresence>
 
               {/* Daily Allowance Command Panel */}
-              <section className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6">
+              <motion.section layout="position" className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-6">
                     <button 
@@ -1155,10 +1157,10 @@ export default function App() {
                     <span>Remaining: {formatCurrency(Math.max(0, todayAllowance - todaySpent))}</span>
                   </div>
                 </div>
-              </section>
+              </motion.section>
 
               {/* Net Buffer Telemetry Console */}
-              <div className="grid grid-cols-2 gap-4">
+              <motion.div layout="position" className="grid grid-cols-2 gap-4 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <div className="material-card p-5 flex flex-col justify-between h-28 relative overflow-hidden">
                   <div className="flex items-center gap-2 text-g-text-variant">
                     <TrendingUp size={16} />
@@ -1184,10 +1186,10 @@ export default function App() {
                     <span className="text-[9px] font-medium text-g-text-variant">of ¥{budgetSettings.totalBudget.toLocaleString()}</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Ledger list */}
-              <section className="space-y-4">
+              <motion.section layout="position" className="space-y-4 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <div className="flex justify-between items-center px-1">
                   <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-g-text-variant">Daily Ledger</h3>
                   <span className="text-[10px] font-mono text-g-primary bg-g-primary-container px-2 py-0.5 rounded-full font-bold">
@@ -1240,10 +1242,10 @@ export default function App() {
                     })
                   )}
                 </div>
-              </section>
+              </motion.section>
 
               {/* Float Trigger for Quick Log */}
-              <div className="flex justify-center pt-2">
+              <motion.div layout="position" className="flex justify-center pt-2 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <button
                   onClick={() => { triggerHaptic('medium'); setIsAddingExpense(true); }}
                   className="w-full py-4 bg-g-primary-container text-g-primary font-bold rounded-2xl shadow-elevation-2 active:scale-[0.99] transition-transform flex items-center justify-center gap-2 ripple"
@@ -1251,7 +1253,7 @@ export default function App() {
                   <Plus size={20} />
                   Log Transaction
                 </button>
-              </div>
+              </motion.div>
             </motion.div>
           )}
 
