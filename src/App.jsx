@@ -101,11 +101,33 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 const PHRASES = [
-  { jp: 'すみません', en: 'Excuse me' },
-  { jp: 'ありがとうございます', en: 'Thank you' },
-  { jp: '美味しい', en: 'Delicious' },
-  { jp: 'これ、お願いします', en: 'This please' },
-  { jp: 'トイレはどこですか？', en: 'Where is the toilet?' },
+  // Essential Category
+  { jp: 'すみません', romaji: 'Sumimasen', en: 'Excuse me / Sorry', cat: 'essential' },
+  { jp: 'ありがとうございます', romaji: 'Arigatou gozaimasu', en: 'Thank you very much', cat: 'essential' },
+  { jp: 'はい', romaji: 'Hai', en: 'Yes', cat: 'essential' },
+  { jp: 'いいえ', romaji: 'Iie', en: 'No', cat: 'essential' },
+  { jp: '日本語がわかりません', romaji: 'Nihongo ga wakarimasen', en: "I don't understand Japanese", cat: 'essential' },
+
+  // Transit Category
+  { jp: '改札口はどこですか？', romaji: 'Kaisatsuguchi wa doko desu ka?', en: 'Where is the ticket gate?', cat: 'transit' },
+  { jp: 'この電車は東京に行きますか？', romaji: 'Kono densha wa Tōkyō ni ikimasu ka?', en: 'Does this train go to Tokyo?', cat: 'transit' },
+  { jp: '切符売り場はどこですか？', romaji: 'Kippu uriba wa doko desu ka?', en: 'Where is the ticket office?', cat: 'transit' },
+  { jp: '切符の買い方を教えてください', romaji: 'Kippu no kaikata o oshiete kudasai', en: 'Please show me how to buy a ticket', cat: 'transit' },
+
+  // Dining Category
+  { jp: 'お水をください', romaji: 'Omizu o kudasai', en: 'Water, please', cat: 'dining' },
+  { jp: 'これ、お願いします', romaji: 'Kore, onegai shimasu', en: 'This one, please (ordering)', cat: 'dining' },
+  { jp: '美味しいです', romaji: 'Oishii desu', en: 'It is delicious', cat: 'dining' },
+  { jp: 'お会計をお願いします', romaji: 'Okaikei o onegai shimasu', en: 'The bill, please', cat: 'dining' },
+  { jp: 'いただきます', romaji: 'Itadakimasu', en: 'Thank you for the meal (before)', cat: 'dining' },
+  { jp: 'ごちそうさまでした', romaji: 'Gochisōsama deshita', en: 'Thank you for the meal (after)', cat: 'dining' },
+
+  // Shopping Category
+  { jp: 'これはいくらですか？', romaji: 'Kore wa ikura desu ka?', en: 'How much is this?', cat: 'shopping' },
+  { jp: 'カードでお願いします', romaji: 'Kādo de onegai shimasu', en: 'Credit card, please', cat: 'shopping' },
+  { jp: 'レシートはいいです', romaji: 'Reshīto wa ii desu', en: "I don't need a receipt", cat: 'shopping' },
+  { jp: '袋をください', romaji: 'Fukuro o kudasai', en: 'A plastic bag, please', cat: 'shopping' },
+  { jp: 'Suicaで払えますか？', romaji: 'Suica de haraemasu ka?', en: 'Can I pay with Suica?', cat: 'shopping' }
 ];
 
 const EXPLORE_SPOTS = [
@@ -200,6 +222,8 @@ export default function App() {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [isStealthMode, setIsStealthMode] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const [phraseCategory, setPhraseCategory] = useState('all');
+  const [fullscreenPhrase, setFullscreenPhrase] = useState(null);
   const [wallet, setWallet] = useState(() => {
     const saved = localStorage.getItem('onyx_wallet');
     return saved ? JSON.parse(saved) : { liquid: 24500, suica: 12840 };
@@ -916,22 +940,106 @@ export default function App() {
                 </div>
               </motion.div>
 
-              {/* Essential Phrases */}
-              <section>
-                <div className="label-text mb-3 ml-2">Essential Phrases</div>
-                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                  {PHRASES.map((phrase, i) => (
+              {/* Essential Japanese Phrases Console */}
+              <section className="space-y-4">
+                <div className="flex justify-between items-center px-2">
+                  <div className="label-text">Essential Japanese HUD</div>
+                  <div className="text-[9px] font-mono font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">
+                    Translate Mod
+                  </div>
+                </div>
+
+                {/* Segmented Category Filter Bar */}
+                <div className="flex gap-1.5 overflow-x-auto no-scrollbar bg-g-aluminium/30 dark:bg-g-aluminium/10 p-1 rounded-2xl border border-g-outline/10">
+                  {[
+                    { id: 'all', label: 'All' },
+                    { id: 'essential', label: '🛡️ Basics' },
+                    { id: 'transit', label: '🚇 Transit' },
+                    { id: 'dining', label: '🍜 Dining' },
+                    { id: 'shopping', label: '🛍️ Shopping' }
+                  ].map((category) => (
                     <button
-                      key={phrase.jp}
-                      onClick={() => copyToClipboard(phrase.jp, i)}
-                      className="shrink-0 material-card px-5 py-3 flex flex-col items-start gap-1 ripple active:scale-95 transition-transform"
+                      key={category.id}
+                      onClick={() => { triggerHaptic('light'); setPhraseCategory(category.id); }}
+                      className={cn(
+                        "relative shrink-0 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-300 select-none cursor-pointer",
+                        phraseCategory === category.id 
+                          ? "bg-g-primary text-white dark:text-[#202124] shadow-sm" 
+                          : "text-g-text-variant hover:text-g-text"
+                      )}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-g-text">{phrase.jp}</span>
-                        {copiedIndex === i && <Check size={14} className="text-g-primary" />}
-                      </div>
-                      <span className="text-xs font-medium text-g-text-variant">{phrase.en}</span>
+                      {category.label}
                     </button>
+                  ))}
+                </div>
+
+                {/* Phrases Cards Shelf (Horizontal Carousel) */}
+                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-0.5">
+                  {PHRASES.filter(p => phraseCategory === 'all' || p.cat === phraseCategory).map((phrase) => (
+                    <div
+                      key={phrase.jp}
+                      className="shrink-0 w-[240px] material-card p-4.5 flex flex-col justify-between space-y-4 border border-g-outline/10 shadow-elevation-1 hover:shadow-elevation-2 transition-shadow duration-300 relative overflow-hidden group"
+                    >
+                      {/* Interactive Corner Accent */}
+                      <div className="absolute top-0 right-0 w-8 h-8 bg-g-primary/5 rounded-bl-[16px] pointer-events-none group-hover:bg-g-primary/10 transition-colors" />
+                      
+                      <div className="space-y-2">
+                        {/* Monospace Phonetic Pronunciation Badge */}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[8px] font-mono font-bold tracking-widest text-g-primary uppercase bg-g-primary-container px-2 py-0.5 rounded-md leading-none">
+                            {phrase.romaji}
+                          </span>
+                        </div>
+
+                        {/* Bold Japanese Script */}
+                        <div className="font-display text-[17px] font-black text-g-text tracking-tight pt-1 leading-tight select-all">
+                          {phrase.jp}
+                        </div>
+
+                        {/* Readable English Translation */}
+                        <div className="text-xs font-semibold text-g-text-variant leading-relaxed">
+                          {phrase.en}
+                        </div>
+                      </div>
+
+                      {/* Card Action Buttons */}
+                      <div className="flex items-center justify-between border-t border-g-outline/10 pt-2.5 mt-1.5">
+                        {/* Copy Action with Inline Feedback */}
+                        <button
+                          onClick={() => {
+                            triggerHaptic('light');
+                            navigator.clipboard.writeText(phrase.jp);
+                            setCopiedIndex(phrase.jp);
+                            setTimeout(() => setCopiedIndex(null), 2000);
+                          }}
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-g-aluminium/40 dark:bg-g-aluminium/10 hover:bg-g-primary-container hover:text-g-primary text-[9px] font-bold uppercase tracking-wider text-g-text transition-colors duration-200 cursor-pointer select-none"
+                        >
+                          {copiedIndex === phrase.jp ? (
+                            <>
+                              <Check size={10} className="text-g-primary stroke-[3]" />
+                              <span className="text-g-primary font-extrabold">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Download size={10} className="stroke-[2.5]" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Presentation Mode Action */}
+                        <button
+                          onClick={() => {
+                            triggerHaptic('medium');
+                            setFullscreenPhrase(phrase);
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-g-primary text-white dark:text-[#202124] hover:bg-g-primary/95 text-[9px] font-bold uppercase tracking-wider transition-colors duration-200 cursor-pointer select-none"
+                        >
+                          <Activity size={10} className="stroke-[3]" />
+                          <span>Show</span>
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </section>
@@ -1527,6 +1635,76 @@ export default function App() {
                 className="w-full h-16 bg-g-primary text-white font-bold uppercase tracking-widest rounded-2xl shadow-elevation-2 mt-12 active:scale-[0.98] transition-transform ripple"
               >
                 Sync New Balances
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Fullscreen Translation Presentation Modal */}
+      <AnimatePresence>
+        {fullscreenPhrase && (
+          <div className="fixed inset-0 z-[700] flex items-center justify-center p-6">
+            {/* Soft Translucent Glassmorphic Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setFullscreenPhrase(null)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+
+            {/* Tactical Fullscreen Presentation Display Board */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="relative w-full max-w-lg bg-g-surface border border-g-outline/20 rounded-[40px] rounded-tl-[12px] p-8 md:p-12 shadow-2xl flex flex-col justify-between items-center text-center space-y-8 z-10 overflow-hidden"
+            >
+              {/* Top Accent Status Header */}
+              <div className="w-full flex justify-between items-center border-b border-g-outline/10 pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-g-primary animate-pulse" />
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-g-text-variant uppercase">Translation Presenter</span>
+                </div>
+                <button
+                  onClick={() => { triggerHaptic('light'); setFullscreenPhrase(null); }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 text-g-text hover:bg-g-primary-container hover:text-g-primary transition-colors cursor-pointer"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Monospace Phonetic Aid */}
+              <div className="bg-g-primary-container text-g-primary font-mono text-xs md:text-sm font-bold px-4 py-1.5 rounded-full tracking-wider shadow-inner">
+                {fullscreenPhrase.romaji}
+              </div>
+
+              {/* GIANT HIGH-CONTRAST JAPANESE GLYPHS - PERFECT FOR SHOWING TO LOCALS */}
+              <div className="w-full py-8 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 rounded-[32px] border border-g-outline/5 shadow-inner select-all">
+                <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-black text-g-text tracking-tight leading-normal whitespace-normal break-words font-sans">
+                  {fullscreenPhrase.jp}
+                </h2>
+              </div>
+
+              {/* English Subtitle Meaning */}
+              <div className="space-y-2">
+                <p className="text-sm md:text-base font-bold text-g-text-variant leading-relaxed">
+                  "{fullscreenPhrase.en}"
+                </p>
+                <div className="flex justify-center items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-g-primary mt-1">
+                  <Shield size={10} className="stroke-[3]" />
+                  <span>Show this screen to transit staff or cashiers</span>
+                </div>
+              </div>
+
+              {/* Direct Haptic Tap Dismiss */}
+              <button
+                onClick={() => { triggerHaptic('heavy'); setFullscreenPhrase(null); }}
+                className="w-full py-4 bg-g-primary text-white dark:text-[#202124] font-bold uppercase tracking-widest rounded-2xl shadow-elevation-2 active:scale-[0.98] transition-all duration-200 ripple"
+              >
+                Close Presentation
               </button>
             </motion.div>
           </div>
