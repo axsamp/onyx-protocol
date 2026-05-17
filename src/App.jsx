@@ -459,22 +459,7 @@ export default function App() {
 
       <main className="flex-1 overflow-y-auto no-scrollbar px-6 pb-32 pt-4 relative z-10">
 
-        {/* Tactical Search */}
-        <div className="relative group mb-8">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search apps, destinations, or intel..."
-            className="w-full bg-g-surface border border-g-outline/20 shadow-elevation-1 rounded-full py-4 px-12 text-sm text-g-text focus:outline-none focus:border-g-primary/40 focus:ring-2 focus:ring-g-primary/20 transition-all"
-          />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-g-text-variant" size={20} />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-g-text-variant hover:text-g-text">
-              <X size={18} />
-            </button>
-          )}
-        </div>
+
 
         <div className="relative">
           {activeTab === 'home' && (
