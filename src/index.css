@@ -39,20 +39,36 @@
     --theme-g-bg: #F0F4F8;
     --theme-g-surface: #FFFFFF;
     --theme-g-primary: #0B57D0;
+    --theme-g-on-primary: #FFFFFF;
     --theme-g-primary-container: #D3E3FD;
+    --theme-g-on-primary-container: #041E49;
     --theme-g-text: #1F1F1F;
     --theme-g-text-variant: #444746;
+    --theme-g-on-surface: #1F1F1F;
     --theme-g-outline: #C4C7C5;
     --theme-g-aluminium: #E8EAED;
+
+    /* Official @material/web M3 design token mappings */
+    --md-sys-color-primary: var(--theme-g-primary);
+    --md-sys-color-on-primary: var(--theme-g-on-primary);
+    --md-sys-color-primary-container: var(--theme-g-primary-container);
+    --md-sys-color-on-primary-container: var(--theme-g-on-primary-container);
+    --md-sys-color-background: var(--theme-g-bg);
+    --md-sys-color-surface: var(--theme-g-surface);
+    --md-sys-color-on-surface: var(--theme-g-on-surface);
+    --md-sys-color-outline: var(--theme-g-outline);
   }
 
   .dark {
     --theme-g-bg: #202124;
     --theme-g-surface: #303134;
     --theme-g-primary: #8AB4F8;
+    --theme-g-on-primary: #062E70;
     --theme-g-primary-container: #3C4043;
+    --theme-g-on-primary-container: #D3E3FD;
     --theme-g-text: #E8EAED;
     --theme-g-text-variant: #9AA0A6;
+    --theme-g-on-surface: #E8EAED;
     --theme-g-outline: #5F6368;
     --theme-g-aluminium: #282A2D;
   }
@@ -75,13 +91,29 @@
 }
 
 @layer components {
-  /* Material Card Style - Evolved to M3 Expressive Shape Tokens */
+  /* Material Card Style - Evolved to Strict M3 Guidelines (iPhone 16 Pro Optimized) */
   .material-card {
     background-color: var(--theme-g-surface);
-    border-radius: 32px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03), 0px 1px 3px rgba(0, 0, 0, 0.02); /* Material Expressive Soft Layered Depth */
-    border: 1px solid var(--theme-g-outline);
+    border-radius: 16px; /* Standard tight M3 corner radius for mobile */
     transition: background-color 0.5s cubic-bezier(0.2, 0, 0, 1), border-color 0.5s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.5s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  /* M3 Outlined Card: Clean outline, flat surface, zero shadow */
+  .material-card-outlined {
+    border: 1px solid var(--theme-g-outline);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+
+  .dark .material-card-outlined {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* M3 Elevated Card: Soft premium dynamic shadow layer, zero border */
+  .material-card-elevated {
+    border: none;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03), 0px 1px 3px rgba(0, 0, 0, 0.02);
   }
 
   /* Premium Apple-Style Frosted Glass Navigation Bar with backdrop saturation */
@@ -147,5 +179,41 @@
     transform: scale(0, 0);
     opacity: .1;
     transition: 0s;
+  }
+
+  /* Material Symbols Font Integration */
+  md-icon {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 22px; /* Default size matching Lucide */
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    
+    /* Variable font axes defaults */
+    font-variation-settings: 
+      'FILL' var(--md-icon-fill, 0),
+      'wght' var(--md-icon-weight, 300), /* Elegant thin lines */
+      'GRAD' var(--md-icon-grade, 0),
+      'opsz' var(--md-icon-opsz, 24);
+      
+    transition: font-variation-settings 0.25s cubic-bezier(0.2, 0, 0, 1), color 0.25s cubic-bezier(0.2, 0, 0, 1), transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  /* Active states smoothly fill in the icon and slightly increase thickness */
+  .nav-active md-icon,
+  .nav-item:hover md-icon {
+    --md-icon-fill: 1;
+    --md-icon-weight: 350;
   }
 }

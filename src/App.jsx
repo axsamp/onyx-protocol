@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  RefreshCcw, Wallet, MapPin, ArrowRight, Download, Calendar, X, Activity, Terminal, ShoppingBag, Search, Plus, Shield, Settings, User, ChevronDown, Phone, Waves, Eye, EyeOff, Check,
-  ChevronLeft, ChevronRight, TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2, Info, Palette
+  Wallet, MapPin, Calendar, Activity, Terminal, ShoppingBag, Search, Shield, Settings, User, ChevronDown, Phone, Waves, Check,
+  TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import '@material/web/icon/icon.js';
+import '@material/web/ripple/ripple.js';
+import '@material/web/progress/linear-progress.js';
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -57,24 +60,114 @@ const FARE_MATRIX = {
 
 const THEME_PALETTES = {
   cobalt: {
-    light: { primary: '#0B57D0', primaryContainer: '#D3E3FD', bg: '#F0F4F8' },
-    dark: { primary: '#8AB4F8', primaryContainer: '#3C4043', bg: '#202124' }
+    light: {
+      primary: '#0B57D0',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#D3E3FD',
+      onPrimaryContainer: '#041E49',
+      bg: '#F8FAFC',
+      surface: '#FFFFFF',
+      onSurface: '#1F1F1F',
+      outline: '#74777F'
+    },
+    dark: {
+      primary: '#A8C7FA',
+      onPrimary: '#062E70',
+      primaryContainer: '#0842A0',
+      onPrimaryContainer: '#D3E3FD',
+      bg: '#0F141C',
+      surface: '#1F1F1F',
+      onSurface: '#E3E2E6',
+      outline: '#8C9099'
+    }
   },
   vermilion: {
-    light: { primary: '#C04836', primaryContainer: '#FCDCD6', bg: '#FAF4F2' },
-    dark: { primary: '#FF8A75', primaryContainer: '#4A2B25', bg: '#241E1D' }
+    light: {
+      primary: '#C04836',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#FFDAD3',
+      onPrimaryContainer: '#410001',
+      bg: '#FFF8F6',
+      surface: '#FFFFFF',
+      onSurface: '#231A18',
+      outline: '#857370'
+    },
+    dark: {
+      primary: '#FF8B77',
+      onPrimary: '#5C1205',
+      primaryContainer: '#5C1E15',
+      onPrimaryContainer: '#FFDAD3',
+      bg: '#140E0C',
+      surface: '#1D1513',
+      onSurface: '#ECE0DD',
+      outline: '#9C8A87'
+    }
   },
   matcha: {
-    light: { primary: '#386B40', primaryContainer: '#D2E7C4', bg: '#F3F7F2' },
-    dark: { primary: '#81C784', primaryContainer: '#223825', bg: '#1E231F' }
+    light: {
+      primary: '#4C662B',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#CDEDA3',
+      onPrimaryContainer: '#102000',
+      bg: '#F8FAF2',
+      surface: '#FFFFFF',
+      onSurface: '#1A1C16',
+      outline: '#74796A'
+    },
+    dark: {
+      primary: '#B2D189',
+      onPrimary: '#1F3700',
+      primaryContainer: '#354E16',
+      onPrimaryContainer: '#CDEDA3',
+      bg: '#11140E',
+      surface: '#1A1D16',
+      onSurface: '#E3E3DA',
+      outline: '#8E9285'
+    }
   },
   sakura: {
-    light: { primary: '#C64E74', primaryContainer: '#FFD9E2', bg: '#FAF5F6' },
-    dark: { primary: '#FCAEC5', primaryContainer: '#4C232F', bg: '#231F20' }
+    light: {
+      primary: '#C64E74',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#FFD9E2',
+      onPrimaryContainer: '#3E001D',
+      bg: '#FCF8F9',
+      surface: '#FFFFFF',
+      onSurface: '#201A1B',
+      outline: '#807477'
+    },
+    dark: {
+      primary: '#FFB1C8',
+      onPrimary: '#5F112D',
+      primaryContainer: '#7E2946',
+      onPrimaryContainer: '#FFD9E2',
+      bg: '#160E11',
+      surface: '#1F1216',
+      onSurface: '#ECDADB',
+      outline: '#9B8C90'
+    }
   },
   yuzu: {
-    light: { primary: '#7E5700', primaryContainer: '#FFF1C5', bg: '#FCFAF5' },
-    dark: { primary: '#F5BE48', primaryContainer: '#4D3100', bg: '#1A1916' }
+    light: {
+      primary: '#7E5700',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#FFE086',
+      onPrimaryContainer: '#281900',
+      bg: '#FFFBF6',
+      surface: '#FFFFFF',
+      onSurface: '#201B12',
+      outline: '#7D7667'
+    },
+    dark: {
+      primary: '#FABD00',
+      onPrimary: '#422C00',
+      primaryContainer: '#5B3D00',
+      onPrimaryContainer: '#FFE086',
+      bg: '#17130B',
+      surface: '#1F190D',
+      onSurface: '#EBE1D4',
+      outline: '#979080'
+    }
   }
 };
 
@@ -219,7 +312,7 @@ const AppLauncher = ({ app, delay }) => (
     </div>
     <div className="pr-2">
       <div className="w-10 h-10 rounded-full bg-g-primary-container flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors text-g-primary">
-        <ArrowRight size={18} />
+        <md-icon style={{ fontSize: '18px' }}>arrow_forward</md-icon>
       </div>
     </div>
   </motion.a>
@@ -305,8 +398,13 @@ export default function App() {
     const colors = THEME_PALETTES[theme][isStealthMode ? 'dark' : 'light'];
     const root = document.documentElement;
     root.style.setProperty('--theme-g-primary', colors.primary);
+    root.style.setProperty('--theme-g-on-primary', colors.onPrimary);
     root.style.setProperty('--theme-g-primary-container', colors.primaryContainer);
+    root.style.setProperty('--theme-g-on-primary-container', colors.onPrimaryContainer);
     root.style.setProperty('--theme-g-bg', colors.bg);
+    root.style.setProperty('--theme-g-surface', colors.surface);
+    root.style.setProperty('--theme-g-on-surface', colors.onSurface);
+    root.style.setProperty('--theme-g-outline', colors.outline);
   }, [theme, isStealthMode]);
 
   useEffect(() => {
@@ -541,7 +639,7 @@ export default function App() {
             className="flex items-center gap-2.5 font-display text-xs font-black uppercase tracking-wider"
           >
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-g-primary text-white dark:text-[#202124] shadow-sm shrink-0">
-              <Check size={11} className="stroke-[3]" />
+              <md-icon style={{ fontSize: '11px', '--md-icon-weight': '700' }}>check</md-icon>
             </span>
             <span className="leading-none pt-0.5">Suica Logged! OK!</span>
           </motion.div>
@@ -624,7 +722,7 @@ export default function App() {
               onClick={handleLogTransit}
               className="px-3.5 py-2 rounded-[12px] rounded-tl-[4px] bg-g-primary hover:bg-g-primary/95 text-[8.5px] font-bold uppercase tracking-widest text-white dark:text-[#202124] shadow-elevation-1 hover:shadow-elevation-2 active:scale-95 transition-all duration-300 ripple flex items-center gap-1.5 cursor-pointer select-none"
             >
-              <Check size={11} className="stroke-[3]" />
+              <md-icon style={{ fontSize: '11px', '--md-icon-weight': '700' }}>check</md-icon>
               Log Suica
             </button>
           </div>
@@ -955,7 +1053,7 @@ export default function App() {
                             onClick={() => triggerHaptic('medium')}
                             className="w-14 h-14 rounded-[20px] rounded-tl-[8px] bg-g-primary text-white dark:text-[#202124] flex items-center justify-center shadow-lg active:scale-90 transition-transform cursor-pointer shrink-0 ripple"
                           >
-                            <ArrowRight size={24} />
+                            <md-icon style={{ fontSize: '24px' }}>arrow_forward</md-icon>
                           </a>
                         </motion.div>
                       </AnimatePresence>
@@ -1004,7 +1102,7 @@ export default function App() {
                     <div className="text-[10px] font-bold text-white/80 mt-1 uppercase tracking-widest leading-none">Mission Funds & Transit</div>
                   </div>
                   <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
-                    <Wallet size={24} className="text-white" />
+                    <md-icon style={{ fontSize: '24px', color: 'white' }}>wallet</md-icon>
                   </div>
                 </div>
 
@@ -1043,7 +1141,7 @@ export default function App() {
                   {PHRASES.map((phrase) => (
                     <div
                       key={phrase.jp}
-                      className="shrink-0 w-[240px] material-card p-4.5 flex flex-col justify-between space-y-4 border border-g-outline/10 shadow-elevation-1 hover:shadow-elevation-2 transition-shadow duration-300 relative overflow-hidden group"
+                      className="shrink-0 w-[240px] material-card material-card-outlined p-4.5 flex flex-col justify-between space-y-4 relative overflow-hidden group"
                     >
                       {/* Interactive Corner Accent */}
                       <div className="absolute top-0 right-0 w-8 h-8 bg-g-primary/5 rounded-bl-[16px] pointer-events-none group-hover:bg-g-primary/10 transition-colors" />
@@ -1086,7 +1184,7 @@ export default function App() {
                             </>
                           ) : (
                             <>
-                              <Download size={10} className="stroke-[2.5]" />
+                              <md-icon style={{ fontSize: '10px' }}>content_copy</md-icon>
                               <span>Copy</span>
                             </>
                           )}
@@ -1122,7 +1220,7 @@ export default function App() {
               <div className="label-text ml-2">Regional Intel</div>
               <div className="grid grid-cols-1 gap-4">
                 {filteredSpots.map((spot) => (
-                  <div key={spot.name} className="material-card overflow-hidden ripple cursor-pointer group pb-4">
+                  <div key={spot.name} className="material-card material-card-outlined overflow-hidden ripple cursor-pointer group pb-4">
                     <img src={spot.img} alt={spot.name} className="w-full h-40 object-cover" />
                     <div className="px-4 pt-3 flex justify-between items-center">
                       <div>
@@ -1134,9 +1232,9 @@ export default function App() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => { e.stopPropagation(); triggerHaptic('medium'); }}
-                        className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors ripple"
+                        className="w-12 h-12 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors ripple"
                       >
-                        <ArrowRight size={18} />
+                        <md-icon style={{ fontSize: '18px' }}>arrow_forward</md-icon>
                       </a>
                     </div>
                   </div>
@@ -1157,14 +1255,14 @@ export default function App() {
               </AnimatePresence>
 
               {/* Daily Allowance Command Panel */}
-              <motion.section layout="position" className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
+              <motion.section layout="position" className="material-card material-card-elevated overflow-hidden relative p-6 space-y-6 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-6">
                     <button
                       onClick={() => { triggerHaptic(); setCurrentDayOffset(Math.max(0, currentDayOffset - 1)); }}
-                      className="text-g-text-variant hover:text-g-text w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple"
+                      className="text-g-text-variant hover:text-g-text w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple animate-[fade-in_0.3s_ease]"
                     >
-                      <ChevronLeft size={20} />
+                      <md-icon style={{ fontSize: '20px' }}>chevron_left</md-icon>
                     </button>
                     <div className="text-center min-w-[100px]">
                       <p className="text-[10px] font-bold text-g-primary uppercase tracking-[0.2em] mb-0.5">Day {currentDayOffset + 1}</p>
@@ -1172,12 +1270,12 @@ export default function App() {
                     </div>
                     <button
                       onClick={() => { triggerHaptic(); setCurrentDayOffset(currentDayOffset + 1); }}
-                      className="text-g-text-variant hover:text-g-text w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple"
+                      className="text-g-text-variant hover:text-g-text w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple animate-[fade-in_0.3s_ease]"
                     >
-                      <ChevronRight size={20} />
+                      <md-icon style={{ fontSize: '20px' }}>chevron_right</md-icon>
                     </button>
                   </div>
-                  <Calendar size={18} className="text-g-text-variant" />
+                  <md-icon style={{ fontSize: '18px' }} className="text-g-text-variant">calendar_today</md-icon>
                 </div>
 
                 <div className="h-[1px] w-full bg-g-outline/10"></div>
@@ -1194,13 +1292,18 @@ export default function App() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="h-2 w-full bg-g-aluminium dark:bg-g-aluminium/10 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(100, (todaySpent / (todayAllowance || 1)) * 100)}%` }}
-                      className={cn("h-full rounded-full transition-all duration-300", todaySpent > todayAllowance ? 'bg-red-500' : 'bg-g-primary')}
-                    />
-                  </div>
+                  <md-linear-progress
+                    value={Math.min(1, todaySpent / (todayAllowance || 1))}
+                    style={{
+                      width: '100%',
+                      '--md-linear-progress-active-indicator-color': todaySpent > todayAllowance ? '#EF4444' : 'var(--theme-g-primary)',
+                      '--md-linear-progress-track-color': 'var(--theme-g-aluminium)',
+                      '--md-linear-progress-track-height': '8px',
+                      '--md-linear-progress-active-indicator-height': '8px',
+                      borderRadius: '9999px',
+                      overflow: 'hidden'
+                    }}
+                  />
                   <div className="flex justify-between items-center text-[10px] font-medium text-g-text-variant px-1">
                     <span>{todaySpent > todayAllowance ? 'Over budget' : `${Math.round(Math.max(0, 100 - (todaySpent / (todayAllowance || 1)) * 100))}% safe`}</span>
                     <span>Remaining: {formatCurrency(Math.max(0, todayAllowance - todaySpent))}</span>
@@ -1210,7 +1313,7 @@ export default function App() {
 
               {/* Net Buffer Telemetry Console */}
               <motion.div layout="position" className="grid grid-cols-2 gap-4 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
-                <div className="material-card p-5 flex flex-col justify-between h-28 relative overflow-hidden">
+                <div className="material-card material-card-outlined p-5 flex flex-col justify-between h-28 relative overflow-hidden">
                   <div className="flex items-center gap-2 text-g-text-variant">
                     <TrendingUp size={16} />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Net Buffer</span>
@@ -1223,7 +1326,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="material-card p-5 flex flex-col justify-between h-28 relative overflow-hidden">
+                <div className="material-card material-card-outlined p-5 flex flex-col justify-between h-28 relative overflow-hidden">
                   <div className="flex items-center gap-2 text-g-text-variant">
                     <Wallet size={16} />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Total Left</span>
@@ -1261,7 +1364,7 @@ export default function App() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: idx * 0.03 }}
-                          className="material-card p-4 flex items-center justify-between shadow-elevation-1 hover:shadow-elevation-2 transition-shadow"
+                          className="material-card material-card-outlined p-4 flex items-center justify-between transition-all"
                         >
                           <div className="flex items-center gap-4 min-w-0 flex-1">
                             <div className={cn("w-10 h-10 rounded-full flex items-center justify-center shrink-0", Cat.bg, Cat.color)}>
@@ -1281,7 +1384,7 @@ export default function App() {
                             <span className="font-bold text-base tabular-nums text-g-text">¥{exp.amount.toLocaleString()}</span>
                             <button
                               onClick={() => handleDeleteExpense(exp.id)}
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-g-text-variant hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                              className="w-12 h-12 rounded-full flex items-center justify-center text-g-text-variant hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -1299,7 +1402,7 @@ export default function App() {
                   onClick={() => { triggerHaptic('medium'); setIsAddingExpense(true); }}
                   className="w-full py-4 bg-g-primary-container text-g-primary font-bold rounded-2xl shadow-elevation-2 active:scale-[0.99] transition-transform flex items-center justify-center gap-2 ripple"
                 >
-                  <Plus size={20} />
+                  <md-icon style={{ fontSize: '20px' }}>add</md-icon>
                   Log Transaction
                 </button>
               </motion.div>
@@ -1318,11 +1421,11 @@ export default function App() {
                 <div className="space-y-3">
                   <button
                     onClick={() => setIsStealthMode(!isStealthMode)}
-                    className="w-full material-card p-5 flex justify-between items-center ripple"
+                    className="w-full material-card material-card-outlined p-5 flex justify-between items-center ripple"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-g-aluminium dark:bg-g-aluminium/10 flex items-center justify-center text-g-text">
-                        {isStealthMode ? <EyeOff size={20} /> : <Eye size={20} />}
+                      <div className="w-12 h-12 rounded-full bg-g-aluminium dark:bg-g-aluminium/10 flex items-center justify-center text-g-text">
+                        {isStealthMode ? <md-icon style={{ fontSize: '20px' }}>visibility_off</md-icon> : <md-icon style={{ fontSize: '20px' }}>visibility</md-icon>}
                       </div>
                       <div className="text-left">
                         <div className="text-base font-bold text-g-text">Stealth Mode</div>
@@ -1335,10 +1438,10 @@ export default function App() {
                   </button>
 
                   {/* Console Color Themes */}
-                  <div className="w-full material-card p-5 space-y-4">
+                  <div className="w-full material-card material-card-outlined p-5 space-y-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center transition-colors duration-700">
-                        <Palette size={20} />
+                      <div className="w-12 h-12 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center transition-colors duration-700">
+                        <md-icon style={{ fontSize: '20px' }}>palette</md-icon>
                       </div>
                       <div className="text-left">
                         <div className="text-base font-bold text-g-text">System Theme</div>
@@ -1379,7 +1482,7 @@ export default function App() {
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
-                        <div className="w-3.5 h-3.5 rounded-full bg-[#386B40]" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#4C662B]" />
                         Matcha
                       </button>
                       <button
@@ -1411,34 +1514,34 @@ export default function App() {
 
                   <button
                     onClick={exportMissionData}
-                    className="w-full material-card p-5 flex justify-between items-center ripple"
+                    className="w-full material-card material-card-outlined p-5 flex justify-between items-center ripple"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
-                        <Download size={20} />
+                      <div className="w-12 h-12 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
+                        <md-icon style={{ fontSize: '20px' }}>download</md-icon>
                       </div>
                       <div className="text-left">
                         <div className="text-base font-bold text-g-text">Export Intel</div>
                         <div className="text-sm font-medium text-g-text-variant">Backup data to JSON</div>
                       </div>
                     </div>
-                    <ArrowRight size={20} className="text-g-text-variant" />
+                    <md-icon style={{ fontSize: '20px' }} className="text-g-text-variant">arrow_forward</md-icon>
                   </button>
 
                   <button
                     onClick={forceRefresh}
-                    className="w-full material-card p-5 flex justify-between items-center ripple"
+                    className="w-full material-card material-card-outlined p-5 flex justify-between items-center ripple"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
-                        <RefreshCcw size={20} />
+                      <div className="w-12 h-12 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center">
+                        <md-icon style={{ fontSize: '20px' }}>sync</md-icon>
                       </div>
                       <div className="text-left">
                         <div className="text-base font-bold text-g-text">Force Sync</div>
                         <div className="text-sm font-medium text-g-text-variant">Clear cache</div>
                       </div>
                     </div>
-                    <ArrowRight size={20} className="text-g-text-variant" />
+                    <md-icon style={{ fontSize: '20px' }} className="text-g-text-variant">arrow_forward</md-icon>
                   </button>
                 </div>
               </div>
@@ -1447,7 +1550,7 @@ export default function App() {
               {/* Trip Budget Parameters */}
               <div>
                 <div className="label-text ml-2 mb-3">Trip Budget Parameters</div>
-                <section className="material-card p-5 space-y-4">
+                <section className="material-card material-card-outlined p-5 space-y-4">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Total Trip Budget</label>
                     <div className="relative flex items-center">
@@ -1496,10 +1599,10 @@ export default function App() {
               {/* Emergency & Safety Protocols */}
               <div>
                 <div className="label-text ml-2 mb-3">Emergency & Safety Protocols</div>
-                <section className="material-card p-5 space-y-4">
+                <section className="material-card material-card-outlined p-5 space-y-4">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/20 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
-                      <Shield size={20} />
+                      <md-icon style={{ fontSize: '20px' }}>shield</md-icon>
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-g-text">Japan Quick Dials</h3>
@@ -1556,7 +1659,8 @@ export default function App() {
             onClick={() => { triggerHaptic('light'); setActiveTab('home'); }}
             className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'home' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium overflow-hidden">
+              <md-ripple></md-ripple>
               {activeTab === 'home' && (
                 <motion.div
                   layoutId="activeNavPill"
@@ -1564,7 +1668,7 @@ export default function App() {
                   className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
                 />
               )}
-              <Activity size={22} className={cn(activeTab === 'home' && "fill-current")} />
+              <md-icon>monitoring</md-icon>
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Home</span>
           </button>
@@ -1573,7 +1677,8 @@ export default function App() {
             onClick={() => { triggerHaptic('light'); setActiveTab('explore'); }}
             className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'explore' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium overflow-hidden">
+              <md-ripple></md-ripple>
               {activeTab === 'explore' && (
                 <motion.div
                   layoutId="activeNavPill"
@@ -1581,7 +1686,7 @@ export default function App() {
                   className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
                 />
               )}
-              <MapPin size={22} className={cn(activeTab === 'explore' && "fill-current")} />
+              <md-icon>explore</md-icon>
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Explore</span>
           </button>
@@ -1592,16 +1697,18 @@ export default function App() {
             whileTap={{ scale: 0.92, rotate: -4 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
             onClick={() => { triggerHaptic('heavy'); setIsLauncherOpen(true); }}
-            className="relative -top-4 w-14 h-14 rounded-[20px] bg-g-primary-container text-g-primary flex items-center justify-center shadow-elevation-3 hover:brightness-110 active:brightness-95 transition-all ripple mx-2"
+            className="relative -top-4 w-14 h-14 rounded-[20px] bg-g-primary-container text-g-primary flex items-center justify-center shadow-elevation-3 hover:brightness-110 active:brightness-95 transition-all mx-2 overflow-hidden"
           >
-            <Plus size={28} />
+            <md-ripple></md-ripple>
+            <md-icon style={{ fontSize: '28px', '--md-icon-weight': '400' }}>add</md-icon>
           </motion.button>
 
           <button
             onClick={() => { triggerHaptic('light'); setActiveTab('budget'); }}
             className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'budget' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium overflow-hidden">
+              <md-ripple></md-ripple>
               {activeTab === 'budget' && (
                 <motion.div
                   layoutId="activeNavPill"
@@ -1609,7 +1716,7 @@ export default function App() {
                   className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
                 />
               )}
-              <Wallet size={22} className={cn(activeTab === 'budget' && "fill-current")} />
+              <md-icon>wallet</md-icon>
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Budget</span>
           </button>
@@ -1618,7 +1725,8 @@ export default function App() {
             onClick={() => { triggerHaptic('light'); setActiveTab('settings'); }}
             className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'settings' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium overflow-hidden">
+              <md-ripple></md-ripple>
               {activeTab === 'settings' && (
                 <motion.div
                   layoutId="activeNavPill"
@@ -1626,7 +1734,7 @@ export default function App() {
                   className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
                 />
               )}
-              <Settings size={22} className={cn(activeTab === 'settings' && "fill-current")} />
+              <md-icon>settings</md-icon>
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Setup</span>
           </button>
@@ -1649,15 +1757,15 @@ export default function App() {
               animate={{ y: 0 }}
               exit={{ y: "100vh" }}
               transition={{ type: "spring", damping: 28, stiffness: 240 }}
-              className="relative w-full max-w-md bg-g-bg rounded-t-[40px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl transform-gpu [will-change:transform]"
+              className="relative w-full max-w-md bg-g-bg rounded-t-[28px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 transform-gpu [will-change:transform]"
             >
-              <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-8" />
-              <div className="flex justify-between items-center mb-10">
+              <div className="w-8 h-1 bg-g-outline/40 rounded-full mx-auto mb-5" />
+              <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-g-text tracking-tight">Wallet Funds</h3>
                   <p className="text-xs font-medium text-g-text-variant mt-1">Please input funds to sync</p>
                 </div>
-                <button onClick={() => setIsWalletModalOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium text-g-text ripple"><X size={20} /></button>
+                <button onClick={() => setIsWalletModalOpen(false)} className="w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium text-g-text ripple animate-[fade-in_0.3s_ease]"><md-icon style={{ fontSize: '20px' }}>close</md-icon></button>
               </div>
 
               <div className="space-y-10">
@@ -1702,8 +1810,9 @@ export default function App() {
                   setIsWalletModalOpen(false);
                   triggerHaptic('heavy');
                 }}
-                className="w-full h-16 bg-g-primary text-white font-bold uppercase tracking-widest rounded-2xl shadow-elevation-2 mt-12 active:scale-[0.98] transition-transform ripple"
+                className="w-full h-12 bg-g-primary text-white dark:text-[#202124] font-bold uppercase tracking-wider text-xs rounded-full shadow-elevation-1 mt-8 active:scale-[0.98] transition-transform relative overflow-hidden"
               >
+                <md-ripple></md-ripple>
                 Sync New Balances
               </button>
             </motion.div>
@@ -1730,7 +1839,7 @@ export default function App() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="relative w-full max-w-lg bg-g-surface border border-g-outline/20 rounded-[40px] rounded-tl-[12px] p-8 md:p-12 shadow-2xl flex flex-col justify-between items-center text-center space-y-8 z-10 overflow-hidden"
+              className="relative w-full max-w-lg bg-g-surface border border-g-outline/20 rounded-[28px] p-6 md:p-8 shadow-2xl flex flex-col justify-between items-center text-center space-y-6 z-10 overflow-hidden"
             >
               {/* Top Accent Status Header */}
               <div className="w-full flex justify-between items-center border-b border-g-outline/10 pb-4">
@@ -1740,9 +1849,9 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => { triggerHaptic('light'); setFullscreenPhrase(null); }}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 text-g-text hover:bg-g-primary-container hover:text-g-primary transition-colors cursor-pointer"
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 text-g-text hover:bg-g-primary-container hover:text-g-primary transition-colors cursor-pointer animate-[fade-in_0.3s_ease]"
                 >
-                  <X size={20} />
+                  <md-icon style={{ fontSize: '20px' }}>close</md-icon>
                 </button>
               </div>
 
@@ -1752,7 +1861,7 @@ export default function App() {
               </div>
 
               {/* GIANT HIGH-CONTRAST JAPANESE GLYPHS - PERFECT FOR SHOWING TO LOCALS */}
-              <div className="w-full py-8 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 rounded-[32px] border border-g-outline/5 shadow-inner select-all">
+              <div className="w-full py-6 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 rounded-[16px] border border-g-outline/5 shadow-inner select-all">
                 <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-black text-g-text tracking-tight leading-normal whitespace-normal break-words font-sans">
                   {fullscreenPhrase.jp}
                 </h2>
@@ -1764,7 +1873,7 @@ export default function App() {
                   "{fullscreenPhrase.en}"
                 </p>
                 <div className="flex justify-center items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-g-primary mt-1">
-                  <Shield size={10} className="stroke-[3]" />
+                  <md-icon style={{ fontSize: '10px', '--md-icon-weight': '700' }} className="text-g-primary">shield</md-icon>
                   <span>Show this screen to transit staff or cashiers</span>
                 </div>
               </div>
@@ -1772,7 +1881,7 @@ export default function App() {
               {/* Direct Haptic Tap Dismiss */}
               <button
                 onClick={() => { triggerHaptic('heavy'); setFullscreenPhrase(null); }}
-                className="w-full py-4 bg-g-primary text-white dark:text-[#202124] font-bold uppercase tracking-widest rounded-2xl shadow-elevation-2 active:scale-[0.98] transition-all duration-200 ripple"
+                className="w-full h-12 bg-g-primary text-white dark:text-[#202124] font-bold uppercase tracking-wider text-xs rounded-full shadow-elevation-1 active:scale-[0.98] transition-all duration-200 ripple"
               >
                 Close Presentation
               </button>
@@ -1799,11 +1908,11 @@ export default function App() {
               animate={{ y: 0 }}
               exit={{ y: "100vh" }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[40px] overflow-hidden transform-gpu [will-change:transform]"
+              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[28px] overflow-hidden transform-gpu [will-change:transform]"
             >
               {/* Material Drag Handle */}
-              <div className="w-full flex justify-center pt-4 pb-2 bg-g-bg">
-                <div className="w-12 h-1.5 rounded-full bg-g-outline/30"></div>
+              <div className="w-full flex justify-center pt-3 pb-1 bg-g-bg">
+                <div className="w-8 h-1 rounded-full bg-g-outline/40"></div>
               </div>
 
               <div className="px-6 py-4 flex justify-between items-center bg-g-bg mb-4">
@@ -1813,9 +1922,9 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setIsLauncherOpen(false)}
-                  className="w-10 h-10 rounded-full bg-g-aluminium flex items-center justify-center text-g-text hover:bg-g-outline/30 transition-colors ripple"
+                  className="w-12 h-12 rounded-full bg-g-aluminium flex items-center justify-center text-g-text hover:bg-g-outline/30 transition-colors ripple animate-[fade-in_0.3s_ease]"
                 >
-                  <X size={20} />
+                  <md-icon style={{ fontSize: '20px' }}>close</md-icon>
                 </button>
               </div>
 
@@ -1852,18 +1961,16 @@ export default function App() {
               animate={{ y: 0 }}
               exit={{ y: "100vh" }}
               transition={{ type: "spring", damping: 28, stiffness: 240 }}
-              className="relative w-full max-w-md bg-g-surface rounded-t-[40px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh] transform-gpu [will-change:transform]"
+              className="relative w-full max-w-md bg-g-surface rounded-t-[28px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh] transform-gpu [will-change:transform]"
             >
-              <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-6" />
+              <div className="w-8 h-1 bg-g-outline/40 rounded-full mx-auto mb-5" />
 
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-g-text">Log Transaction</h3>
                   <p className="text-xs font-medium text-g-text-variant mt-0.5">Record trip expenses in real-time</p>
                 </div>
-                <button type="button" onClick={() => setIsAddingExpense(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/15 text-g-text ripple">
-                  <X size={20} />
-                </button>
+                <button type="button" onClick={() => setIsAddingExpense(false)} className="w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/15 text-g-text ripple animate-[fade-in_0.3s_ease]"><md-icon style={{ fontSize: '20px' }}>close</md-icon></button>
               </div>
 
               <div className="space-y-6">
@@ -1941,10 +2048,11 @@ export default function App() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-g-primary-container text-g-primary font-bold rounded-2xl shadow-elevation-2 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
+                  className="w-full h-12 bg-g-primary text-white dark:text-[#202124] font-bold uppercase tracking-wider text-xs rounded-full shadow-elevation-1 active:scale-[0.98] transition-all flex items-center justify-center gap-2 relative overflow-hidden mt-6 animate-[fade-in_0.3s_ease]"
                 >
+                  <md-ripple></md-ripple>
                   Log Expense
-                  <ArrowRight size={18} />
+                  <md-icon style={{ fontSize: '18px' }}>arrow_forward</md-icon>
                 </button>
               </div>
             </motion.form>
@@ -1971,7 +2079,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="relative w-full max-w-lg bg-white/70 dark:bg-g-surface/70 backdrop-blur-xl border border-g-outline/15 rounded-t-[40px] rounded-b-[24px] p-6 md:p-8 shadow-2xl flex flex-col space-y-6 z-10 max-h-[85vh] overflow-y-auto no-scrollbar transition-colors duration-700"
+              className="relative w-full max-w-lg bg-white/70 dark:bg-g-surface/70 backdrop-blur-xl border border-g-outline/15 rounded-[28px] p-6 md:p-8 shadow-2xl flex flex-col space-y-6 z-10 max-h-[85vh] overflow-y-auto no-scrollbar transition-colors duration-700"
             >
               {/* Header status bar */}
               <div className="w-full flex justify-between items-center border-b border-g-outline/10 pb-4">
@@ -1981,9 +2089,9 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => { triggerHaptic('light'); setIsConfigModalOpen(false); }}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 text-g-text hover:bg-g-primary-container hover:text-g-primary transition-colors cursor-pointer"
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 text-g-text hover:bg-g-primary-container hover:text-g-primary transition-colors cursor-pointer animate-[fade-in_0.3s_ease]"
                 >
-                  <X size={20} />
+                  <md-icon style={{ fontSize: '20px' }}>close</md-icon>
                 </button>
               </div>
 
@@ -2058,7 +2166,7 @@ export default function App() {
 
                 {/* Info helper block */}
                 <div className="p-4 rounded-2xl bg-g-primary-container/15 border border-g-primary/10 flex items-start gap-3 mt-2 text-left">
-                  <Info size={16} className="text-g-primary shrink-0 mt-0.5" />
+                  <md-icon style={{ fontSize: '16px' }} className="text-g-primary shrink-0 mt-0.5">info</md-icon>
                   <div className="space-y-1">
                     <div className="text-[10px] font-bold text-g-text uppercase tracking-wider">Timeline Auto-Calculation</div>
                     <p className="text-[9px] font-medium text-g-text-variant leading-relaxed">
@@ -2071,9 +2179,10 @@ export default function App() {
               {/* Save Confirmation Button */}
               <button
                 onClick={() => { triggerHaptic('medium'); setIsConfigModalOpen(false); }}
-                className="w-full py-4 bg-g-primary text-white dark:text-[#202124] font-bold rounded-2xl shadow-elevation-2 hover:bg-g-primary/95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
+                className="w-full h-12 bg-g-primary text-white dark:text-[#202124] font-bold uppercase tracking-wider text-xs rounded-full shadow-elevation-1 active:scale-[0.98] transition-all flex items-center justify-center gap-2 relative overflow-hidden mt-6 animate-[fade-in_0.3s_ease]"
               >
-                <Check size={18} className="stroke-[3]" />
+                <md-ripple></md-ripple>
+                <md-icon style={{ fontSize: '18px', '--md-icon-weight': '700' }}>check</md-icon>
                 <span>Save Profile</span>
               </button>
             </motion.div>
