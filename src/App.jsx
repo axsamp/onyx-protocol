@@ -454,8 +454,8 @@ export default function App() {
         {/* Top Header Row */}
         <div className="relative z-10 flex justify-between items-center w-full">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-g-primary/10 text-g-primary flex items-center justify-center shrink-0 border border-g-primary/10">
-              <Bus size={13} />
+            <div className="w-8 h-8 rounded-[10px] rounded-tl-[4px] bg-g-primary/10 text-g-primary flex items-center justify-center shrink-0 border border-g-primary/10">
+              <Bus size={14} />
             </div>
             <div>
               <h4 className="text-[9px] font-bold text-g-text-variant uppercase tracking-widest leading-none">Commute Resolved</h4>
@@ -475,18 +475,18 @@ export default function App() {
         {/* Route Details Panel */}
         <div className="relative z-10 pt-0.5">
           <div className="flex items-center gap-2.5 flex-wrap">
-            <div className="text-base font-bold text-g-text tracking-tight">{fromName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
+            <div className="font-display text-xl font-extrabold text-g-text tracking-tight leading-none">{fromName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
             
-            {/* Custom High-Precision 3-Dot Kinetic Rail Progress */}
-            <div className="flex items-center gap-1 shrink-0 px-1">
+            {/* Custom High-Precision 3-Dot Kinetic Rail Progress - KEPT PERFECTLY */}
+            <div className="flex items-center gap-1.5 shrink-0 px-1">
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0s' }} />
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.4s' }} />
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.8s' }} />
             </div>
 
-            <div className="text-base font-bold text-g-text tracking-tight">{toName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
+            <div className="font-display text-xl font-extrabold text-g-text tracking-tight leading-none">{toName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
           </div>
-          <p className="text-[11px] font-medium text-g-text-variant mt-1.5 leading-relaxed">
+          <p className="text-[11px] font-medium text-g-text-variant mt-2 leading-relaxed">
             Passive transit geofence triggered. Confirm fare to commit Suica logs:
           </p>
         </div>
@@ -501,7 +501,7 @@ export default function App() {
                 type="number"
                 value={customFareInput}
                 onChange={(e) => setCustomFareInput(e.target.value)}
-                className="w-full py-1 pl-6 pr-2 bg-g-aluminium/40 dark:bg-g-aluminium/10 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-colors text-center shadow-inner"
+                className="w-full py-1.5 pl-6 pr-2 bg-g-aluminium/40 dark:bg-g-aluminium/10 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-all duration-300 text-center shadow-inner"
               />
             </div>
           </div>
@@ -509,13 +509,13 @@ export default function App() {
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => { triggerHaptic('light'); setPendingTransitPrompt(null); }}
-              className="px-3.5 py-2 rounded-[12px] rounded-br-[4px] bg-g-aluminium/40 dark:bg-g-aluminium/10 hover:bg-g-aluminium/60 text-[8.5px] font-bold uppercase tracking-widest text-g-text transition-all ripple shadow-sm cursor-pointer select-none"
+              className="px-3.5 py-2 rounded-[12px] rounded-br-[4px] bg-g-aluminium/40 dark:bg-g-aluminium/10 hover:bg-g-aluminium/60 text-[8.5px] font-bold uppercase tracking-widest text-g-text transition-all duration-300 ripple shadow-sm cursor-pointer select-none"
             >
               Dismiss
             </button>
             <button
               onClick={handleLogTransit}
-              className="px-3.5 py-2 rounded-[12px] rounded-tl-[4px] bg-g-primary hover:bg-g-primary/95 text-[8.5px] font-bold uppercase tracking-widest text-white dark:text-[#202124] shadow-elevation-1 hover:shadow-elevation-2 active:scale-95 transition-all ripple flex items-center gap-1.5 cursor-pointer select-none"
+              className="px-3.5 py-2 rounded-[12px] rounded-tl-[4px] bg-g-primary hover:bg-g-primary/95 text-[8.5px] font-bold uppercase tracking-widest text-white dark:text-[#202124] shadow-elevation-1 hover:shadow-elevation-2 active:scale-95 transition-all duration-300 ripple flex items-center gap-1.5 cursor-pointer select-none"
             >
               <Check size={11} className="stroke-[3]" />
               Log Suica
