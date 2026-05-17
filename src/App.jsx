@@ -943,7 +943,7 @@ export default function App() {
                         type="date" 
                         value={budgetSettings.startDate} 
                         onChange={(e) => setBudgetSettings({...budgetSettings, startDate: e.target.value})} 
-                        className="w-full py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                        className="w-full max-w-full appearance-none py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -952,7 +952,7 @@ export default function App() {
                         type="date" 
                         value={budgetSettings.endDate} 
                         onChange={(e) => setBudgetSettings({...budgetSettings, endDate: e.target.value})} 
-                        className="w-full py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                        className="w-full max-w-full appearance-none py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
                       />
                     </div>
                   </div>
