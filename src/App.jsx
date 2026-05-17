@@ -752,7 +752,7 @@ export default function App() {
                     <span className="text-[10px] font-bold uppercase tracking-wider">Net Buffer</span>
                   </div>
                   <div className="mt-2">
-                    <span className={cn("text-2xl font-bold tracking-tight block", cumulativeBuffer < 0 ? 'text-red-500 dark:text-red-400' : 'text-g-primary')}>
+                    <span className={cn("text-xl font-bold tracking-tight block whitespace-nowrap", cumulativeBuffer < 0 ? 'text-red-500 dark:text-red-400' : 'text-g-primary')}>
                       {cumulativeBuffer >= 0 ? '+¥' : '-¥'}{Math.abs(cumulativeBuffer).toLocaleString()}
                     </span>
                     <span className="text-[9px] font-medium text-g-text-variant">Cumulative surplus</span>
@@ -765,7 +765,7 @@ export default function App() {
                     <span className="text-[10px] font-bold uppercase tracking-wider">Total Left</span>
                   </div>
                   <div className="mt-2">
-                    <span className="text-2xl font-bold tracking-tight text-g-text block">
+                    <span className="text-xl font-bold tracking-tight text-g-text block whitespace-nowrap">
                       ¥{totalRemaining.toLocaleString()}
                     </span>
                     <span className="text-[9px] font-medium text-g-text-variant">of ¥{budgetSettings.totalBudget.toLocaleString()}</span>
