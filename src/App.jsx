@@ -855,7 +855,7 @@ export default function App() {
               {time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
             </span>
             <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-g-text-variant">
-              Base Active • Agent {callsign}
+              Active • {callsign}
             </span>
           </div>
         </div>
@@ -1942,7 +1942,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Callsign & Mission Profile Configurator Modal */}
+      {/* Profile Configurator Modal */}
       <AnimatePresence>
         {isConfigModalOpen && (
           <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:p-6">
@@ -1952,22 +1952,22 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsConfigModalOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             />
 
-            {/* Tactical Bottom Sheet Dialog */}
+            {/* Frosted Glass Bottom Sheet Dialog */}
             <motion.div
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="relative w-full max-w-lg bg-g-surface border border-g-outline/20 rounded-t-[40px] rounded-b-[24px] p-6 md:p-8 shadow-2xl flex flex-col space-y-6 z-10 max-h-[85vh] overflow-y-auto no-scrollbar"
+              className="relative w-full max-w-lg frosted-nav bg-g-surface/90 backdrop-blur-2xl border border-g-outline/15 rounded-t-[40px] rounded-b-[24px] p-6 md:p-8 shadow-2xl flex flex-col space-y-6 z-10 max-h-[85vh] overflow-y-auto no-scrollbar transition-colors duration-700"
             >
               {/* Header status bar */}
               <div className="w-full flex justify-between items-center border-b border-g-outline/10 pb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-g-primary animate-pulse" />
-                  <span className="text-[10px] font-bold tracking-[0.2em] text-g-text-variant uppercase">Mission Profile Setup</span>
+                  <div className="w-2 h-2 rounded-full bg-g-primary animate-pulse" />
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-g-text-variant uppercase">Profile Setup</span>
                 </div>
                 <button
                   onClick={() => { triggerHaptic('light'); setIsConfigModalOpen(false); }}
@@ -1981,10 +1981,10 @@ export default function App() {
               <div className="space-y-5">
                 {/* Callsign Input */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Agent Callsign</label>
+                  <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Traveler Name</label>
                   <div className="relative flex items-center">
-                    <div className="absolute left-4 text-g-primary font-mono text-xs font-bold uppercase tracking-wider select-none">
-                      Callsign:
+                    <div className="absolute left-4 text-g-primary text-xs font-bold uppercase tracking-wider select-none">
+                      Name:
                     </div>
                     <input
                       type="text"
@@ -1994,10 +1994,10 @@ export default function App() {
                         const val = e.target.value.toUpperCase();
                         setCallsign(val || 'JD');
                       }}
-                      className="w-full py-4 pl-24 pr-5 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-xl text-g-text font-display font-black tracking-widest placeholder:text-g-text-variant focus:outline-none focus:border-g-primary transition-colors"
+                      className="w-full py-4 pl-18 pr-5 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text font-display font-black tracking-widest placeholder:text-g-text-variant focus:outline-none focus:border-g-primary transition-colors"
                     />
                   </div>
-                  <span className="text-[9px] font-medium text-g-text-variant ml-1">Maximum 8 alphanumeric characters. Updates header registry.</span>
+                  <span className="text-[9px] font-medium text-g-text-variant ml-1">Maximum 8 alphanumeric characters. Updates header display.</span>
                 </div>
 
                 {/* Trip Timeline Configuration */}
@@ -2020,13 +2020,13 @@ export default function App() {
                             updateTripTimeline(newStart, totalDays);
                           }
                         }}
-                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-xl text-g-text font-mono text-xs font-bold focus:outline-none focus:border-g-primary transition-colors cursor-pointer"
+                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text text-sm font-semibold focus:outline-none focus:border-g-primary transition-colors cursor-pointer"
                       />
                     </div>
 
                     {/* Trip Duration */}
                     <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Length (Days)</label>
+                      <label className="text-[9px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Duration (Days)</label>
                       <input
                         type="number"
                         min={1}
@@ -2036,7 +2036,7 @@ export default function App() {
                           const val = Math.max(1, parseInt(e.target.value) || 1);
                           updateTripTimeline(budgetSettings.startDate, val);
                         }}
-                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-xl text-g-text font-mono text-xs font-bold focus:outline-none focus:border-g-primary transition-colors"
+                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text text-sm font-semibold focus:outline-none focus:border-g-primary transition-colors"
                       />
                     </div>
                   </div>
@@ -2046,9 +2046,9 @@ export default function App() {
                 <div className="p-4 rounded-2xl bg-g-primary-container/15 border border-g-primary/10 flex items-start gap-3 mt-2 text-left">
                   <Info size={16} className="text-g-primary shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <div className="text-[10px] font-bold text-g-text uppercase tracking-wider">Timeline Auto-Calculation Node</div>
+                    <div className="text-[10px] font-bold text-g-text uppercase tracking-wider">Timeline Auto-Calculation</div>
                     <p className="text-[9px] font-medium text-g-text-variant leading-relaxed">
-                      Setting your active travel date and length will dynamically calculate budget day metrics, surplus buffers, and transit coordinates.
+                      Setting your active travel date and length will dynamically calculate budget day metrics and surplus buffers.
                     </p>
                   </div>
                 </div>
@@ -2060,7 +2060,7 @@ export default function App() {
                 className="w-full py-4 bg-g-primary text-white dark:text-[#202124] font-bold rounded-2xl shadow-elevation-2 hover:bg-g-primary/95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
               >
                 <Check size={18} className="stroke-[3]" />
-                <span>Update Profile Node</span>
+                <span>Save Profile</span>
               </button>
             </motion.div>
           </div>
