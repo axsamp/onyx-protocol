@@ -705,7 +705,7 @@ export default function App() {
             <motion.div
               key="budget"
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="space-y-6 animate-in fade-in duration-300"
+              className="space-y-6"
             >
               {/* Daily Allowance Command Panel */}
               <section className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6">
@@ -861,7 +861,7 @@ export default function App() {
             <motion.div
               key="settings"
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="space-y-6 animate-in fade-in duration-300"
+              className="space-y-6"
             >
               {/* System Registry */}
               <div>
