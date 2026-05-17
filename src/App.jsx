@@ -127,24 +127,40 @@ const THEME_PALETTES = {
   },
   sakura: {
     light: {
-      primary: '#C64E74',
+      primary: '#5B5891',
       onPrimary: '#FFFFFF',
-      primaryContainer: '#FFD9E2',
-      onPrimaryContainer: '#3E001D',
-      bg: '#FCF8F9',
+      primaryContainer: '#E3DFFF',
+      onPrimaryContainer: '#434078',
+      secondary: '#5E5C71',
+      onSecondary: '#FFFFFF',
+      secondaryContainer: '#E4E0F9',
+      onSecondaryContainer: '#464559',
+      tertiary: '#7A5367',
+      onTertiary: '#FFFFFF',
+      tertiaryContainer: '#FFD8E9',
+      onTertiaryContainer: '#603B4F',
+      bg: '#FAF8FC',
       surface: '#FFFFFF',
-      onSurface: '#201A1B',
-      outline: '#807477'
+      onSurface: '#1C1A22',
+      outline: '#787680'
     },
     dark: {
-      primary: '#FFB1C8',
-      onPrimary: '#5F112D',
-      primaryContainer: '#7E2946',
-      onPrimaryContainer: '#FFD9E2',
-      bg: '#160E11',
-      surface: '#1F1216',
-      onSurface: '#ECDADB',
-      outline: '#9B8C90'
+      primary: '#C4C0FF',
+      onPrimary: '#2D2960',
+      primaryContainer: '#434078',
+      onPrimaryContainer: '#E3DFFF',
+      secondary: '#C7C4DC',
+      onSecondary: '#302E42',
+      secondaryContainer: '#464559',
+      onSecondaryContainer: '#E4E0F9',
+      tertiary: '#EBB9D0',
+      onTertiary: '#472638',
+      tertiaryContainer: '#603B4F',
+      onTertiaryContainer: '#FFD8E9',
+      bg: '#131218',
+      surface: '#1C1B22',
+      onSurface: '#E6E1E9',
+      outline: '#928F99'
     }
   },
   yuzu: {
@@ -401,6 +417,14 @@ export default function App() {
     root.style.setProperty('--theme-g-on-primary', colors.onPrimary);
     root.style.setProperty('--theme-g-primary-container', colors.primaryContainer);
     root.style.setProperty('--theme-g-on-primary-container', colors.onPrimaryContainer);
+    root.style.setProperty('--theme-g-secondary', colors.secondary || colors.primary);
+    root.style.setProperty('--theme-g-on-secondary', colors.onSecondary || colors.onPrimary);
+    root.style.setProperty('--theme-g-secondary-container', colors.secondaryContainer || colors.primaryContainer);
+    root.style.setProperty('--theme-g-on-secondary-container', colors.onSecondaryContainer || colors.onPrimaryContainer);
+    root.style.setProperty('--theme-g-tertiary', colors.tertiary || colors.primary);
+    root.style.setProperty('--theme-g-on-tertiary', colors.onTertiary || colors.onPrimary);
+    root.style.setProperty('--theme-g-tertiary-container', colors.tertiaryContainer || colors.primaryContainer);
+    root.style.setProperty('--theme-g-on-tertiary-container', colors.onTertiaryContainer || colors.onPrimaryContainer);
     root.style.setProperty('--theme-g-bg', colors.bg);
     root.style.setProperty('--theme-g-surface', colors.surface);
     root.style.setProperty('--theme-g-on-surface', colors.onSurface);
@@ -1494,7 +1518,7 @@ export default function App() {
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
-                        <div className="w-3.5 h-3.5 rounded-full bg-[#C64E74]" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#7A5367]" />
                         Sakura
                       </button>
                       <button
