@@ -130,7 +130,7 @@ export default function App() {
   const [isStealthMode, setIsStealthMode] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
   const [wallet, setWallet] = useState(() => {
-    const saved = localStorage.getItem('onyx_wallet_v2');
+    const saved = localStorage.getItem('onyx_wallet');
     return saved ? JSON.parse(saved) : { liquid: 24500, suica: 12840 };
   });
 
