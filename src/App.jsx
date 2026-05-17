@@ -771,7 +771,7 @@ export default function App() {
       <div className="h-14 w-full shrink-0"></div>
 
       {/* Header Section (M3 Expressive) */}
-      <header className="px-6 pt-14 pb-4 flex justify-between items-end z-20 shrink-0 bg-g-bg/80 backdrop-blur-2xl">
+      <header className="px-6 pt-3 pb-4 flex justify-between items-end z-20 shrink-0 bg-g-bg/80 backdrop-blur-2xl">
         <div className="flex-1">
           {/* Animated Title with Cinematic Focus Pull */}
           <motion.h1 
