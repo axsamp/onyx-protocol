@@ -630,9 +630,10 @@ export default function App() {
   // Preload next image to prevent white flash
   useEffect(() => {
     const nextIndex = (highlightIndex + 1) % HIGHLIGHTS.length;
-    if (HIGHLIGHTS[nextIndex].img.startsWith('http')) {
+    const imgSrc = HIGHLIGHTS[nextIndex]?.img;
+    if (imgSrc) {
       const img = new Image();
-      img.src = HIGHLIGHTS[nextIndex].img;
+      img.src = imgSrc;
     }
   }, [highlightIndex]);
 
