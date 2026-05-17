@@ -376,55 +376,80 @@ export default function App() {
         initial={{ opacity: 0, y: -10, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.95 }}
-        className="w-full material-card border-2 border-g-primary/30 p-5 space-y-4 relative overflow-hidden bg-g-primary/5 dark:bg-g-primary/10 shadow-lg"
+        className="relative w-full rounded-[24px] overflow-hidden p-5 flex flex-col justify-between shadow-elevation-1 border border-g-outline/15 bg-g-surface dark:bg-g-aluminium/5 backdrop-blur-md space-y-4"
       >
-        {/* Animated Radio-Pulse Indicator */}
-        <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-g-primary/10 dark:bg-g-primary/20 px-2 py-0.5 rounded-full">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-g-primary opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-g-primary"></span>
-          </span>
-          <span className="text-[8px] font-bold font-mono tracking-widest text-g-primary uppercase">Transit Telemetry</span>
+        {/* Subtle Brushed Metal Texture overlay */}
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] opacity-[0.02] dark:opacity-[0.05] pointer-events-none" />
+
+        {/* Top Header Row */}
+        <div className="relative z-10 flex justify-between items-center w-full">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-g-primary/10 text-g-primary flex items-center justify-center shrink-0">
+              <Bus size={14} />
+            </div>
+            <div>
+              <h4 className="text-[10px] font-bold text-g-text-variant uppercase tracking-widest leading-none">Active Commute Resolved</h4>
+            </div>
+          </div>
+
+          {/* Dynamic Radar Pulse Badge */}
+          <div className="flex items-center gap-1.5 bg-g-primary/10 px-2 py-0.5 rounded-full">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-g-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-g-primary"></span>
+            </span>
+            <span className="text-[7.5px] font-bold font-mono tracking-widest text-g-primary uppercase leading-none">GPS Telemetry</span>
+          </div>
         </div>
 
-        <div className="flex gap-4">
-          <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center shrink-0">
-            <Bus size={20} />
+        {/* Route Details Panel */}
+        <div className="relative z-10 pt-0.5">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="text-base font-bold text-g-text tracking-tight">{fromName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
+            
+            {/* Custom High-Precision Vector Rail Arrow */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-g-primary/60 animate-pulse" />
+              <svg width="24" height="8" viewBox="0 0 24 8" fill="none" className="text-g-primary">
+                <path d="M0 4H20M20 4L16 1M20 4L16 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="w-1.5 h-1.5 rounded-full bg-g-primary/60" />
+            </div>
+
+            <div className="text-base font-bold text-g-text tracking-tight">{toName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
           </div>
-          <div className="space-y-1 pr-16">
-            <h4 className="text-sm font-bold text-g-text leading-none tracking-tight">Active Commute Detected</h4>
-            <p className="text-[11px] font-medium text-g-text-variant leading-relaxed">
-              Did you ride the rail from <span className="font-bold text-g-text">{fromName}</span> to <span className="font-bold text-g-text">{toName}</span>?
-            </p>
-          </div>
+          <p className="text-[9.5px] font-medium text-g-text-variant mt-1 leading-relaxed">
+            Passive transit change registered. Confirm details below to log fare:
+          </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 pt-1 border-t border-g-outline/10">
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider">Suggested Fare:</span>
+        {/* Actions & Fare Panel */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-3 border-t border-g-outline/10">
+          <div className="flex items-center gap-2">
+            <span className="text-[8.5px] font-bold text-g-text-variant uppercase tracking-wider">Suggested Fare JPY</span>
             <div className="relative flex items-center shrink-0 w-24">
               <span className="absolute left-2.5 text-xs font-bold text-g-text-variant">¥</span>
               <input
                 type="number"
                 value={customFareInput}
                 onChange={(e) => setCustomFareInput(e.target.value)}
-                className="w-full py-1.5 pl-6 pr-2 bg-g-aluminium/40 dark:bg-g-aluminium/10 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-colors text-center"
+                className="w-full py-1 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-colors text-center shadow-inner"
               />
             </div>
           </div>
 
-          <div className="flex gap-2 w-full justify-end text-right">
+          <div className="flex gap-2 justify-end">
             <button
               onClick={() => { triggerHaptic('light'); setPendingTransitPrompt(null); }}
-              className="px-4 py-2 rounded-xl border border-g-outline/20 hover:bg-g-aluminium/30 dark:hover:bg-g-aluminium/5 text-[10px] font-bold uppercase tracking-wider text-g-text-variant transition-all ripple"
+              className="px-4 py-2 rounded-xl bg-g-aluminium/30 dark:bg-g-aluminium/5 hover:bg-g-aluminium/50 text-[8.5px] font-bold uppercase tracking-wider text-g-text transition-all ripple shadow-sm"
             >
               Dismiss
             </button>
             <button
               onClick={handleLogTransit}
-              className="px-4 py-2 rounded-xl bg-g-primary hover:bg-g-primary-hover text-[10px] font-bold uppercase tracking-wider text-white shadow-sm transition-all ripple flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-g-primary hover:bg-g-primary-hover text-[8.5px] font-bold uppercase tracking-wider text-white shadow-elevation-1 transition-all ripple flex items-center gap-1.5"
             >
-              <Check size={12} />
+              <Check size={11} />
               Log Suica
             </button>
           </div>
