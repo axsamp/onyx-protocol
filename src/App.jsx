@@ -223,6 +223,7 @@ export default function App() {
   const [isStealthMode, setIsStealthMode] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
   const [fullscreenPhrase, setFullscreenPhrase] = useState(null);
+  const [isTransitLogged, setIsTransitLogged] = useState(false);
   const [wallet, setWallet] = useState(() => {
     const saved = localStorage.getItem('onyx_wallet');
     return saved ? JSON.parse(saved) : { liquid: 24500, suica: 12840 };
@@ -433,7 +434,6 @@ export default function App() {
 
   const handleLogTransit = () => {
     if (!pendingTransitPrompt) return;
-    triggerHaptic('medium');
     
     const finalFare = Number(customFareInput) || pendingTransitPrompt.fare;
     const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
@@ -458,8 +458,15 @@ export default function App() {
       return next;
     });
     
-    // Clear prompt
-    setPendingTransitPrompt(null);
+    // 🎭 TRIGGERS THE ULTRA-SATISFYING SUCCESS MORPH!
+    setIsTransitLogged(true);
+    triggerHaptic('heavy');
+
+    // Smoothly clear prompt after success presentation
+    setTimeout(() => {
+      setIsTransitLogged(false);
+      setPendingTransitPrompt(null);
+    }, 1300);
   };
 
   const renderTransitPrompt = () => {
@@ -467,8 +474,35 @@ export default function App() {
     const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
     const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
 
+    // 🎭 If logged successfully, morph layout instantly into a compact, gorgeous "OK! [Check]" badge!
+    if (isTransitLogged) {
+      return (
+        <motion.div
+          key="transit-success-pill"
+          initial={{ opacity: 0, scale: 0.9, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: -10 }}
+          transition={{ type: "spring", damping: 25, stiffness: 220 }}
+          className="relative w-full rounded-full py-4 px-6 bg-g-primary-container border border-g-primary/20 shadow-elevation-1 flex items-center justify-center text-g-primary"
+        >
+          <motion.div 
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 350, damping: 18, delay: 0.05 }}
+            className="flex items-center gap-2.5 font-display text-xs font-black uppercase tracking-wider"
+          >
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-g-primary text-white dark:text-[#202124] shadow-sm shrink-0">
+              <Check size={11} className="stroke-[3]" />
+            </span>
+            <span className="leading-none pt-0.5">Suica Logged! OK!</span>
+          </motion.div>
+        </motion.div>
+      );
+    }
+
     return (
       <motion.div
+        key="transit-prompt-card"
         initial={{ opacity: 0, y: -10, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.95 }}
