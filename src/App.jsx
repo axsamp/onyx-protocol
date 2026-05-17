@@ -1549,7 +1549,7 @@ export default function App() {
       </main>
 
       {/* Material 3 Bottom Nav */}
-      <div className="fixed bottom-0 left-0 w-full z-40 frosted-nav border-t border-g-outline/10 pt-2 pb-safe px-2 pb-6">
+      <div className="fixed bottom-0 left-0 w-full z-40 bg-g-surface/90 backdrop-blur-xl border-t border-g-outline/10 pt-2 pb-safe px-2 pb-6">
         <nav className="w-full flex justify-around items-center max-w-sm mx-auto">
 
           <button
@@ -1971,7 +1971,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="relative w-full max-w-lg frosted-nav border border-g-outline/15 rounded-t-[40px] rounded-b-[24px] p-6 md:p-8 shadow-2xl flex flex-col space-y-6 z-10 max-h-[85vh] overflow-y-auto no-scrollbar transition-colors duration-700"
+              className="relative w-full max-w-lg bg-g-surface/90 backdrop-blur-xl border border-g-outline/15 rounded-t-[40px] rounded-b-[24px] p-6 md:p-8 shadow-2xl flex flex-col space-y-6 z-10 max-h-[85vh] overflow-y-auto no-scrollbar transition-colors duration-700"
             >
               {/* Header status bar */}
               <div className="w-full flex justify-between items-center border-b border-g-outline/10 pb-4">
