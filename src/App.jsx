@@ -73,8 +73,8 @@ const THEME_PALETTES = {
     dark: { primary: '#FCAEC5', primaryContainer: '#4C232F', bg: '#231F20' }
   },
   yuzu: {
-    light: { primary: '#8A6000', primaryContainer: '#FFE086', bg: '#FAF7F2' },
-    dark: { primary: '#F5BE48', primaryContainer: '#4D3100', bg: '#211E1A' }
+    light: { primary: '#7E5700', primaryContainer: '#FFF1C5', bg: '#FCFAF5' },
+    dark: { primary: '#F5BE48', primaryContainer: '#4D3100', bg: '#1A1916' }
   }
 };
 
@@ -1362,7 +1362,7 @@ export default function App() {
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
-                        <div className="w-3.5 h-3.5 rounded-full bg-[#8A6000]" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#7E5700]" />
                         Yuzu
                       </button>
                     </div>
