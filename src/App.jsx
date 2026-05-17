@@ -85,7 +85,11 @@ const getRouteFare = (fromId, toId) => {
   return FARE_MATRIX[key1] || FARE_MATRIX[key2] || null;
 };
 
-const formatCurrency = (amount) => new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(Math.round(amount));
+const formatCurrency = (amount) => {
+  const val = Number(amount);
+  if (isNaN(val)) return '¥0';
+  return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(Math.round(val));
+};
 
 const formatDateSafely = (dateString, offset = 0) => {
   try {
@@ -384,6 +388,13 @@ export default function App() {
       setDurationInput(totalDays.toString());
     }
   }, [isConfigModalOpen, totalDays]);
+
+  // Safety check: Clamp day offset to the active timeline range if the timeline is shortened
+  useEffect(() => {
+    if (currentDayOffset >= totalDays) {
+      setCurrentDayOffset(Math.max(0, totalDays - 1));
+    }
+  }, [totalDays, currentDayOffset]);
 
   const targetDailyBudget = useMemo(() => budgetSettings.totalBudget / totalDays, [budgetSettings.totalBudget, totalDays]);
   const currentTripDayDate = useMemo(() => formatDateSafely(budgetSettings.startDate, currentDayOffset), [budgetSettings.startDate, currentDayOffset]);
@@ -1625,13 +1636,20 @@ export default function App() {
       <AnimatePresence>
         {isWalletModalOpen && (
           <div className="fixed inset-0 z-[600] flex items-end justify-center">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsWalletModalOpen(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
             <motion.div
-              initial={{ y: "100%" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={() => setIsWalletModalOpen(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ y: "100vh" }}
               animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-md bg-g-bg rounded-t-[40px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl"
+              exit={{ y: "100vh" }}
+              transition={{ type: "spring", damping: 28, stiffness: 240 }}
+              className="relative w-full max-w-md bg-g-bg rounded-t-[40px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl transform-gpu [will-change:transform]"
             >
               <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-8" />
               <div className="flex justify-between items-center mb-10">
@@ -1769,14 +1787,19 @@ export default function App() {
         {isLauncherOpen && (
           <>
             <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               onClick={() => setIsLauncherOpen(false)}
               className="fixed inset-0 bg-black/50 z-50"
             />
             <motion.div
-              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              initial={{ y: "100vh" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100vh" }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[40px] overflow-hidden will-change-transform"
+              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[40px] overflow-hidden transform-gpu [will-change:transform]"
             >
               {/* Material Drag Handle */}
               <div className="w-full flex justify-center pt-4 pb-2 bg-g-bg">
