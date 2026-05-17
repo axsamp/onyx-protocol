@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material OS - Live Interactive Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'g-bg': 'var(--g-bg)',
+            'g-surface': 'var(--g-surface)',
+            'g-primary': 'var(--g-primary)',
+            'g-primary-container': 'var(--g-primary-container)',
+            'g-text': 'var(--g-text)',
+            'g-text-variant': 'var(--g-text-variant)',
+            'g-outline': 'var(--g-outline)',
+            'g-aluminium': 'var(--g-aluminium)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --g-bg: #F0F4F8;
+      --g-surface: #FFFFFF;
+      --g-primary: #0B57D0;
+      --g-primary-container: #D3E3FD;
+      --g-text: #1F1F1F;
+      --g-text-variant: #444746;
+      --g-outline: #C4C7C5;
+      --g-aluminium: #E8EAED;
+    }
+    body {
+      background-color: #0c0d0e;
+      color: #e8eaed;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .phone-shadow {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(11, 87, 208, 0.12);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+
+  <!-- W3C Importmap to force a single unified React instance and prevent context collisions -->
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "framer-motion": "https://esm.sh/framer-motion@10.16.4?external=react,react-dom"
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6 overflow-x-hidden bg-[#0e1013]">
+  
+  <div class="mb-6 text-center max-w-sm">
+    <h2 class="text-xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
+      Material OS Console Preview
+    </h2>
+    <p class="text-xs text-[#9aa0a6] mt-1.5 leading-relaxed">
+      A dynamic sandbox to test transitions and dynamic themes live in the browser without modifying your core repository.
+    </p>
+  </div>
+
+  <div id="root"></div>
+
+  <!-- React & Framer Motion Module -->
+  <script type="module">
+    import React, { useState, useEffect } from 'react';
+    import ReactDOM from 'react-dom/client';
+    import { motion, AnimatePresence } from 'framer-motion';
+
+    const THEME_PALETTES = {
+      cobalt: { primary: '#0B57D0', primaryContainer: '#D3E3FD', bg: '#F0F4F8' },
+      matcha: { primary: '#386B40', primaryContainer: '#E2F0D9', bg: '#F2F5F3' },
+      vermilion: { primary: '#B84A39', primaryContainer: '#FAD8D2', bg: '#FBF3F2' },
+      sakura: { primary: '#B326B3', primaryContainer: '#FAD2FA', bg: '#FAF2FA' }
+    };
+
+    function PreviewApp() {
+      const [activePalette, setActivePalette] = useState('cobalt');
+      const [activeTab, setActiveTab] = useState('home');
+      const [wallet, setWallet] = useState({ liquid: 24500, suica: 12840 });
+
+      useEffect(() => {
+        const colors = THEME_PALETTES[activePalette];
+        document.documentElement.style.setProperty('--g-primary', colors.primary);
+        document.documentElement.style.setProperty('--g-primary-container', colors.primaryContainer);
+        document.documentElement.style.setProperty('--g-bg', colors.bg);
+      }, [activePalette]);
+
+      return (
+        React.createElement('div', { className: 'w-full max-w-sm h-[740px] bg-g-bg rounded-[48px] border-[10px] border-[#303134] overflow-hidden flex flex-col relative phone-shadow transition-colors duration-700' },
+          // Phone status bar
+          React.createElement('div', { className: 'h-10 w-full flex justify-between items-center px-8 pt-3 shrink-0' },
+            React.createElement('span', { className: 'text-xs font-mono font-medium text-g-text-variant' }, '13:09 JST'),
+            React.createElement('div', { className: 'flex gap-1.5' },
+              React.createElement('div', { className: 'w-4 h-2 bg-g-text-variant rounded-sm' }),
+              React.createElement('div', { className: 'w-2 h-2 bg-g-text-variant rounded-full' })
+            )
+          ),
+          
+          // Header
+          React.createElement('header', { className: 'px-6 py-4 flex justify-between items-center shrink-0' },
+            React.createElement('div', null,
+              React.createElement('div', { className: 'mb-0.5' },
+                React.createElement('span', { className: 'text-[10px] font-bold text-g-text-variant tracking-wider uppercase' }, 'Fujisawa Base')
+              ),
+              React.createElement('h1', { className: 'text-2xl font-bold tracking-tight text-g-text flex items-center gap-1' }, 
+                'Material OS',
+                React.createElement('span', { className: 'text-[9px] bg-g-primary/10 text-g-primary font-bold px-2.5 py-0.5 rounded-full ml-2 border border-g-primary/20 transition-colors duration-700' }, activePalette.toUpperCase())
+              )
+            )
+          ),
+
+          // Main View Content
+          React.createElement('main', { className: 'flex-1 overflow-y-auto px-6 py-4 space-y-6 no-scrollbar' },
+            // Brushed Aluminium Card
+            React.createElement('div', { className: 'w-full rounded-[24px] p-6 border border-g-outline/20 relative overflow-hidden bg-g-surface shadow-sm transition-colors duration-700' },
+              React.createElement('div', { className: 'absolute top-0 right-0 w-32 h-32 bg-g-primary/5 blur-3xl rounded-full transition-colors duration-700' }),
+              React.createElement('div', { className: 'flex justify-between items-center mb-6' },
+                React.createElement('div', null,
+                  React.createElement('h2', { className: 'text-sm font-bold text-g-text tracking-wide' }, 'Apple Wallet'),
+                  React.createElement('p', { className: 'text-[10px] text-g-text-variant' }, 'Mission Funds & Transit')
+                ),
+                React.createElement('div', { className: 'w-8 h-8 rounded-full bg-g-primary/10 text-g-primary flex items-center justify-center font-bold transition-all duration-700' }, '¥')
+              ),
+              React.createElement('div', { className: 'grid grid-cols-2 gap-4' },
+                React.createElement('div', null,
+                  React.createElement('span', { className: 'text-[9px] font-bold text-g-text-variant uppercase tracking-wider block mb-1' }, 'Liquid Cash'),
+                  React.createElement('span', { className: 'text-lg font-bold text-g-text' }, `¥${wallet.liquid.toLocaleString()}`)
+                ),
+                React.createElement('div', null,
+                  React.createElement('span', { className: 'text-[9px] font-bold text-g-text-variant uppercase tracking-wider block mb-1' }, 'Suica balance'),
+                  React.createElement('span', { className: 'text-lg font-bold text-g-primary transition-colors duration-700' }, `¥${wallet.suica.toLocaleString()}`)
+                )
+              )
+            ),
+
+            // Live Interactive Theme Toggler Section
+            React.createElement('section', { className: 'space-y-3' },
+              React.createElement('h3', { className: 'text-[10px] font-bold text-g-text-variant uppercase tracking-widest pl-2' }, 'Theme Palettes'),
+              React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
+                Object.keys(THEME_PALETTES).map(paletteName => 
+                  React.createElement('button', {
+                    key: paletteName,
+                    onClick: () => { setActivePalette(paletteName); },
+                    className: `p-3 rounded-xl border flex items-center justify-between text-xs font-bold uppercase transition-all duration-500 ${activePalette === paletteName ? 'bg-g-primary-container border-g-primary text-g-primary shadow-sm' : 'bg-g-surface border-g-outline/10 text-g-text-variant'}`
+                  },
+                    paletteName,
+                    React.createElement('div', { className: 'w-4 h-4 rounded-full border border-black/10 transition-colors duration-700', style: { backgroundColor: THEME_PALETTES[paletteName].primary } })
+                  )
+                )
+              )
+            ),
+
+            // Visual sliding Nav indicator notes
+            React.createElement('section', { className: 'bg-g-primary-container/20 border border-g-primary/10 rounded-2xl p-4 text-[11px] text-g-text-variant space-y-2 transition-all duration-700' },
+              React.createElement('p', { className: 'font-bold text-g-primary transition-colors duration-700 flex items-center gap-1.5' }, '💡 Interactive Details:'),
+              React.createElement('p', { className: 'leading-relaxed' }, '1. Tap the Theme buttons above: watch the entire app (headers, borders, cards, highlights) morph smoothly to your chosen style in real-time.'),
+              React.createElement('p', { className: 'leading-relaxed' }, '2. Tap the bottom navigation tabs below: watch the capsule background glide smoothly to the active tab using spring physics!')
+            )
+          ),
+
+          // Sliding Navigation Bar (Framer Motion!)
+          React.createElement('nav', { className: 'h-20 bg-g-surface border-t border-g-outline/10 px-8 flex justify-around items-center shrink-0 relative z-20 pb-4 transition-colors duration-700' },
+            ['home', 'explore', 'budget', 'setup'].map(tab => {
+              const isActive = activeTab === tab;
+              return React.createElement('button', {
+                key: tab,
+                onClick: () => { setActiveTab(tab); },
+                className: 'relative flex flex-col items-center gap-1 w-16 group outline-none'
+              },
+                React.createElement('div', { className: 'w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant' },
+                  isActive && React.createElement(motion.div, {
+                    layoutId: 'activeNavPill',
+                    transition: { type: 'spring', stiffness: 350, damping: 28 },
+                    className: 'absolute inset-0 bg-g-primary-container rounded-full -z-10'
+                  }),
+                  // Simulating simple tab vector icons
+                  React.createElement('div', { className: `w-5 h-5 rounded-md border-2 transition-all duration-300 ${isActive ? 'border-g-primary bg-g-primary/10' : 'border-g-outline'}` })
+                ),
+                React.createElement('span', { className: `text-[10px] font-medium transition-colors duration-200 capitalize ${isActive ? 'text-g-text font-bold' : 'text-g-text-variant'}` }, tab)
+              );
+            })
+          )
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(PreviewApp));
+  </script>
+</body>
+</html>

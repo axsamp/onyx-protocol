@@ -74,13 +74,13 @@
 }
 
 @layer components {
-  /* Material Card Style */
+  /* Material Card Style - Evolved to M3 Expressive Shape Tokens */
   .material-card {
     background-color: var(--theme-g-surface);
-    border-radius: 24px;
-    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.05); /* Very soft shadow */
+    border-radius: 32px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03), 0px 1px 3px rgba(0, 0, 0, 0.02); /* Material Expressive Soft Layered Depth */
     border: 1px solid var(--theme-g-outline);
-    transition: background-color 0.5s ease, border-color 0.5s ease;
+    transition: background-color 0.5s cubic-bezier(0.2, 0, 0, 1), border-color 0.5s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.5s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .label-text {
@@ -89,7 +89,7 @@
 
   /* Material 3 Bottom Nav Indicator */
   .nav-item.nav-active .nav-icon-container {
-    @apply bg-g-primary-container text-g-primary;
+    @apply text-g-primary;
   }
   .nav-item.nav-active span {
     @apply text-g-text font-bold;

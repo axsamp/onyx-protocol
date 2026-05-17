@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RefreshCcw, Wallet, MapPin, ArrowRight, Download, Calendar, X, Activity, Terminal, ShoppingBag, Search, Plus, Shield, Settings, User, ChevronDown, Phone, Waves, Eye, EyeOff, Check,
-  ChevronLeft, ChevronRight, TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2, Info
+  ChevronLeft, ChevronRight, TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2, Info, Palette
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -53,6 +53,21 @@ const FARE_MATRIX = {
   'shinjuku-chiba': 820,
   'tokyo-chiba': 650,
   'shibuya-chiba': 820
+};
+
+const THEME_PALETTES = {
+  cobalt: {
+    light: { primary: '#0B57D0', primaryContainer: '#D3E3FD', bg: '#F0F4F8' },
+    dark: { primary: '#8AB4F8', primaryContainer: '#3C4043', bg: '#202124' }
+  },
+  vermilion: {
+    light: { primary: '#C04836', primaryContainer: '#FCDCD6', bg: '#FAF4F2' },
+    dark: { primary: '#FF8A75', primaryContainer: '#4A2B25', bg: '#241E1D' }
+  },
+  matcha: {
+    light: { primary: '#386B40', primaryContainer: '#D2E7C4', bg: '#F3F7F2' },
+    dark: { primary: '#81C784', primaryContainer: '#223825', bg: '#1E231F' }
+  }
 };
 
 const getRouteFare = (fromId, toId) => {
@@ -231,6 +246,22 @@ export default function App() {
       localStorage.setItem('onyx_last_known_node', lastKnownNode);
     }
   }, [lastKnownNode]);
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('onyx_theme') || 'cobalt';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('onyx_theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const colors = THEME_PALETTES[theme][isStealthMode ? 'dark' : 'light'];
+    const root = document.documentElement;
+    root.style.setProperty('--theme-g-primary', colors.primary);
+    root.style.setProperty('--theme-g-primary-container', colors.primaryContainer);
+    root.style.setProperty('--theme-g-bg', colors.bg);
+  }, [theme, isStealthMode]);
 
   useEffect(() => {
     if (pendingTransitPrompt) {
@@ -755,7 +786,7 @@ export default function App() {
               {!searchQuery && (
                 <section>
                   <div className="label-text mb-3 ml-2">Recommended for you</div>
-                  <div className="relative aspect-[4/3] rounded-[24px] overflow-hidden group shadow-elevation-2 bg-g-aluminium">
+                  <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden group shadow-elevation-2 bg-g-aluminium">
                     <AnimatePresence initial={false}>
                       <motion.img
                         key={highlightIndex}
@@ -795,9 +826,9 @@ export default function App() {
                             href={HIGHLIGHTS[highlightIndex].link}
                             target="_blank"
                             onClick={() => triggerHaptic('medium')}
-                            className="w-12 h-12 rounded-full bg-g-primary flex items-center justify-center shadow-elevation-2 active:scale-90 transition-transform cursor-pointer ripple"
+                            className="w-12 h-12 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center shadow-elevation-2 active:scale-90 transition-transform cursor-pointer ripple"
                           >
-                            <ArrowRight size={20} className="text-white" />
+                            <ArrowRight size={20} />
                           </a>
                         </motion.div>
                       </AnimatePresence>
@@ -1115,7 +1146,7 @@ export default function App() {
               <div className="flex justify-center pt-2">
                 <button
                   onClick={() => { triggerHaptic('medium'); setIsAddingExpense(true); }}
-                  className="w-full py-4 bg-g-primary text-white font-bold rounded-2xl shadow-elevation-2 active:scale-[0.99] transition-transform flex items-center justify-center gap-2 ripple"
+                  className="w-full py-4 bg-g-primary-container text-g-primary font-bold rounded-2xl shadow-elevation-2 active:scale-[0.99] transition-transform flex items-center justify-center gap-2 ripple"
                 >
                   <Plus size={20} />
                   Log Transaction
@@ -1151,6 +1182,57 @@ export default function App() {
                       <div className={cn("absolute top-1 w-4 h-4 rounded-full bg-white transition-all", isStealthMode ? "right-1" : "left-1 shadow-sm")} />
                     </div>
                   </button>
+
+                  {/* Console Color Themes */}
+                  <div className="w-full material-card p-5 space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-g-primary-container text-g-primary flex items-center justify-center transition-colors duration-700">
+                        <Palette size={20} />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-base font-bold text-g-text">System Theme</div>
+                        <div className="text-sm font-medium text-g-text-variant">Select interface profile</div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 pt-1.5">
+                      <button
+                        onClick={() => { triggerHaptic('medium'); setTheme('cobalt'); }}
+                        className={cn(
+                          "py-2.5 px-1.5 rounded-xl border flex flex-col items-center gap-2 text-[10px] font-bold uppercase transition-all duration-300 ripple",
+                          theme === 'cobalt' 
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                            : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
+                        )}
+                      >
+                        <div className="w-4 h-4 rounded-full bg-[#0B57D0]" />
+                        Cobalt
+                      </button>
+                      <button
+                        onClick={() => { triggerHaptic('medium'); setTheme('vermilion'); }}
+                        className={cn(
+                          "py-2.5 px-1.5 rounded-xl border flex flex-col items-center gap-2 text-[10px] font-bold uppercase transition-all duration-300 ripple",
+                          theme === 'vermilion' 
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                            : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
+                        )}
+                      >
+                        <div className="w-4 h-4 rounded-full bg-[#C04836]" />
+                        Vermilion
+                      </button>
+                      <button
+                        onClick={() => { triggerHaptic('medium'); setTheme('matcha'); }}
+                        className={cn(
+                          "py-2.5 px-1.5 rounded-xl border flex flex-col items-center gap-2 text-[10px] font-bold uppercase transition-all duration-300 ripple",
+                          theme === 'matcha' 
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                            : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
+                        )}
+                      >
+                        <div className="w-4 h-4 rounded-full bg-[#386B40]" />
+                        Matcha
+                      </button>
+                    </div>
+                  </div>
 
                   <button
                     onClick={exportMissionData}
@@ -1325,9 +1407,16 @@ export default function App() {
 
           <button
             onClick={() => { triggerHaptic('light'); setActiveTab('home'); }}
-            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'home' && "nav-active")}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'home' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+              {activeTab === 'home' && (
+                <motion.div
+                  layoutId="activeNavPill"
+                  transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                  className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
+                />
+              )}
               <Activity size={22} className={cn(activeTab === 'home' && "fill-current")} />
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Home</span>
@@ -1335,27 +1424,44 @@ export default function App() {
 
           <button
             onClick={() => { triggerHaptic('light'); setActiveTab('explore'); }}
-            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'explore' && "nav-active")}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'explore' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+              {activeTab === 'explore' && (
+                <motion.div
+                  layoutId="activeNavPill"
+                  transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                  className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
+                />
+              )}
               <MapPin size={22} className={cn(activeTab === 'explore' && "fill-current")} />
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Explore</span>
           </button>
 
-          {/* Central FAB aligned with Material Design */}
-          <button
+          {/* Central FAB aligned with Material Design 3 Expressive squircle and kinetic spring */}
+          <motion.button
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.92, rotate: -4 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
             onClick={() => { triggerHaptic('heavy'); setIsLauncherOpen(true); }}
-            className="relative -top-4 w-14 h-14 rounded-2xl bg-g-primary text-white flex items-center justify-center shadow-elevation-3 hover:bg-blue-700 active:bg-blue-800 transition-colors ripple mx-2"
+            className="relative -top-4 w-14 h-14 rounded-[20px] bg-g-primary-container text-g-primary flex items-center justify-center shadow-elevation-3 hover:brightness-110 active:brightness-95 transition-all ripple mx-2"
           >
             <Plus size={28} />
-          </button>
+          </motion.button>
 
           <button
             onClick={() => { triggerHaptic('light'); setActiveTab('budget'); }}
-            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'budget' && "nav-active")}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'budget' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+              {activeTab === 'budget' && (
+                <motion.div
+                  layoutId="activeNavPill"
+                  transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                  className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
+                />
+              )}
               <Wallet size={22} className={cn(activeTab === 'budget' && "fill-current")} />
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Budget</span>
@@ -1363,9 +1469,16 @@ export default function App() {
 
           <button
             onClick={() => { triggerHaptic('light'); setActiveTab('settings'); }}
-            className={cn("nav-item flex flex-col items-center gap-1 w-16 group", activeTab === 'settings' && "nav-active")}
+            className={cn("nav-item flex flex-col items-center gap-1 w-16 group relative", activeTab === 'settings' && "nav-active")}
           >
-            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 text-g-text-variant group-hover:bg-g-aluminium">
+            <div className="nav-icon-container w-16 h-8 rounded-full flex items-center justify-center relative text-g-text-variant group-hover:bg-g-aluminium">
+              {activeTab === 'settings' && (
+                <motion.div
+                  layoutId="activeNavPill"
+                  transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                  className="absolute inset-0 bg-g-primary-container rounded-full -z-10"
+                />
+              )}
               <Settings size={22} className={cn(activeTab === 'settings' && "fill-current")} />
             </div>
             <span className="text-[11px] font-medium text-g-text-variant transition-colors duration-200">Setup</span>
@@ -1382,7 +1495,7 @@ export default function App() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-md bg-g-bg rounded-t-[32px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl"
+              className="relative w-full max-w-md bg-g-bg rounded-t-[40px] p-8 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl"
             >
               <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-8" />
               <div className="flex justify-between items-center mb-10">
@@ -1457,7 +1570,7 @@ export default function App() {
             <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[32px] overflow-hidden will-change-transform"
+              className="fixed bottom-0 left-0 w-full h-[85vh] bg-g-bg z-50 flex flex-col shadow-elevation-3 rounded-t-[40px] overflow-hidden will-change-transform"
             >
               {/* Material Drag Handle */}
               <div className="w-full flex justify-center pt-4 pb-2 bg-g-bg">
@@ -1503,7 +1616,7 @@ export default function App() {
               animate={{ y: 0 }} 
               exit={{ y: "100%" }} 
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="relative w-full max-w-md bg-g-surface rounded-t-[32px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh]"
+              className="relative w-full max-w-md bg-g-surface rounded-t-[40px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh]"
             >
               <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-6" />
               
@@ -1592,7 +1705,7 @@ export default function App() {
 
                 <button 
                   type="submit" 
-                  className="w-full py-4 bg-g-primary text-white font-bold rounded-2xl shadow-elevation-2 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
+                  className="w-full py-4 bg-g-primary-container text-g-primary font-bold rounded-2xl shadow-elevation-2 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
                 >
                   Log Expense
                   <ArrowRight size={18} />
