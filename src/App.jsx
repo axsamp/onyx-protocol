@@ -114,6 +114,22 @@ const HIGHLIGHTS = [
     link: 'https://www.google.com/maps/search/Yokohama+Minatomirai'
   },
   {
+    title: 'Shizuoka Vistas',
+    subtitle: "1h Shinkansen • Mt. Fuji views & tea slopes",
+    tag: 'Nature',
+    density: 'Low',
+    img: 'https://images.unsplash.com/photo-1490806862337-875726298d24?q=80&w=1000&auto=format&fit=crop',
+    link: 'https://www.google.com/maps/search/Shizuoka+Prefecture'
+  },
+  {
+    title: 'Nagoya Castle',
+    subtitle: "1.5h Shinkansen • Historic castle & legacy museum",
+    tag: 'Priority',
+    density: 'Medium',
+    img: 'https://images.unsplash.com/photo-1590253407275-14374ef57a9f?q=80&w=1000&auto=format&fit=crop',
+    link: 'https://www.google.com/maps/search/Nagoya+Castle'
+  },
+  {
     title: 'Kyoto Temples',
     subtitle: "Future Deployment • Historic capital",
     tag: 'Planned',
