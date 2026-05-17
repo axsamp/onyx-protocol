@@ -73,6 +73,18 @@ const formatDateSafely = (dateString, offset = 0) => {
   } catch (e) { return '2026-01-01'; }
 };
 
+// Haversine formula to calculate distance in KM
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
+
 const PHRASES = [
   { jp: 'すみません', en: 'Excuse me' },
   { jp: 'ありがとうございます', en: 'Thank you' },
@@ -204,6 +216,11 @@ export default function App() {
     return localStorage.getItem('onyx_last_known_node') || 'fujisawa';
   });
 
+  const lastKnownNodeRef = useRef(lastKnownNode);
+  useEffect(() => {
+    lastKnownNodeRef.current = lastKnownNode;
+  }, [lastKnownNode]);
+
   const [pendingTransitPrompt, setPendingTransitPrompt] = useState(() => {
     const saved = localStorage.getItem('onyx_pending_transit_prompt');
     return saved ? JSON.parse(saved) : null;
@@ -277,7 +294,16 @@ export default function App() {
 
   const targetDailyBudget = useMemo(() => budgetSettings.totalBudget / totalDays, [budgetSettings.totalBudget, totalDays]);
   const currentTripDayDate = useMemo(() => formatDateSafely(budgetSettings.startDate, currentDayOffset), [budgetSettings.startDate, currentDayOffset]);
-  const getDayTotal = useCallback((dateStr) => expenses.filter(e => e.date === dateStr).reduce((sum, exp) => sum + Number(exp.amount), 0), [expenses]);
+  // Pre-compile daily spent totals into a linear-time hash-map
+  const dailyTotalsMap = useMemo(() => {
+    const map = {};
+    expenses.forEach(exp => {
+      map[exp.date] = (map[exp.date] || 0) + Number(exp.amount);
+    });
+    return map;
+  }, [expenses]);
+
+  const getDayTotal = useCallback((dateStr) => dailyTotalsMap[dateStr] || 0, [dailyTotalsMap]);
 
   const cumulativeBuffer = useMemo(() => {
     let buffer = 0;
@@ -517,17 +543,7 @@ export default function App() {
     }
   };
 
-  // Haversine formula to calculate distance in KM
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  };
+
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -552,25 +568,26 @@ export default function App() {
           setActiveNode(closestId);
           
           // Check for transition
-          if (lastKnownNode && lastKnownNode !== closestId) {
-            const fare = getRouteFare(lastKnownNode, closestId);
+          const lkn = lastKnownNodeRef.current;
+          if (lkn && lkn !== closestId) {
+            const fare = getRouteFare(lkn, closestId);
             if (fare) {
               setPendingTransitPrompt({
-                from: lastKnownNode,
+                from: lkn,
                 to: closestId,
                 fare: fare,
                 type: 'standard'
               });
             } else {
               const routeDist = calculateDistance(
-                MISSION_NODES[lastKnownNode].lat,
-                MISSION_NODES[lastKnownNode].lng,
+                MISSION_NODES[lkn].lat,
+                MISSION_NODES[lkn].lng,
                 MISSION_NODES[closestId].lat,
                 MISSION_NODES[closestId].lng
               );
               if (routeDist > 3) {
                 setPendingTransitPrompt({
-                  from: lastKnownNode,
+                  from: lkn,
                   to: closestId,
                   fare: 200, // editable fallback JPY
                   type: 'custom',
@@ -579,7 +596,7 @@ export default function App() {
               }
             }
             setLastKnownNode(closestId);
-          } else if (!lastKnownNode) {
+          } else if (!lkn) {
             setLastKnownNode(closestId);
           }
         } else {
@@ -589,7 +606,7 @@ export default function App() {
 
       return () => navigator.geolocation.clearWatch(watchId);
     }
-  }, [lastKnownNode]);
+  }, []);
 
   const [tempWallet, setTempWallet] = useState(wallet);
 
