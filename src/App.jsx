@@ -222,6 +222,16 @@ const AppLauncher = ({ app, delay }) => (
 );
 
 export default function App() {
+  const [callsign, setCallsign] = useState(() => {
+    return localStorage.getItem('onyx_callsign') || 'JD';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('onyx_callsign', callsign);
+  }, [callsign]);
+
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
   const [time, setTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedIndex, setCopiedIndex] = useState(null);
@@ -348,6 +358,18 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('onyx_budget_day_offset', currentDayOffset.toString());
   }, [currentDayOffset]);
+
+  const updateTripTimeline = useCallback((newStartDate, newLength) => {
+    const start = new Date(newStartDate);
+    const end = new Date(start);
+    end.setDate(start.getDate() + newLength - 1);
+    const formattedEndDate = end.toISOString().split('T')[0];
+    setBudgetSettings(prev => ({
+      ...prev,
+      startDate: newStartDate,
+      endDate: formattedEndDate
+    }));
+  }, []);
 
   const totalDays = useMemo(() => {
     const start = new Date(budgetSettings.startDate);
@@ -833,17 +855,17 @@ export default function App() {
               {time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
             </span>
             <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-g-text-variant">
-              Base Active
+              Base Active • Agent {callsign}
             </span>
           </div>
         </div>
 
         {/* Asymmetrical Profile Button */}
         <button 
-          onClick={() => triggerHaptic('medium')}
-          className="w-14 h-14 rounded-[20px] rounded-bl-[8px] bg-g-aluminium/50 dark:bg-g-aluminium/10 text-g-text flex items-center justify-center font-bold text-xl hover:bg-g-primary-container hover:text-g-primary transition-all duration-300 active:scale-90 ripple shrink-0 mb-1"
+          onClick={() => { triggerHaptic('medium'); setIsConfigModalOpen(true); }}
+          className="w-14 h-14 rounded-[20px] rounded-bl-[8px] bg-g-aluminium/50 dark:bg-g-aluminium/10 text-g-primary flex items-center justify-center font-display font-black text-sm tracking-widest hover:bg-g-primary-container hover:text-g-primary transition-all duration-300 active:scale-90 ripple shrink-0 mb-1 border border-g-outline/10 shadow-sm"
         >
-          <User size={24} />
+          {callsign.slice(0, 2).toUpperCase()}
         </button>
       </header>
 
@@ -1916,6 +1938,131 @@ export default function App() {
                 </button>
               </div>
             </motion.form>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Callsign & Mission Profile Configurator Modal */}
+      <AnimatePresence>
+        {isConfigModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:p-6">
+            {/* Dark Backing Blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsConfigModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+
+            {/* Tactical Bottom Sheet Dialog */}
+            <motion.div
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="relative w-full max-w-lg bg-g-surface border border-g-outline/20 rounded-t-[40px] rounded-b-[24px] p-6 md:p-8 shadow-2xl flex flex-col space-y-6 z-10 max-h-[85vh] overflow-y-auto no-scrollbar"
+            >
+              {/* Header status bar */}
+              <div className="w-full flex justify-between items-center border-b border-g-outline/10 pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-g-primary animate-pulse" />
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-g-text-variant uppercase">Mission Profile Setup</span>
+                </div>
+                <button
+                  onClick={() => { triggerHaptic('light'); setIsConfigModalOpen(false); }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 text-g-text hover:bg-g-primary-container hover:text-g-primary transition-colors cursor-pointer"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Body Content */}
+              <div className="space-y-5">
+                {/* Callsign Input */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Agent Callsign</label>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-4 text-g-primary font-mono text-xs font-bold uppercase tracking-wider select-none">
+                      Callsign:
+                    </div>
+                    <input
+                      type="text"
+                      maxLength={8}
+                      value={callsign}
+                      onChange={(e) => {
+                        const val = e.target.value.toUpperCase();
+                        setCallsign(val || 'JD');
+                      }}
+                      className="w-full py-4 pl-24 pr-5 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-xl text-g-text font-display font-black tracking-widest placeholder:text-g-text-variant focus:outline-none focus:border-g-primary transition-colors"
+                    />
+                  </div>
+                  <span className="text-[9px] font-medium text-g-text-variant ml-1">Maximum 8 alphanumeric characters. Updates header registry.</span>
+                </div>
+
+                {/* Trip Timeline Configuration */}
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">
+                    <Calendar size={12} className="text-g-primary" />
+                    <span>Trip Timeline</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Trip Start Date */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Start Date</label>
+                      <input
+                        type="date"
+                        value={budgetSettings.startDate}
+                        onChange={(e) => {
+                          const newStart = e.target.value;
+                          if (newStart) {
+                            updateTripTimeline(newStart, totalDays);
+                          }
+                        }}
+                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-xl text-g-text font-mono text-xs font-bold focus:outline-none focus:border-g-primary transition-colors cursor-pointer"
+                      />
+                    </div>
+
+                    {/* Trip Duration */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Length (Days)</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={90}
+                        value={totalDays}
+                        onChange={(e) => {
+                          const val = Math.max(1, parseInt(e.target.value) || 1);
+                          updateTripTimeline(budgetSettings.startDate, val);
+                        }}
+                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-xl text-g-text font-mono text-xs font-bold focus:outline-none focus:border-g-primary transition-colors"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Info helper block */}
+                <div className="p-4 rounded-2xl bg-g-primary-container/15 border border-g-primary/10 flex items-start gap-3 mt-2 text-left">
+                  <Info size={16} className="text-g-primary shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <div className="text-[10px] font-bold text-g-text uppercase tracking-wider">Timeline Auto-Calculation Node</div>
+                    <p className="text-[9px] font-medium text-g-text-variant leading-relaxed">
+                      Setting your active travel date and length will dynamically calculate budget day metrics, surplus buffers, and transit coordinates.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Save Confirmation Button */}
+              <button
+                onClick={() => { triggerHaptic('medium'); setIsConfigModalOpen(false); }}
+                className="w-full py-4 bg-g-primary text-white dark:text-[#202124] font-bold rounded-2xl shadow-elevation-2 hover:bg-g-primary/95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
+              >
+                <Check size={18} className="stroke-[3]" />
+                <span>Update Profile Node</span>
+              </button>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>
