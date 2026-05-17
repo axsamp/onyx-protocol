@@ -67,6 +67,14 @@ const THEME_PALETTES = {
   matcha: {
     light: { primary: '#386B40', primaryContainer: '#D2E7C4', bg: '#F3F7F2' },
     dark: { primary: '#81C784', primaryContainer: '#223825', bg: '#1E231F' }
+  },
+  sakura: {
+    light: { primary: '#C64E74', primaryContainer: '#FFD9E2', bg: '#FAF5F6' },
+    dark: { primary: '#FCAEC5', primaryContainer: '#4C232F', bg: '#231F20' }
+  },
+  yuzu: {
+    light: { primary: '#8A6000', primaryContainer: '#FFE086', bg: '#FAF7F2' },
+    dark: { primary: '#F5BE48', primaryContainer: '#4D3100', bg: '#211E1A' }
   }
 };
 
@@ -1296,42 +1304,66 @@ export default function App() {
                         <div className="text-sm font-medium text-g-text-variant">Select interface profile</div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 pt-1.5">
+                    <div className="grid grid-cols-5 gap-1.5 pt-1.5">
                       <button
                         onClick={() => { triggerHaptic('medium'); setTheme('cobalt'); }}
                         className={cn(
-                          "py-2.5 px-1.5 rounded-xl border flex flex-col items-center gap-2 text-[10px] font-bold uppercase transition-all duration-300 ripple",
+                          "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
                           theme === 'cobalt' 
                             ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
-                        <div className="w-4 h-4 rounded-full bg-[#0B57D0]" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#0B57D0]" />
                         Cobalt
                       </button>
                       <button
                         onClick={() => { triggerHaptic('medium'); setTheme('vermilion'); }}
                         className={cn(
-                          "py-2.5 px-1.5 rounded-xl border flex flex-col items-center gap-2 text-[10px] font-bold uppercase transition-all duration-300 ripple",
+                          "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
                           theme === 'vermilion' 
                             ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
-                        <div className="w-4 h-4 rounded-full bg-[#C04836]" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#C04836]" />
                         Vermilion
                       </button>
                       <button
                         onClick={() => { triggerHaptic('medium'); setTheme('matcha'); }}
                         className={cn(
-                          "py-2.5 px-1.5 rounded-xl border flex flex-col items-center gap-2 text-[10px] font-bold uppercase transition-all duration-300 ripple",
+                          "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
                           theme === 'matcha' 
                             ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
-                        <div className="w-4 h-4 rounded-full bg-[#386B40]" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#386B40]" />
                         Matcha
+                      </button>
+                      <button
+                        onClick={() => { triggerHaptic('medium'); setTheme('sakura'); }}
+                        className={cn(
+                          "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
+                          theme === 'sakura' 
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                            : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
+                        )}
+                      >
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#C64E74]" />
+                        Sakura
+                      </button>
+                      <button
+                        onClick={() => { triggerHaptic('medium'); setTheme('yuzu'); }}
+                        className={cn(
+                          "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
+                          theme === 'yuzu' 
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                            : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
+                        )}
+                      >
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#8A6000]" />
+                        Yuzu
                       </button>
                     </div>
                   </div>
