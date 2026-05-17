@@ -407,13 +407,11 @@ export default function App() {
           <div className="flex items-center gap-3 flex-wrap">
             <div className="text-base font-bold text-g-text tracking-tight">{fromName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
             
-            {/* Custom High-Precision Vector Rail Arrow */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-g-primary/60 animate-pulse" />
-              <svg width="24" height="8" viewBox="0 0 24 8" fill="none" className="text-g-primary">
-                <path d="M0 4H20M20 4L16 1M20 4L16 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="w-1.5 h-1.5 rounded-full bg-g-primary/60" />
+            {/* Custom High-Precision 3-Dot Kinetic Rail Progress */}
+            <div className="flex items-center gap-1.5 shrink-0 px-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0s' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.2s' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.4s' }} />
             </div>
 
             <div className="text-base font-bold text-g-text tracking-tight">{toName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
@@ -426,7 +424,7 @@ export default function App() {
         {/* Actions & Fare Panel */}
         <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-3 border-t border-g-outline/10">
           <div className="flex items-center gap-2">
-            <span className="text-[8.5px] font-bold text-g-text-variant uppercase tracking-wider">Suggested Fare JPY</span>
+            <span className="text-[8.5px] font-bold text-g-text-variant uppercase tracking-wider">Suggested Fare</span>
             <div className="relative flex items-center shrink-0 w-24">
               <span className="absolute left-2.5 text-xs font-bold text-g-text-variant">¥</span>
               <input
