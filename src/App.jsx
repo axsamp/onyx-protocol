@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RefreshCcw, Wallet, MapPin, ArrowRight, Download, Calendar, X, Activity, Terminal, ShoppingBag, Search, Plus, Shield, Settings, User, ChevronDown, Phone, Waves, Eye, EyeOff, Check,
@@ -159,6 +159,19 @@ export default function App() {
 
   const [isAddingExpense, setIsAddingExpense] = useState(false);
   const [newExpense, setNewExpense] = useState({ amount: '', category: 'Food', note: '', paymentMethod: 'cash' });
+
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    if (isAddingExpense) {
+      const timer = setTimeout(() => {
+        if (formRef.current) {
+          formRef.current.scrollTop = 0;
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAddingExpense]);
 
   // Sync budget settings to localStorage
   useEffect(() => {
@@ -1174,6 +1187,7 @@ export default function App() {
           <div className="fixed inset-0 z-[600] flex items-end justify-center">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAddingExpense(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
             <motion.form 
+              ref={formRef}
               onSubmit={handleAddExpense}
               initial={{ y: "100%" }} 
               animate={{ y: 0 }} 
