@@ -345,12 +345,12 @@ export default function App() {
 
     // Add to ledger
     const expense = {
-      id: Date.now().toString(),
-      amount: -finalFare,
+      id: Date.now(),
+      amount: finalFare,
       category: 'Transit',
       note: `${fromName} ➔ ${toName}`,
       paymentMethod: 'suica',
-      date: new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-')
+      date: currentTripDayDate
     };
     
     setExpenses(prev => [expense, ...prev]);
@@ -410,8 +410,8 @@ export default function App() {
             {/* Custom High-Precision 3-Dot Kinetic Rail Progress */}
             <div className="flex items-center gap-1.5 shrink-0 px-2">
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0s' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.2s' }} />
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.4s' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.8s' }} />
             </div>
 
             <div className="text-base font-bold text-g-text tracking-tight">{toName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
