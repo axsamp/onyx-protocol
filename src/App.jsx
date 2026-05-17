@@ -816,7 +816,9 @@ export default function App() {
               className="space-y-8"
             >
               {/* Geofence Transit Prompt Card */}
-              {pendingTransitPrompt && renderTransitPrompt()}
+              <AnimatePresence>
+                {pendingTransitPrompt && renderTransitPrompt()}
+              </AnimatePresence>
 
               {/* Recommended Section - Highly Expressive Carousel */}
               {!searchQuery && (
@@ -1065,7 +1067,9 @@ export default function App() {
               className="space-y-6"
             >
               {/* Geofence Transit Prompt Card */}
-              {pendingTransitPrompt && renderTransitPrompt()}
+              <AnimatePresence>
+                {pendingTransitPrompt && renderTransitPrompt()}
+              </AnimatePresence>
 
               {/* Daily Allowance Command Panel */}
               <section className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6">
