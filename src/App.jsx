@@ -222,7 +222,6 @@ export default function App() {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [isStealthMode, setIsStealthMode] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
-  const [phraseCategory, setPhraseCategory] = useState('all');
   const [fullscreenPhrase, setFullscreenPhrase] = useState(null);
   const [wallet, setWallet] = useState(() => {
     const saved = localStorage.getItem('onyx_wallet');
@@ -941,41 +940,20 @@ export default function App() {
               </motion.div>
 
               {/* Essential Japanese Phrases Console */}
-              <section className="space-y-4">
+              <section className="space-y-3.5">
                 <div className="flex justify-between items-center px-2">
                   <div className="label-text">Essential Japanese HUD</div>
-                  <div className="text-[9px] font-mono font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">
+                  
+                  {/* Glassmorphic Badge adopting the Highlights Image Tag design */}
+                  <span className="px-3 py-1 rounded-full bg-g-primary/15 dark:bg-g-primary/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest text-g-primary border border-g-primary/20 shadow-sm flex items-center gap-1.5 select-none">
+                    <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-pulse" />
                     Translate Mod
-                  </div>
-                </div>
-
-                {/* Segmented Category Filter Bar */}
-                <div className="flex gap-1.5 overflow-x-auto no-scrollbar bg-g-aluminium/30 dark:bg-g-aluminium/10 p-1 rounded-2xl border border-g-outline/10">
-                  {[
-                    { id: 'all', label: 'All' },
-                    { id: 'essential', label: '🛡️ Basics' },
-                    { id: 'transit', label: '🚇 Transit' },
-                    { id: 'dining', label: '🍜 Dining' },
-                    { id: 'shopping', label: '🛍️ Shopping' }
-                  ].map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => { triggerHaptic('light'); setPhraseCategory(category.id); }}
-                      className={cn(
-                        "relative shrink-0 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-300 select-none cursor-pointer",
-                        phraseCategory === category.id 
-                          ? "bg-g-primary text-white dark:text-[#202124] shadow-sm" 
-                          : "text-g-text-variant hover:text-g-text"
-                      )}
-                    >
-                      {category.label}
-                    </button>
-                  ))}
+                  </span>
                 </div>
 
                 {/* Phrases Cards Shelf (Horizontal Carousel) */}
                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-0.5">
-                  {PHRASES.filter(p => phraseCategory === 'all' || p.cat === phraseCategory).map((phrase) => (
+                  {PHRASES.map((phrase) => (
                     <div
                       key={phrase.jp}
                       className="shrink-0 w-[240px] material-card p-4.5 flex flex-col justify-between space-y-4 border border-g-outline/10 shadow-elevation-1 hover:shadow-elevation-2 transition-shadow duration-300 relative overflow-hidden group"
