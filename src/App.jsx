@@ -2015,10 +2015,10 @@ export default function App() {
                     <span>Trip Timeline</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {/* Trip Start Date */}
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Start Date</label>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Start Date</label>
                       <input
                         type="date"
                         value={budgetSettings.startDate}
@@ -2028,13 +2028,13 @@ export default function App() {
                             updateTripTimeline(newStart, totalDays);
                           }
                         }}
-                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text text-sm font-semibold focus:outline-none focus:border-g-primary transition-colors cursor-pointer"
+                        className="w-full max-w-full appearance-none py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text text-sm font-semibold outline-none focus:border-g-primary transition-colors cursor-pointer"
                       />
                     </div>
 
                     {/* Trip Duration */}
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Duration (Days)</label>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Duration (Days)</label>
                       <input
                         type="number"
                         min={1}
@@ -2048,7 +2048,7 @@ export default function App() {
                             updateTripTimeline(budgetSettings.startDate, parsed);
                           }
                         }}
-                        className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text text-sm font-semibold focus:outline-none focus:border-g-primary transition-colors"
+                        className="w-full max-w-full appearance-none py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text text-sm font-semibold outline-none focus:border-g-primary transition-colors"
                       />
                     </div>
                   </div>
