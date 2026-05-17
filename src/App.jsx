@@ -688,8 +688,7 @@ export default function App() {
       {/* Header Section */}
       <header className="px-6 py-4 flex justify-between items-center z-20 shrink-0 bg-g-bg/90 backdrop-blur-xl">
         <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          <div className="mb-0.5">
             <span className="text-xs font-mono font-medium text-g-text-variant">
               Fujisawa Base • {time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
             </span>
@@ -849,12 +848,8 @@ export default function App() {
 
               {/* Itinerary Timeline */}
               <section>
-                <div className="flex justify-between items-center mb-4 px-2">
+                <div className="mb-4 px-2">
                   <h3 className="text-lg font-bold text-g-text">Mission Timeline</h3>
-                  <div className="flex items-center gap-2">
-                    <div className={cn("w-2 h-2 rounded-full", currentLocation ? "bg-green-500 animate-pulse" : "bg-g-outline")} />
-                    <span className="text-[10px] font-bold uppercase text-g-text-variant tracking-wider">{currentLocation ? 'GPS Linked' : 'GPS Standby'}</span>
-                  </div>
                 </div>
 
                 <div className="space-y-3">
