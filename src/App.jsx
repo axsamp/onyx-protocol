@@ -933,169 +933,115 @@ export default function App() {
                   <span className="text-[10px] font-mono font-medium text-g-text-variant">NODE NET STATUS</span>
                 </div>
 
-                <div className="relative pl-8 space-y-6">
-                  {/* High-Precision Vertical Rail Track */}
-                  <div className="absolute left-[23px] top-3 bottom-3 w-[2px] bg-g-outline/20 pointer-events-none">
-                    {/* Animated flow line indicating active progress */}
-                    <div 
-                      className="w-full bg-g-primary rounded-full transition-all duration-700" 
-                      style={{ 
-                        height: activeNode === 'fujisawa' ? '15%' : activeNode === 'tokyo' ? '50%' : activeNode === 'shibuya' ? '100%' : '0%',
-                        top: 0 
-                      }} 
-                    />
-                  </div>
-
+                <div className="space-y-4">
                   {/* Fujisawa Node */}
                   <motion.div
-                    whileHover={{ x: 3 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => { triggerHaptic('light'); simulateNodeArrival('fujisawa'); }}
-                    className="relative flex items-start gap-4 cursor-pointer group select-none"
-                  >
-                    {/* Glowing Timeline Node Hub */}
-                    <div className="absolute -left-[32px] top-1.5 z-10 flex items-center justify-center">
-                      <div className={cn(
-                        "w-5 h-5 rounded-full border-4 flex items-center justify-center transition-all duration-500",
-                        activeNode === 'fujisawa' 
-                          ? "bg-g-bg border-g-primary scale-125 shadow-sm" 
-                          : "bg-g-bg border-g-outline group-hover:border-g-text-variant"
-                      )}>
-                        {activeNode === 'fujisawa' && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-g-primary animate-ping" />
-                        )}
-                      </div>
-                    </div>
-
-                    <div className={cn(
-                      "flex-1 p-5 rounded-[28px] rounded-tl-[8px] border transition-all duration-500 flex items-center gap-4 shadow-sm",
+                    className={cn(
+                      "p-5 rounded-[28px] rounded-tl-[8px] border transition-all duration-500 flex items-center gap-4 cursor-pointer shadow-sm select-none group",
                       activeNode === 'fujisawa' 
                         ? "bg-g-primary-container border-transparent text-g-primary shadow-elevation-1" 
                         : "bg-g-surface border-g-outline/20 hover:border-g-outline/40"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
+                      activeNode === 'fujisawa' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
                     )}>
-                      <div className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
-                        activeNode === 'fujisawa' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
-                      )}>
-                        <Activity size={20} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center mb-0.5">
-                          <div>
-                            <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'fujisawa' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-01</span>
-                            <h4 className={cn("font-bold text-base tracking-tight", activeNode === 'fujisawa' ? "text-g-primary" : "text-g-text")}>Fujisawa Hub</h4>
-                          </div>
-                          <span className={cn(
-                            "text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full leading-none",
-                            activeNode === 'fujisawa' ? "bg-g-primary/20 text-g-primary border border-g-primary/20" : "bg-g-aluminium/50 text-g-outline"
-                          )}>
-                            {activeNode === 'fujisawa' ? 'Active' : 'Standby'}
-                          </span>
+                      <Activity size={20} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center gap-2 mb-0.5">
+                        <div className="min-w-0">
+                          <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'fujisawa' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-01</span>
+                          <h4 className={cn("font-bold text-base tracking-tight truncate", activeNode === 'fujisawa' ? "text-g-primary" : "text-g-text")}>Fujisawa Hub</h4>
                         </div>
-                        <p className={cn("text-xs font-medium", activeNode === 'fujisawa' ? "text-g-primary/80" : "text-g-text-variant")}>Almont Inn Deployment</p>
+                        <span className={cn(
+                          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md select-none shrink-0 leading-none",
+                          activeNode === 'fujisawa' 
+                            ? "bg-g-primary/10 text-g-primary border-g-primary/20" 
+                            : "bg-g-outline/10 text-g-text-variant border-g-outline/20"
+                        )}>
+                          {activeNode === 'fujisawa' ? 'Active' : 'Standby'}
+                        </span>
                       </div>
+                      <p className={cn("text-xs font-medium truncate", activeNode === 'fujisawa' ? "text-g-primary/80" : "text-g-text-variant")}>Almont Inn Deployment</p>
                     </div>
                   </motion.div>
 
                   {/* Tokyo Node */}
                   <motion.div
-                    whileHover={{ x: 3 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => { triggerHaptic('light'); simulateNodeArrival('tokyo'); }}
-                    className="relative flex items-start gap-4 cursor-pointer group select-none"
-                  >
-                    {/* Glowing Timeline Node Hub */}
-                    <div className="absolute -left-[32px] top-1.5 z-10 flex items-center justify-center">
-                      <div className={cn(
-                        "w-5 h-5 rounded-full border-4 flex items-center justify-center transition-all duration-500",
-                        activeNode === 'tokyo' 
-                          ? "bg-g-bg border-g-primary scale-125 shadow-sm" 
-                          : "bg-g-bg border-g-outline group-hover:border-g-text-variant"
-                      )}>
-                        {activeNode === 'tokyo' && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-g-primary animate-ping" />
-                        )}
-                      </div>
-                    </div>
-
-                    <div className={cn(
-                      "flex-1 p-5 rounded-[28px] rounded-br-[8px] border transition-all duration-500 flex items-center gap-4 shadow-sm",
+                    className={cn(
+                      "p-5 rounded-[28px] rounded-br-[8px] border transition-all duration-500 flex items-center gap-4 cursor-pointer shadow-sm select-none group",
                       activeNode === 'tokyo' 
                         ? "bg-g-primary-container border-transparent text-g-primary shadow-elevation-1" 
                         : "bg-g-surface border-g-outline/20 hover:border-g-outline/40"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
+                      activeNode === 'tokyo' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
                     )}>
-                      <div className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
-                        activeNode === 'tokyo' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
-                      )}>
-                        <ShoppingBag size={20} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center mb-0.5">
-                          <div>
-                            <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'tokyo' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-02</span>
-                            <h4 className={cn("font-bold text-base tracking-tight", activeNode === 'tokyo' ? "text-g-primary" : "text-g-text")}>Tokyo Ops</h4>
-                          </div>
-                          <span className={cn(
-                            "text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full leading-none",
-                            activeNode === 'tokyo' ? "bg-g-primary/20 text-g-primary border border-g-primary/20" : "bg-g-aluminium/50 text-g-outline"
-                          )}>
-                            {activeNode === 'tokyo' ? 'Active' : 'Pending'}
-                          </span>
+                      <ShoppingBag size={20} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center gap-2 mb-0.5">
+                        <div className="min-w-0">
+                          <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'tokyo' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-02</span>
+                          <h4 className={cn("font-bold text-base tracking-tight truncate", activeNode === 'tokyo' ? "text-g-primary" : "text-g-text")}>Tokyo Ops</h4>
                         </div>
-                        <p className={cn("text-xs font-medium", activeNode === 'tokyo' ? "text-g-primary/80" : "text-g-text-variant")}>Onitsuka Tigers • Shinjuku</p>
+                        <span className={cn(
+                          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md select-none shrink-0 leading-none",
+                          activeNode === 'tokyo' 
+                            ? "bg-g-primary/10 text-g-primary border-g-primary/20" 
+                            : "bg-g-outline/10 text-g-text-variant border-g-outline/20"
+                        )}>
+                          {activeNode === 'tokyo' ? 'Active' : 'Pending'}
+                        </span>
                       </div>
+                      <p className={cn("text-xs font-medium truncate", activeNode === 'tokyo' ? "text-g-primary/80" : "text-g-text-variant")}>Onitsuka Tigers • Shinjuku</p>
                     </div>
                   </motion.div>
 
                   {/* Shibuya Node */}
                   <motion.div
-                    whileHover={{ x: 3 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => { triggerHaptic('light'); simulateNodeArrival('shibuya'); }}
-                    className="relative flex items-start gap-4 cursor-pointer group select-none"
-                  >
-                    {/* Glowing Timeline Node Hub */}
-                    <div className="absolute -left-[32px] top-1.5 z-10 flex items-center justify-center">
-                      <div className={cn(
-                        "w-5 h-5 rounded-full border-4 flex items-center justify-center transition-all duration-500",
-                        activeNode === 'shibuya' 
-                          ? "bg-g-bg border-g-primary scale-125 shadow-sm" 
-                          : "bg-g-bg border-g-outline group-hover:border-g-text-variant"
-                      )}>
-                        {activeNode === 'shibuya' && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-g-primary animate-ping" />
-                        )}
-                      </div>
-                    </div>
-
-                    <div className={cn(
-                      "flex-1 p-5 rounded-[28px] rounded-tl-[8px] border transition-all duration-500 flex items-center gap-4 shadow-sm",
+                    className={cn(
+                      "p-5 rounded-[28px] rounded-tl-[8px] border transition-all duration-500 flex items-center gap-4 cursor-pointer shadow-sm select-none group",
                       activeNode === 'shibuya' 
                         ? "bg-g-primary-container border-transparent text-g-primary shadow-elevation-1" 
                         : "bg-g-surface border-g-outline/20 hover:border-g-outline/40"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
+                      activeNode === 'shibuya' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
                     )}>
-                      <div className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
-                        activeNode === 'shibuya' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
-                      )}>
-                        <MapPin size={20} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center mb-0.5">
-                          <div>
-                            <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'shibuya' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-03</span>
-                            <h4 className={cn("font-bold text-base tracking-tight", activeNode === 'shibuya' ? "text-g-primary" : "text-g-text")}>Shibuya Point</h4>
-                          </div>
-                          <span className={cn(
-                            "text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full leading-none",
-                            activeNode === 'shibuya' ? "bg-g-primary/20 text-g-primary border border-g-primary/20" : "bg-g-aluminium/50 text-g-outline"
-                          )}>
-                            {activeNode === 'shibuya' ? 'Active' : 'Scheduled'}
-                          </span>
+                      <MapPin size={20} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center gap-2 mb-0.5">
+                        <div className="min-w-0">
+                          <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'shibuya' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-03</span>
+                          <h4 className={cn("font-bold text-base tracking-tight truncate", activeNode === 'shibuya' ? "text-g-primary" : "text-g-text")}>Shibuya Point</h4>
                         </div>
-                        <p className={cn("text-xs font-medium", activeNode === 'shibuya' ? "text-g-primary/80" : "text-g-text-variant")}>Crossing Intelligence</p>
+                        <span className={cn(
+                          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md select-none shrink-0 leading-none",
+                          activeNode === 'shibuya' 
+                            ? "bg-g-primary/10 text-g-primary border-g-primary/20" 
+                            : "bg-g-outline/10 text-g-text-variant border-g-outline/20"
+                        )}>
+                          {activeNode === 'shibuya' ? 'Active' : 'Scheduled'}
+                        </span>
                       </div>
+                      <p className={cn("text-xs font-medium truncate", activeNode === 'shibuya' ? "text-g-primary/80" : "text-g-text-variant")}>Crossing Intelligence</p>
                     </div>
                   </motion.div>
                 </div>
