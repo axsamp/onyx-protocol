@@ -449,39 +449,36 @@ export default function App() {
         initial={{ opacity: 0, y: -10, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.95 }}
-        className="relative w-full rounded-[24px] overflow-hidden p-5 flex flex-col justify-between shadow-elevation-1 border border-g-outline/15 bg-g-surface dark:bg-g-aluminium/5 backdrop-blur-md space-y-4"
+        className="relative w-full rounded-[28px] rounded-tl-[8px] overflow-hidden p-5 flex flex-col justify-between shadow-elevation-2 border border-g-outline/20 bg-g-surface space-y-3.5"
       >
-        {/* Subtle Brushed Metal Texture overlay */}
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] opacity-[0.02] dark:opacity-[0.05] pointer-events-none" />
-
         {/* Top Header Row */}
         <div className="relative z-10 flex justify-between items-center w-full">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-g-primary/10 text-g-primary flex items-center justify-center shrink-0">
-              <Bus size={14} />
+            <div className="w-7 h-7 rounded-full bg-g-primary/10 text-g-primary flex items-center justify-center shrink-0 border border-g-primary/10">
+              <Bus size={13} />
             </div>
             <div>
-              <h4 className="text-[10px] font-bold text-g-text-variant uppercase tracking-widest leading-none">Active Commute Resolved</h4>
+              <h4 className="text-[9px] font-bold text-g-text-variant uppercase tracking-widest leading-none">Commute Resolved</h4>
             </div>
           </div>
 
           {/* Dynamic Radar Pulse Badge */}
-          <div className="flex items-center gap-1.5 bg-g-primary/10 px-2 py-0.5 rounded-full">
-            <span className="relative flex h-1.5 w-1.5">
+          <div className="flex items-center gap-1 bg-g-primary/15 dark:bg-g-primary/10 px-2 py-0.5 rounded-full border border-g-primary/20 backdrop-blur-md">
+            <span className="relative flex h-1 w-1 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-g-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-g-primary"></span>
+              <span className="relative inline-flex rounded-full h-1 w-1 bg-g-primary"></span>
             </span>
-            <span className="text-[7.5px] font-bold font-mono tracking-widest text-g-primary uppercase leading-none">GPS Telemetry</span>
+            <span className="text-[7px] font-mono font-bold tracking-widest text-g-primary uppercase leading-none">GPS TELEMETRY</span>
           </div>
         </div>
 
         {/* Route Details Panel */}
         <div className="relative z-10 pt-0.5">
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <div className="text-base font-bold text-g-text tracking-tight">{fromName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
             
             {/* Custom High-Precision 3-Dot Kinetic Rail Progress */}
-            <div className="flex items-center gap-1.5 shrink-0 px-2">
+            <div className="flex items-center gap-1 shrink-0 px-1">
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0s' }} />
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.4s' }} />
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.8s' }} />
@@ -489,22 +486,22 @@ export default function App() {
 
             <div className="text-base font-bold text-g-text tracking-tight">{toName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
           </div>
-          <p className="text-[9.5px] font-medium text-g-text-variant mt-1 leading-relaxed">
-            Passive transit change registered. Confirm details below to log fare:
+          <p className="text-[11px] font-medium text-g-text-variant mt-1.5 leading-relaxed">
+            Passive transit geofence triggered. Confirm fare to commit Suica logs:
           </p>
         </div>
 
         {/* Actions & Fare Panel */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-3 border-t border-g-outline/10">
+        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3">
           <div className="flex items-center gap-2">
-            <span className="text-[8.5px] font-bold text-g-text-variant uppercase tracking-wider">Suggested Fare</span>
+            <span className="text-[8.5px] font-bold text-g-text-variant uppercase tracking-widest leading-none">Suggested Fare</span>
             <div className="relative flex items-center shrink-0 w-24">
-              <span className="absolute left-2.5 text-xs font-bold text-g-text-variant">¥</span>
+              <span className="absolute left-3 text-[10px] font-mono font-bold text-g-text-variant">¥</span>
               <input
                 type="number"
                 value={customFareInput}
                 onChange={(e) => setCustomFareInput(e.target.value)}
-                className="w-full py-1 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-colors text-center shadow-inner"
+                className="w-full py-1 pl-6 pr-2 bg-g-aluminium/40 dark:bg-g-aluminium/10 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-colors text-center shadow-inner"
               />
             </div>
           </div>
@@ -512,15 +509,15 @@ export default function App() {
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => { triggerHaptic('light'); setPendingTransitPrompt(null); }}
-              className="px-4 py-2 rounded-xl bg-g-aluminium/30 dark:bg-g-aluminium/5 hover:bg-g-aluminium/50 text-[8.5px] font-bold uppercase tracking-wider text-g-text transition-all ripple shadow-sm"
+              className="px-3.5 py-2 rounded-[12px] rounded-br-[4px] bg-g-aluminium/40 dark:bg-g-aluminium/10 hover:bg-g-aluminium/60 text-[8.5px] font-bold uppercase tracking-widest text-g-text transition-all ripple shadow-sm cursor-pointer select-none"
             >
               Dismiss
             </button>
             <button
               onClick={handleLogTransit}
-              className="px-4 py-2 rounded-xl bg-g-primary hover:bg-g-primary-hover text-[8.5px] font-bold uppercase tracking-wider text-white shadow-elevation-1 transition-all ripple flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-[12px] rounded-tl-[4px] bg-g-primary hover:bg-g-primary/95 text-[8.5px] font-bold uppercase tracking-widest text-white dark:text-[#202124] shadow-elevation-1 hover:shadow-elevation-2 active:scale-95 transition-all ripple flex items-center gap-1.5 cursor-pointer select-none"
             >
-              <Check size={11} />
+              <Check size={11} className="stroke-[3]" />
               Log Suica
             </button>
           </div>
@@ -750,21 +747,37 @@ export default function App() {
       {/* Dynamic Island Spacer */}
       <div className="h-14 w-full shrink-0"></div>
 
-      {/* Header Section */}
-      <header className="px-6 py-4 flex justify-between items-center z-20 shrink-0 bg-g-bg/90 backdrop-blur-xl">
-        <div>
-          <div className="mb-0.5">
-            <span className="text-xs font-mono font-medium text-g-text-variant">
-              Fujisawa Base • {time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
+      {/* Header Section (M3 Expressive) */}
+      <header className="px-6 pt-14 pb-4 flex justify-between items-end z-20 shrink-0 bg-g-bg/80 backdrop-blur-2xl">
+        <div className="flex-1">
+          {/* Animated Title with Cinematic Focus Pull */}
+          <motion.h1 
+            key={activeTab}
+            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }} 
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} 
+            transition={{ duration: 0.4 }}
+            className="text-[44px] leading-[1.05] font-black font-display tracking-tight text-g-text mb-2"
+          >
+            {activeTab === 'home' ? 'Fujisawa.' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + '.'}
+          </motion.h1>
+          
+          {/* Subtitle & JST Time */}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold px-3 py-1 bg-g-primary-container text-g-primary rounded-full tracking-wide">
+              {time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
+            </span>
+            <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-g-text-variant">
+              Base Active
             </span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-g-text flex items-center gap-2">
-            {activeTab === 'home' ? 'Fujisawa, Japan' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-            <ChevronDown size={20} className="text-g-primary mt-1" />
-          </h1>
         </div>
-        <button className="w-10 h-10 rounded-full overflow-hidden border border-g-outline/30 shadow-sm active:scale-95 transition-transform ripple shrink-0">
-          <div className="w-full h-full bg-g-primary text-white flex items-center justify-center font-bold text-lg">O</div>
+
+        {/* Asymmetrical Profile Button */}
+        <button 
+          onClick={() => triggerHaptic('medium')}
+          className="w-14 h-14 rounded-[20px] rounded-bl-[8px] bg-g-aluminium/50 dark:bg-g-aluminium/10 text-g-text flex items-center justify-center font-bold text-xl hover:bg-g-primary-container hover:text-g-primary transition-all duration-300 active:scale-90 ripple shrink-0 mb-1"
+        >
+          <User size={24} />
         </button>
       </header>
 
@@ -823,7 +836,7 @@ export default function App() {
                             <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-widest mb-2 inline-block border border-white/20">
                               {HIGHLIGHTS[highlightIndex].tag}
                             </span>
-                            <h2 className="text-2xl font-bold leading-tight tracking-tight mb-1">{HIGHLIGHTS[highlightIndex].title}</h2>
+                            <h2 className="font-display text-2xl font-bold leading-tight tracking-tight mb-1">{HIGHLIGHTS[highlightIndex].title}</h2>
                             <p className="text-xs font-medium opacity-90">{HIGHLIGHTS[highlightIndex].subtitle}</p>
                           </div>
                           <a
@@ -866,7 +879,7 @@ export default function App() {
                   triggerHaptic('medium');
                   setIsWalletModalOpen(true);
                 }}
-                className="relative w-full h-[210px] rounded-[40px] rounded-tl-[12px] overflow-hidden p-7 flex flex-col justify-between shadow-elevation-2 bg-g-primary text-white dark:text-[#202124] cursor-pointer group select-none transition-colors duration-700"
+                className="relative w-full h-[210px] rounded-[40px] rounded-tl-[12px] overflow-hidden p-7 flex flex-col justify-between shadow-elevation-2 bg-g-primary dark:bg-g-primary-container text-white cursor-pointer group select-none transition-colors duration-700"
               >
                 {/* Brushed Sheen & Blur overlays */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none -skew-x-12 transform translate-x-1/2 opacity-45 transition-transform duration-700 group-hover:translate-x-1/3" />
@@ -875,29 +888,29 @@ export default function App() {
                 
                 <div className="relative z-10 flex justify-between items-start">
                   <div>
-                    <div className="font-bold text-2xl tracking-tight flex items-center gap-2">
+                    <div className="font-display font-bold text-2xl tracking-tight flex items-center gap-2">
                       Apple Wallet
                     </div>
-                    <div className="text-[10px] font-bold text-white/80 dark:text-[#202124]/80 mt-1 uppercase tracking-widest leading-none">Mission Funds & Transit</div>
+                    <div className="text-[10px] font-bold text-white/80 mt-1 uppercase tracking-widest leading-none">Mission Funds & Transit</div>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-white/20 dark:bg-black/10 backdrop-blur-md flex items-center justify-center border border-white/20 dark:border-black/10 shadow-inner">
-                    <Wallet size={24} className="text-white dark:text-[#202124]" />
+                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                    <Wallet size={24} className="text-white" />
                   </div>
                 </div>
 
                 <div className="relative z-10 flex justify-between items-end">
                   <div>
-                    <div className="text-[9px] font-bold text-white/70 dark:text-[#202124]/70 mb-1.5 uppercase tracking-widest leading-none">Liquid Cash</div>
-                    <div className="text-3xl font-bold tracking-tight font-sans flex items-baseline gap-1">
-                      <span className="text-xl text-white/60 dark:text-[#202124]/60">¥</span>{wallet.liquid.toLocaleString()}
+                    <div className="text-[9px] font-bold text-white/70 mb-1.5 uppercase tracking-widest leading-none">Liquid Cash</div>
+                    <div className="text-3xl font-display font-bold tracking-tight flex items-baseline gap-1">
+                      <span className="text-xl text-white/60">¥</span>{wallet.liquid.toLocaleString()}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[9px] font-bold text-white/70 dark:text-[#202124]/70 mb-1.5 uppercase tracking-widest flex items-center justify-end gap-1 leading-none">
-                      Suica <Waves size={12} className="text-white/70 dark:text-[#202124]/70" />
+                    <div className="text-[9px] font-bold text-white/70 mb-1.5 uppercase tracking-widest flex items-center justify-end gap-1 leading-none">
+                      Suica <Waves size={12} className="text-white/70" />
                     </div>
-                    <div className="text-xl font-bold tracking-tight font-sans flex items-baseline gap-1 justify-end">
-                      <span className="text-sm text-white/60 dark:text-[#202124]/60">¥</span>{wallet.suica.toLocaleString()}
+                    <div className="text-xl font-display font-bold tracking-tight flex items-baseline gap-1 justify-end">
+                      <span className="text-sm text-white/60">¥</span>{wallet.suica.toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -923,129 +936,7 @@ export default function App() {
                 </div>
               </section>
 
-              {/* Itinerary Timeline - Highly Expressive Tactical Command */}
-              <section>
-                <div className="mb-6 px-2 flex justify-between items-center">
-                  <h3 className="text-lg font-bold text-g-text tracking-tight flex items-center gap-2">
-                    Mission Timeline
-                    <span className="text-[10px] font-mono bg-g-primary/10 text-g-primary px-2.5 py-0.5 rounded-full border border-g-primary/20">LIVE GPS</span>
-                  </h3>
-                  <span className="text-[10px] font-mono font-medium text-g-text-variant">NODE NET STATUS</span>
-                </div>
 
-                <div className="space-y-4">
-                  {/* Fujisawa Node */}
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => { triggerHaptic('light'); simulateNodeArrival('fujisawa'); }}
-                    className={cn(
-                      "p-5 rounded-[28px] rounded-tl-[8px] border transition-all duration-500 flex items-center gap-4 cursor-pointer shadow-sm select-none group",
-                      activeNode === 'fujisawa' 
-                        ? "bg-g-primary-container border-transparent text-g-primary shadow-elevation-1" 
-                        : "bg-g-surface border-g-outline/20 hover:border-g-outline/40"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
-                      activeNode === 'fujisawa' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
-                    )}>
-                      <Activity size={20} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center gap-2 mb-0.5">
-                        <div className="min-w-0">
-                          <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'fujisawa' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-01</span>
-                          <h4 className={cn("font-bold text-base tracking-tight truncate", activeNode === 'fujisawa' ? "text-g-primary" : "text-g-text")}>Fujisawa Hub</h4>
-                        </div>
-                        <span className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md select-none shrink-0 leading-none",
-                          activeNode === 'fujisawa' 
-                            ? "bg-g-primary/10 text-g-primary border-g-primary/20" 
-                            : "bg-g-outline/10 text-g-text-variant border-g-outline/20"
-                        )}>
-                          {activeNode === 'fujisawa' ? 'Active' : 'Standby'}
-                        </span>
-                      </div>
-                      <p className={cn("text-xs font-medium truncate", activeNode === 'fujisawa' ? "text-g-primary/80" : "text-g-text-variant")}>Almont Inn Deployment</p>
-                    </div>
-                  </motion.div>
-
-                  {/* Tokyo Node */}
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => { triggerHaptic('light'); simulateNodeArrival('tokyo'); }}
-                    className={cn(
-                      "p-5 rounded-[28px] rounded-br-[8px] border transition-all duration-500 flex items-center gap-4 cursor-pointer shadow-sm select-none group",
-                      activeNode === 'tokyo' 
-                        ? "bg-g-primary-container border-transparent text-g-primary shadow-elevation-1" 
-                        : "bg-g-surface border-g-outline/20 hover:border-g-outline/40"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
-                      activeNode === 'tokyo' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
-                    )}>
-                      <ShoppingBag size={20} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center gap-2 mb-0.5">
-                        <div className="min-w-0">
-                          <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'tokyo' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-02</span>
-                          <h4 className={cn("font-bold text-base tracking-tight truncate", activeNode === 'tokyo' ? "text-g-primary" : "text-g-text")}>Tokyo Ops</h4>
-                        </div>
-                        <span className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md select-none shrink-0 leading-none",
-                          activeNode === 'tokyo' 
-                            ? "bg-g-primary/10 text-g-primary border-g-primary/20" 
-                            : "bg-g-outline/10 text-g-text-variant border-g-outline/20"
-                        )}>
-                          {activeNode === 'tokyo' ? 'Active' : 'Pending'}
-                        </span>
-                      </div>
-                      <p className={cn("text-xs font-medium truncate", activeNode === 'tokyo' ? "text-g-primary/80" : "text-g-text-variant")}>Onitsuka Tigers • Shinjuku</p>
-                    </div>
-                  </motion.div>
-
-                  {/* Shibuya Node */}
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => { triggerHaptic('light'); simulateNodeArrival('shibuya'); }}
-                    className={cn(
-                      "p-5 rounded-[28px] rounded-tl-[8px] border transition-all duration-500 flex items-center gap-4 cursor-pointer shadow-sm select-none group",
-                      activeNode === 'shibuya' 
-                        ? "bg-g-primary-container border-transparent text-g-primary shadow-elevation-1" 
-                        : "bg-g-surface border-g-outline/20 hover:border-g-outline/40"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-inner",
-                      activeNode === 'shibuya' ? "bg-g-primary text-white" : "bg-g-aluminium text-g-text-variant"
-                    )}>
-                      <MapPin size={20} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center gap-2 mb-0.5">
-                        <div className="min-w-0">
-                          <span className={cn("text-[9px] font-mono font-bold tracking-widest uppercase block leading-none mb-1", activeNode === 'shibuya' ? "text-g-primary/70" : "text-g-text-variant/60")}>Node-03</span>
-                          <h4 className={cn("font-bold text-base tracking-tight truncate", activeNode === 'shibuya' ? "text-g-primary" : "text-g-text")}>Shibuya Point</h4>
-                        </div>
-                        <span className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md select-none shrink-0 leading-none",
-                          activeNode === 'shibuya' 
-                            ? "bg-g-primary/10 text-g-primary border-g-primary/20" 
-                            : "bg-g-outline/10 text-g-text-variant border-g-outline/20"
-                        )}>
-                          {activeNode === 'shibuya' ? 'Active' : 'Scheduled'}
-                        </span>
-                      </div>
-                      <p className={cn("text-xs font-medium truncate", activeNode === 'shibuya' ? "text-g-primary/80" : "text-g-text-variant")}>Crossing Intelligence</p>
-                    </div>
-                  </motion.div>
-                </div>
-              </section>
             </motion.div>
           )}
 
@@ -1487,7 +1378,7 @@ export default function App() {
       </main>
 
       {/* Material 3 Bottom Nav */}
-      <div className="fixed bottom-0 left-0 w-full z-40 bg-g-surface border-t border-g-outline/20 pt-2 pb-safe px-2 pb-6">
+      <div className="fixed bottom-0 left-0 w-full z-40 frosted-nav border-t border-g-outline/10 pt-2 pb-safe px-2 pb-6">
         <nav className="w-full flex justify-around items-center max-w-sm mx-auto">
 
           <button
