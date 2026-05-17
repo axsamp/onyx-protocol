@@ -101,10 +101,10 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 };
 
@@ -329,7 +329,7 @@ export default function App() {
       }, 200);
 
       // Multiple staggered triggers to ensure scrollTop remains 0 during the entrance transitions
-      const scrollTimers = [50, 150, 300, 500, 700].map(delay => 
+      const scrollTimers = [50, 150, 300, 500, 700].map(delay =>
         setTimeout(() => {
           if (formRef.current) {
             formRef.current.scrollTop = 0;
@@ -377,6 +377,14 @@ export default function App() {
     return Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1);
   }, [budgetSettings.startDate, budgetSettings.endDate]);
 
+  const [durationInput, setDurationInput] = useState('');
+
+  useEffect(() => {
+    if (isConfigModalOpen) {
+      setDurationInput(totalDays.toString());
+    }
+  }, [isConfigModalOpen, totalDays]);
+
   const targetDailyBudget = useMemo(() => budgetSettings.totalBudget / totalDays, [budgetSettings.totalBudget, totalDays]);
   const currentTripDayDate = useMemo(() => formatDateSafely(budgetSettings.startDate, currentDayOffset), [budgetSettings.startDate, currentDayOffset]);
   // Pre-compile daily spent totals into a linear-time hash-map
@@ -406,7 +414,7 @@ export default function App() {
     if (e) e.preventDefault();
     const val = Number(newExpense.amount);
     if (!newExpense.amount || isNaN(val) || val === 0) return;
-    
+
     triggerHaptic('medium');
     const expense = {
       id: Date.now(),
@@ -416,7 +424,7 @@ export default function App() {
       note: newExpense.note.trim(),
       paymentMethod: newExpense.paymentMethod
     };
-    
+
     setExpenses(prev => [expense, ...prev]);
 
     // Live Wallet Sync
@@ -464,7 +472,7 @@ export default function App() {
 
   const handleLogTransit = () => {
     if (!pendingTransitPrompt) return;
-    
+
     const finalFare = Number(customFareInput) || pendingTransitPrompt.fare;
     const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
     const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
@@ -478,16 +486,16 @@ export default function App() {
       paymentMethod: 'suica',
       date: currentTripDayDate
     };
-    
+
     setExpenses(prev => [expense, ...prev]);
-    
+
     // Deduct from Suica
     setWallet(prev => {
       const next = { ...prev };
       next.suica = Math.max(0, next.suica - finalFare);
       return next;
     });
-    
+
     // 🎭 TRIGGERS THE ULTRA-SATISFYING SUCCESS MORPH!
     setIsTransitLogged(true);
     triggerHaptic('heavy');
@@ -515,7 +523,7 @@ export default function App() {
           transition={{ type: "spring", damping: 18, stiffness: 220 }}
           className="relative w-full rounded-full py-4 px-6 bg-g-primary-container border border-g-primary/20 shadow-elevation-1 flex items-center justify-center text-g-primary [will-change:transform,opacity,filter] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu"
         >
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 350, damping: 18, delay: 0.05 }}
@@ -564,7 +572,7 @@ export default function App() {
         <div className="relative z-10 pt-0.5">
           <div className="flex items-center gap-2.5 flex-wrap">
             <div className="font-display text-xl font-extrabold text-g-text tracking-tight leading-none">{fromName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
-            
+
             {/* Custom High-Precision 3-Dot Kinetic Rail Progress - KEPT PERFECTLY */}
             <div className="flex items-center gap-1.5 shrink-0 px-1">
               <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0s' }} />
@@ -625,7 +633,7 @@ export default function App() {
     if (node) {
       setCurrentLocation({ lat: node.lat, lng: node.lng });
       setActiveNode(nodeId);
-      
+
       if (lastKnownNode && lastKnownNode !== nodeId) {
         const fare = getRouteFare(lastKnownNode, nodeId);
         if (fare) {
@@ -670,7 +678,7 @@ export default function App() {
         // Find closest node (Nearest-Neighbor)
         let closestDist = Infinity;
         let closestId = 'fujisawa';
-        
+
         Object.entries(MISSION_NODES).forEach(([id, node]) => {
           const dist = calculateDistance(latitude, longitude, node.lat, node.lng);
           if (dist < closestDist) {
@@ -678,11 +686,11 @@ export default function App() {
             closestId = id;
           }
         });
-        
+
         // Broad regional threshold: 15km
         if (closestDist < 15) {
           setActiveNode(closestId);
-          
+
           // Check for transition
           const lkn = lastKnownNodeRef.current;
           if (lkn && lkn !== closestId) {
@@ -839,16 +847,16 @@ export default function App() {
       <header className="px-6 pt-3 pb-4 flex justify-between items-end z-20 shrink-0 bg-g-bg/80 backdrop-blur-2xl">
         <div className="flex-1">
           {/* Animated Title with Cinematic Focus Pull */}
-          <motion.h1 
+          <motion.h1
             key={activeTab}
-            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }} 
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} 
+            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.4 }}
             className="text-[44px] leading-[1.05] font-black font-display tracking-tight text-g-text mb-2"
           >
             {activeTab === 'home' ? 'Fujisawa.' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + '.'}
           </motion.h1>
-          
+
           {/* Subtitle & JST Time */}
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold px-3 py-1 bg-g-primary-container text-g-primary rounded-full tracking-wide">
@@ -861,7 +869,7 @@ export default function App() {
         </div>
 
         {/* Asymmetrical Profile Button */}
-        <button 
+        <button
           onClick={() => { triggerHaptic('medium'); setIsConfigModalOpen(true); }}
           className="w-14 h-14 rounded-[20px] rounded-bl-[8px] bg-g-aluminium/50 dark:bg-g-aluminium/10 text-g-primary flex items-center justify-center font-display font-black text-sm tracking-widest hover:bg-g-primary-container hover:text-g-primary transition-all duration-300 active:scale-90 ripple shrink-0 mb-1 border border-g-outline/10 shadow-sm"
         >
@@ -976,7 +984,7 @@ export default function App() {
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none -skew-x-12 transform translate-x-1/2 opacity-45 transition-transform duration-700 group-hover:translate-x-1/3" />
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 dark:bg-black/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] opacity-[0.03] dark:opacity-[0.06] pointer-events-none" />
-                
+
                 <div className="relative z-10 flex justify-between items-start">
                   <div>
                     <div className="font-display font-bold text-2xl tracking-tight flex items-center gap-2">
@@ -1011,7 +1019,7 @@ export default function App() {
               <motion.section layout="position" className="space-y-3.5 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <div className="flex justify-between items-center px-2">
                   <div className="label-text">Essential Japanese HUD</div>
-                  
+
                   {/* Glassmorphic Badge adopting the Highlights Image Tag design */}
                   <span className="px-3 py-1 rounded-full bg-g-primary/15 dark:bg-g-primary/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest text-g-primary border border-g-primary/20 shadow-sm flex items-center gap-1.5 select-none">
                     <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-pulse" />
@@ -1028,7 +1036,7 @@ export default function App() {
                     >
                       {/* Interactive Corner Accent */}
                       <div className="absolute top-0 right-0 w-8 h-8 bg-g-primary/5 rounded-bl-[16px] pointer-events-none group-hover:bg-g-primary/10 transition-colors" />
-                      
+
                       <div className="space-y-2">
                         {/* Monospace Phonetic Pronunciation Badge */}
                         <div className="flex items-center gap-1.5">
@@ -1141,8 +1149,8 @@ export default function App() {
               <motion.section layout="position" className="material-card overflow-hidden shadow-elevation-2 relative p-6 space-y-6 [will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-6">
-                    <button 
-                      onClick={() => { triggerHaptic(); setCurrentDayOffset(Math.max(0, currentDayOffset - 1)); }} 
+                    <button
+                      onClick={() => { triggerHaptic(); setCurrentDayOffset(Math.max(0, currentDayOffset - 1)); }}
                       className="text-g-text-variant hover:text-g-text w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple"
                     >
                       <ChevronLeft size={20} />
@@ -1151,8 +1159,8 @@ export default function App() {
                       <p className="text-[10px] font-bold text-g-primary uppercase tracking-[0.2em] mb-0.5">Day {currentDayOffset + 1}</p>
                       <p className="text-sm font-bold uppercase tracking-tight text-g-text">{new Date(currentTripDayDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                     </div>
-                    <button 
-                      onClick={() => { triggerHaptic(); setCurrentDayOffset(currentDayOffset + 1); }} 
+                    <button
+                      onClick={() => { triggerHaptic(); setCurrentDayOffset(currentDayOffset + 1); }}
                       className="text-g-text-variant hover:text-g-text w-10 h-10 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple"
                     >
                       <ChevronRight size={20} />
@@ -1176,10 +1184,10 @@ export default function App() {
 
                 <div className="space-y-2">
                   <div className="h-2 w-full bg-g-aluminium dark:bg-g-aluminium/10 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }} 
-                      animate={{ width: `${Math.min(100, (todaySpent / (todayAllowance || 1)) * 100)}%` }} 
-                      className={cn("h-full rounded-full transition-all duration-300", todaySpent > todayAllowance ? 'bg-red-500' : 'bg-g-primary')} 
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, (todaySpent / (todayAllowance || 1)) * 100)}%` }}
+                      className={cn("h-full rounded-full transition-all duration-300", todaySpent > todayAllowance ? 'bg-red-500' : 'bg-g-primary')}
                     />
                   </div>
                   <div className="flex justify-between items-center text-[10px] font-medium text-g-text-variant px-1">
@@ -1260,8 +1268,8 @@ export default function App() {
                           </div>
                           <div className="flex items-center gap-3 ml-4 shrink-0">
                             <span className="font-bold text-base tabular-nums text-g-text">¥{exp.amount.toLocaleString()}</span>
-                            <button 
-                              onClick={() => handleDeleteExpense(exp.id)} 
+                            <button
+                              onClick={() => handleDeleteExpense(exp.id)}
                               className="w-8 h-8 rounded-full flex items-center justify-center text-g-text-variant hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                             >
                               <Trash2 size={16} />
@@ -1331,8 +1339,8 @@ export default function App() {
                         onClick={() => { triggerHaptic('medium'); setTheme('cobalt'); }}
                         className={cn(
                           "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
-                          theme === 'cobalt' 
-                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                          theme === 'cobalt'
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm"
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
@@ -1343,8 +1351,8 @@ export default function App() {
                         onClick={() => { triggerHaptic('medium'); setTheme('vermilion'); }}
                         className={cn(
                           "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
-                          theme === 'vermilion' 
-                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                          theme === 'vermilion'
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm"
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
@@ -1355,8 +1363,8 @@ export default function App() {
                         onClick={() => { triggerHaptic('medium'); setTheme('matcha'); }}
                         className={cn(
                           "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
-                          theme === 'matcha' 
-                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                          theme === 'matcha'
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm"
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
@@ -1367,8 +1375,8 @@ export default function App() {
                         onClick={() => { triggerHaptic('medium'); setTheme('sakura'); }}
                         className={cn(
                           "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
-                          theme === 'sakura' 
-                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                          theme === 'sakura'
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm"
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
@@ -1379,8 +1387,8 @@ export default function App() {
                         onClick={() => { triggerHaptic('medium'); setTheme('yuzu'); }}
                         className={cn(
                           "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
-                          theme === 'yuzu' 
-                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm" 
+                          theme === 'yuzu'
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm"
                             : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
                         )}
                       >
@@ -1440,8 +1448,8 @@ export default function App() {
                           onClick={() => simulateNodeArrival(id)}
                           className={cn(
                             "py-2 px-3 rounded-xl border text-[10px] font-bold uppercase tracking-wider transition-all ripple",
-                            isActive 
-                              ? "bg-g-primary text-white border-g-primary shadow-sm" 
+                            isActive
+                              ? "bg-g-primary text-white border-g-primary shadow-sm"
                               : "bg-g-aluminium/30 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text hover:bg-g-aluminium/50"
                           )}
                         >
@@ -1461,11 +1469,11 @@ export default function App() {
                     <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Total Trip Budget</label>
                     <div className="relative flex items-center">
                       <span className="absolute left-4 text-base font-bold text-g-text-variant">¥</span>
-                      <input 
-                        type="number" 
-                        value={budgetSettings.totalBudget} 
-                        onChange={(e) => setBudgetSettings({...budgetSettings, totalBudget: Number(e.target.value)})} 
-                        className="w-full py-3 pl-8 pr-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-base font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                      <input
+                        type="number"
+                        value={budgetSettings.totalBudget}
+                        onChange={(e) => setBudgetSettings({ ...budgetSettings, totalBudget: Number(e.target.value) })}
+                        className="w-full py-3 pl-8 pr-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-base font-bold text-g-text outline-none focus:border-g-primary transition-colors"
                       />
                     </div>
                   </div>
@@ -1473,27 +1481,27 @@ export default function App() {
                   <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">Start Date</label>
-                      <input 
-                        type="date" 
-                        value={budgetSettings.startDate} 
-                        onChange={(e) => setBudgetSettings({...budgetSettings, startDate: e.target.value})} 
-                        className="w-full max-w-full appearance-none py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                      <input
+                        type="date"
+                        value={budgetSettings.startDate}
+                        onChange={(e) => setBudgetSettings({ ...budgetSettings, startDate: e.target.value })}
+                        className="w-full max-w-full appearance-none py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors"
                       />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-wider ml-1">End Date</label>
-                      <input 
-                        type="date" 
-                        value={budgetSettings.endDate} 
-                        onChange={(e) => setBudgetSettings({...budgetSettings, endDate: e.target.value})} 
-                        className="w-full max-w-full appearance-none py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors" 
+                      <input
+                        type="date"
+                        value={budgetSettings.endDate}
+                        onChange={(e) => setBudgetSettings({ ...budgetSettings, endDate: e.target.value })}
+                        className="w-full max-w-full appearance-none py-3 px-4 bg-g-aluminium/30 dark:bg-g-aluminium/5 border border-g-outline/10 rounded-xl text-xs font-bold text-g-text outline-none focus:border-g-primary transition-colors"
                       />
                     </div>
                   </div>
 
                   <div className="pt-2">
-                    <button 
-                      onClick={() => { if(confirm('Erase all ledger history? Wallet balances will NOT be reimbursed.')) setExpenses([]); }} 
+                    <button
+                      onClick={() => { if (confirm('Erase all ledger history? Wallet balances will NOT be reimbursed.')) setExpenses([]); }}
                       className="w-full py-3 text-[10px] font-bold text-red-500 uppercase tracking-widest border border-red-500/20 hover:bg-red-500/5 rounded-xl transition-all"
                     >
                       Clear Budget Ledger
@@ -1517,8 +1525,8 @@ export default function App() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <a 
-                      href="tel:110" 
+                    <a
+                      href="tel:110"
                       onClick={() => triggerHaptic('medium')}
                       className="flex items-center justify-between p-4 bg-g-bg hover:bg-g-aluminium/20 rounded-2xl border border-g-outline/10 transition-colors"
                     >
@@ -1528,9 +1536,9 @@ export default function App() {
                       </div>
                       <span className="text-sm font-mono font-bold text-red-500">110</span>
                     </a>
-                    
-                    <a 
-                      href="tel:119" 
+
+                    <a
+                      href="tel:119"
                       onClick={() => triggerHaptic('medium')}
                       className="flex items-center justify-between p-4 bg-g-bg hover:bg-g-aluminium/20 rounded-2xl border border-g-outline/10 transition-colors"
                     >
@@ -1835,17 +1843,17 @@ export default function App() {
         {isAddingExpense && (
           <div className="fixed inset-0 z-[600] flex items-end justify-center">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAddingExpense(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
-            <motion.form 
+            <motion.form
               ref={formRef}
               onSubmit={handleAddExpense}
-              initial={{ y: "100%" }} 
-              animate={{ y: 0 }} 
-              exit={{ y: "100%" }} 
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
               className="relative w-full max-w-md bg-g-surface rounded-t-[40px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh]"
             >
               <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-6" />
-              
+
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-g-text">Log Transaction</h3>
@@ -1862,14 +1870,14 @@ export default function App() {
                   <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Amount</label>
                   <div className="relative flex items-center">
                     <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
-                    <input 
+                    <input
                       ref={inputRef}
-                      inputMode="decimal" 
-                      type="number" 
-                      placeholder="0" 
-                      value={newExpense.amount} 
-                      onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})} 
-                      className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-3 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors" 
+                      inputMode="decimal"
+                      type="number"
+                      placeholder="0"
+                      value={newExpense.amount}
+                      onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+                      className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-3 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors"
                     />
                   </div>
                 </div>
@@ -1878,16 +1886,16 @@ export default function App() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Payment Method</label>
                   <div className="grid grid-cols-2 gap-2 bg-g-aluminium/30 dark:bg-g-aluminium/10 p-1 rounded-xl">
-                    <button 
-                      type="button" 
-                      onClick={() => { triggerHaptic(); setNewExpense({...newExpense, paymentMethod: 'cash'}); }}
+                    <button
+                      type="button"
+                      onClick={() => { triggerHaptic(); setNewExpense({ ...newExpense, paymentMethod: 'cash' }); }}
                       className={cn("py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all", newExpense.paymentMethod === 'cash' ? 'bg-g-primary text-white shadow-elevation-1' : 'text-g-text-variant')}
                     >
                       Cash (¥{wallet.liquid.toLocaleString()})
                     </button>
-                    <button 
-                      type="button" 
-                      onClick={() => { triggerHaptic(); setNewExpense({...newExpense, paymentMethod: 'suica'}); }}
+                    <button
+                      type="button"
+                      onClick={() => { triggerHaptic(); setNewExpense({ ...newExpense, paymentMethod: 'suica' }); }}
                       className={cn("py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all", newExpense.paymentMethod === 'suica' ? 'bg-g-primary text-white shadow-elevation-1' : 'text-g-text-variant')}
                     >
                       Suica (¥{wallet.suica.toLocaleString()})
@@ -1903,10 +1911,10 @@ export default function App() {
                       const CatInfo = CATEGORIES[cat];
                       const IconComponent = CatInfo.icon;
                       return (
-                        <button 
-                          key={cat} 
-                          type="button" 
-                          onClick={() => { triggerHaptic(); setNewExpense({...newExpense, category: cat}); }} 
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => { triggerHaptic(); setNewExpense({ ...newExpense, category: cat }); }}
                           className={cn("py-3 rounded-xl border flex flex-col items-center gap-1.5 transition-all duration-200", newExpense.category === cat ? 'bg-g-primary-container border-g-primary text-g-primary' : 'bg-g-bg border-g-outline/10 text-g-text-variant')}
                         >
                           <IconComponent size={16} />
@@ -1920,17 +1928,17 @@ export default function App() {
                 {/* Note input */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Details</label>
-                  <input 
-                    type="text" 
-                    placeholder="E.g. Ichiran Ramen, Train ride" 
-                    value={newExpense.note} 
-                    onChange={(e) => setNewExpense({...newExpense, note: e.target.value})} 
-                    className="w-full py-4 px-5 bg-g-bg border border-g-outline/20 rounded-xl text-g-text font-medium placeholder:text-g-text-variant focus:outline-none focus:border-g-primary transition-colors" 
+                  <input
+                    type="text"
+                    placeholder="E.g. Ichiran Ramen, Train ride"
+                    value={newExpense.note}
+                    onChange={(e) => setNewExpense({ ...newExpense, note: e.target.value })}
+                    className="w-full py-4 px-5 bg-g-bg border border-g-outline/20 rounded-xl text-g-text font-medium placeholder:text-g-text-variant focus:outline-none focus:border-g-primary transition-colors"
                   />
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="w-full py-4 bg-g-primary-container text-g-primary font-bold rounded-2xl shadow-elevation-2 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ripple mt-4"
                 >
                   Log Expense
@@ -2031,10 +2039,14 @@ export default function App() {
                         type="number"
                         min={1}
                         max={90}
-                        value={totalDays}
+                        value={durationInput}
                         onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value) || 1);
-                          updateTripTimeline(budgetSettings.startDate, val);
+                          const valStr = e.target.value;
+                          setDurationInput(valStr);
+                          const parsed = parseInt(valStr);
+                          if (!isNaN(parsed) && parsed > 0) {
+                            updateTripTimeline(budgetSettings.startDate, parsed);
+                          }
                         }}
                         className="w-full py-3.5 px-4 bg-g-aluminium/20 dark:bg-g-aluminium/5 border border-g-outline/15 rounded-xl text-g-text text-sm font-semibold focus:outline-none focus:border-g-primary transition-colors"
                       />
