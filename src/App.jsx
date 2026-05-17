@@ -161,15 +161,30 @@ export default function App() {
   const [newExpense, setNewExpense] = useState({ amount: '', category: 'Food', note: '', paymentMethod: 'cash' });
 
   const formRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (isAddingExpense) {
-      const timer = setTimeout(() => {
-        if (formRef.current) {
-          formRef.current.scrollTop = 0;
+      // Focus input programmatically with preventScroll to stop iOS from scrolling down
+      const focusTimer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus({ preventScroll: true });
         }
-      }, 100);
-      return () => clearTimeout(timer);
+      }, 200);
+
+      // Multiple staggered triggers to ensure scrollTop remains 0 during the entrance transitions
+      const scrollTimers = [50, 150, 300, 500, 700].map(delay => 
+        setTimeout(() => {
+          if (formRef.current) {
+            formRef.current.scrollTop = 0;
+          }
+        }, delay)
+      );
+
+      return () => {
+        clearTimeout(focusTimer);
+        scrollTimers.forEach(clearTimeout);
+      };
     }
   }, [isAddingExpense]);
 
@@ -1214,7 +1229,7 @@ export default function App() {
                   <div className="relative flex items-center">
                     <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
                     <input 
-                      autoFocus 
+                      ref={inputRef}
                       inputMode="decimal" 
                       type="number" 
                       placeholder="0" 
