@@ -1842,15 +1842,22 @@ export default function App() {
       <AnimatePresence>
         {isAddingExpense && (
           <div className="fixed inset-0 z-[600] flex items-end justify-center">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAddingExpense(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={() => setIsAddingExpense(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-md"
+            />
             <motion.form
               ref={formRef}
               onSubmit={handleAddExpense}
-              initial={{ y: "100%" }}
+              initial={{ y: "100vh" }}
               animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="relative w-full max-w-md bg-g-surface rounded-t-[40px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh]"
+              exit={{ y: "100vh" }}
+              transition={{ type: "spring", damping: 28, stiffness: 240 }}
+              className="relative w-full max-w-md bg-g-surface rounded-t-[40px] p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-elevation-3 overflow-y-auto max-h-[90vh] transform-gpu [will-change:transform]"
             >
               <div className="w-12 h-1.5 bg-g-outline/30 rounded-full mx-auto mb-6" />
 
