@@ -555,17 +555,6 @@ export default function App() {
     lastKnownNodeRef.current = lastKnownNode;
   }, [lastKnownNode]);
 
-  const [pendingTransitPrompt, setPendingTransitPrompt] = useState(() => {
-    const saved = localStorage.getItem('onyx_pending_transit_prompt');
-    return saved ? JSON.parse(saved) : null;
-  });
-
-  useEffect(() => {
-    if (lastKnownNode) {
-      localStorage.setItem('onyx_last_known_node', lastKnownNode);
-    }
-  }, [lastKnownNode]);
-
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('onyx_theme');
     return (saved && THEME_PALETTES[saved]) ? saved : 'cobalt';
@@ -574,6 +563,12 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('onyx_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (lastKnownNode) {
+      localStorage.setItem('onyx_last_known_node', lastKnownNode);
+    }
+  }, [lastKnownNode]);
 
   useEffect(() => {
     const safeTheme = THEME_PALETTES[theme] ? theme : 'cobalt';
@@ -602,14 +597,6 @@ export default function App() {
     root.style.setProperty('--theme-g-error-container', colors.errorContainer || (isStealthMode ? '#93000A' : '#FFDAD6'));
     root.style.setProperty('--theme-g-on-error-container', colors.onErrorContainer || (isStealthMode ? '#FFDAD6' : '#410002'));
   }, [theme, isStealthMode]);
-
-  useEffect(() => {
-    if (pendingTransitPrompt) {
-      localStorage.setItem('onyx_pending_transit_prompt', JSON.stringify(pendingTransitPrompt));
-    } else {
-      localStorage.removeItem('onyx_pending_transit_prompt');
-    }
-  }, [pendingTransitPrompt]);
 
   const [isAddingExpense, setIsAddingExpense] = useState(false);
   const [newExpense, setNewExpense] = useState({ amount: '', category: 'Food', note: '', paymentMethod: 'suica' });
@@ -810,52 +797,6 @@ export default function App() {
     }
   }, [currentTripDayDate]);
 
-  const [customFareInput, setCustomFareInput] = useState('');
-
-  // Sync custom fare input with the active prompt fare
-  useEffect(() => {
-    if (pendingTransitPrompt) {
-      setCustomFareInput(pendingTransitPrompt.fare.toString());
-    }
-  }, [pendingTransitPrompt]);
-
-  const handleLogTransit = () => {
-    if (!pendingTransitPrompt) return;
-
-    const finalFare = Number(customFareInput) || pendingTransitPrompt.fare;
-    const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
-    const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
-
-    // Add to ledger
-    const expense = {
-      id: Date.now(),
-      amount: finalFare,
-      category: 'Transit',
-      note: `${fromName} ➔ ${toName}`,
-      paymentMethod: 'suica',
-      date: currentTripDayDate
-    };
-
-    setExpenses(prev => [expense, ...prev]);
-
-    // Deduct from Suica
-    setWallet(prev => {
-      const next = { ...prev };
-      next.suica = Math.max(0, next.suica - finalFare);
-      return next;
-    });
-
-    // 🎭 TRIGGERS THE ULTRA-SATISFYING SUCCESS MORPH!
-    setIsTransitLogged(true);
-    triggerHaptic('heavy');
-
-    // Smoothly clear prompt after success presentation
-    setTimeout(() => {
-      setIsTransitLogged(false);
-      setPendingTransitPrompt(null);
-    }, 1300);
-  };
-
   const renderTransitPrompt = () => {
     // 🎭 If logged successfully, morph layout instantly into a compact, gorgeous "OK! [Check]" badge!
     if (isTransitLogged) {
@@ -882,93 +823,7 @@ export default function App() {
         </motion.div>
       );
     }
-
-    if (!pendingTransitPrompt) return null;
-    const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
-    const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
-
-    return (
-      <motion.div
-        key="transit-prompt-card"
-        initial={{ opacity: 0, y: -24, scale: 0.92, filter: 'blur(4px)' }}
-        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-        exit={{ opacity: 0, y: -18, scale: 0.95, filter: 'blur(2px)' }}
-        transition={{ type: "spring", damping: 20, stiffness: 190 }}
-        className="relative w-full rounded-[28px] rounded-tl-[8px] overflow-hidden p-5 flex flex-col justify-between shadow-elevation-2 border border-g-outline/20 bg-g-surface space-y-3.5 [will-change:transform,opacity,filter] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu"
-      >
-        {/* Top Header Row */}
-        <div className="relative z-10 flex justify-between items-center w-full">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-[10px] rounded-tl-[4px] bg-g-primary/10 text-g-primary flex items-center justify-center shrink-0 border border-g-primary/10">
-              <Bus size={14} />
-            </div>
-            <div>
-              <h4 className="text-[9px] font-bold text-g-text-variant uppercase tracking-widest leading-none">Commute Resolved</h4>
-            </div>
-          </div>
-
-          {/* Dynamic Radar Pulse Badge */}
-          <div className="flex items-center gap-1 bg-g-primary/15 dark:bg-g-primary/10 px-2 py-0.5 rounded-full border border-g-primary/20 backdrop-blur-md">
-            <span className="relative flex h-1 w-1 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-g-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1 w-1 bg-g-primary"></span>
-            </span>
-            <span className="text-[7px] font-mono font-bold tracking-widest text-g-primary uppercase leading-none">GPS TELEMETRY</span>
-          </div>
-        </div>
-
-        {/* Route Details Panel */}
-        <div className="relative z-10 pt-0.5">
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <div className="font-display text-xl font-extrabold text-g-text tracking-tight leading-none">{fromName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
-
-            {/* Custom High-Precision 3-Dot Kinetic Rail Progress - KEPT PERFECTLY */}
-            <div className="flex items-center gap-1.5 shrink-0 px-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0s' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.4s' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-dot-flow" style={{ animationDelay: '0.8s' }} />
-            </div>
-
-            <div className="font-display text-xl font-extrabold text-g-text tracking-tight leading-none">{toName.replace(' Hub', '').replace(' Crossing', '').replace(' Node', '').replace(' Station', '')}</div>
-          </div>
-          <p className="text-[11px] font-medium text-g-text-variant mt-2 leading-relaxed">
-            Passive transit geofence triggered. Confirm fare to commit Suica logs:
-          </p>
-        </div>
-
-        {/* Actions & Fare Panel */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3">
-          <div className="flex items-center gap-2">
-            <span className="text-[8.5px] font-bold text-g-text-variant uppercase tracking-widest leading-none">Suggested Fare</span>
-            <div className="relative flex items-center shrink-0 w-24">
-              <span className="absolute left-3 text-[10px] font-mono font-bold text-g-text-variant">¥</span>
-              <input
-                type="number"
-                value={customFareInput}
-                onChange={(e) => setCustomFareInput(e.target.value)}
-                className="w-full py-1.5 pl-6 pr-2 bg-g-aluminium/40 dark:bg-g-aluminium/10 border border-g-outline/20 rounded-lg text-xs font-mono font-bold text-g-text outline-none focus:border-g-primary transition-all duration-300 text-center shadow-inner"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-2 justify-end">
-            <button
-              onClick={() => { triggerHaptic('light'); setPendingTransitPrompt(null); }}
-              className="px-3.5 py-2 rounded-[12px] rounded-br-[4px] bg-g-aluminium/40 dark:bg-g-aluminium/10 hover:bg-g-aluminium/60 text-[8.5px] font-bold uppercase tracking-widest text-g-text transition-all duration-300 ripple shadow-sm cursor-pointer select-none"
-            >
-              Dismiss
-            </button>
-            <button
-              onClick={handleLogTransit}
-              className="px-3.5 py-2 rounded-[12px] rounded-tl-[4px] bg-g-primary hover:bg-g-primary/95 text-[8.5px] font-bold uppercase tracking-widest text-white dark:text-[#202124] shadow-elevation-1 hover:shadow-elevation-2 active:scale-95 transition-all duration-300 ripple flex items-center gap-1.5 cursor-pointer select-none"
-            >
-              <md-icon style={{ fontSize: '11px', '--md-icon-weight': '700' }}>check</md-icon>
-              Log Suica
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    );
+    return null;
   };
 
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -982,37 +837,7 @@ export default function App() {
     if (node) {
       setCurrentLocation({ lat: node.lat, lng: node.lng });
       setActiveNode(nodeId);
-
-      if (lastKnownNode && lastKnownNode !== nodeId) {
-        const fare = getRouteFare(lastKnownNode, nodeId);
-        if (fare) {
-          setPendingTransitPrompt({
-            from: lastKnownNode,
-            to: nodeId,
-            fare: fare,
-            type: 'standard'
-          });
-        } else {
-          const routeDist = calculateDistance(
-            MISSION_NODES[lastKnownNode].lat,
-            MISSION_NODES[lastKnownNode].lng,
-            node.lat,
-            node.lng
-          );
-          if (routeDist > 3) {
-            setPendingTransitPrompt({
-              from: lastKnownNode,
-              to: nodeId,
-              fare: 200,
-              type: 'custom',
-              distance: routeDist
-            });
-          }
-        }
-        setLastKnownNode(nodeId);
-      } else if (!lastKnownNode) {
-        setLastKnownNode(nodeId);
-      }
+      setLastKnownNode(nodeId);
     }
   };
 
@@ -1043,31 +868,6 @@ export default function App() {
           // Check for transition
           const lkn = lastKnownNodeRef.current;
           if (lkn && lkn !== closestId) {
-            const fare = getRouteFare(lkn, closestId);
-            if (fare) {
-              setPendingTransitPrompt({
-                from: lkn,
-                to: closestId,
-                fare: fare,
-                type: 'standard'
-              });
-            } else {
-              const routeDist = calculateDistance(
-                MISSION_NODES[lkn].lat,
-                MISSION_NODES[lkn].lng,
-                MISSION_NODES[closestId].lat,
-                MISSION_NODES[closestId].lng
-              );
-              if (routeDist > 3) {
-                setPendingTransitPrompt({
-                  from: lkn,
-                  to: closestId,
-                  fare: 200, // editable fallback JPY
-                  type: 'custom',
-                  distance: routeDist
-                });
-              }
-            }
             setLastKnownNode(closestId);
           } else if (!lkn) {
             setLastKnownNode(closestId);
