@@ -457,30 +457,43 @@ const HIGHLIGHTS = [
   }
 ];
 
-const AppLauncher = ({ app, delay }) => (
-  <motion.a
-    href={app.url}
-    onPointerDown={() => triggerHaptic('medium')}
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 0.25, delay: delay, ease: "easeOut" }}
-    className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-colors duration-200 relative rounded-2xl mx-1 bg-g-surface border border-g-outline/10 shadow-sm mb-3 will-change-[opacity]"
-  >
-    <div className="flex flex-col gap-1 pl-2">
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">ID: {app.node}</span>
-        <span className="text-[10px] font-medium text-g-text-variant">{app.version}</span>
+const AppLauncher = ({ app, delay, currentTheme, isStealthMode }) => {
+  const launchUrl = useMemo(() => {
+    try {
+      const url = new URL(app.url);
+      url.searchParams.set('theme', currentTheme || 'cobalt');
+      url.searchParams.set('stealth', isStealthMode ? 'true' : 'false');
+      return url.toString();
+    } catch (e) {
+      return `${app.url}?theme=${currentTheme || 'cobalt'}&stealth=${isStealthMode ? 'true' : 'false'}`;
+    }
+  }, [app.url, currentTheme, isStealthMode]);
+
+  return (
+    <motion.a
+      href={launchUrl}
+      onPointerDown={() => triggerHaptic('medium')}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, delay: delay, ease: "easeOut" }}
+      className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-colors duration-200 relative rounded-2xl mx-1 bg-g-surface border border-g-outline/10 shadow-sm mb-3 will-change-[opacity]"
+    >
+      <div className="flex flex-col gap-1 pl-2">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">ID: {app.node}</span>
+          <span className="text-[10px] font-medium text-g-text-variant">{app.version}</span>
+        </div>
+        <span className="text-xl font-bold text-g-text tracking-tight mt-0.5">{app.name}</span>
       </div>
-      <span className="text-xl font-bold text-g-text tracking-tight mt-0.5">{app.name}</span>
-    </div>
-    <div className="pr-2">
-      <div className="w-10 h-10 rounded-full bg-g-primary-container flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors text-g-primary">
-        <md-icon style={{ fontSize: '18px' }}>arrow_forward</md-icon>
+      <div className="pr-2">
+        <div className="w-10 h-10 rounded-full bg-g-primary-container flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors text-g-primary">
+          <md-icon style={{ fontSize: '18px' }}>arrow_forward</md-icon>
+        </div>
       </div>
-    </div>
-  </motion.a>
-);
+    </motion.a>
+  );
+};
 
 export default function App() {
   const [callsign, setCallsign] = useState(() => {
@@ -2137,7 +2150,7 @@ export default function App() {
 
               <div className="flex-1 overflow-y-auto flex flex-col px-4 pb-24 pt-2 no-scrollbar">
                 {filteredApps.length > 0 ? (
-                  filteredApps.map((app, i) => <AppLauncher key={app.id} app={app} delay={i * 0.04} />)
+                  filteredApps.map((app, i) => <AppLauncher key={app.id} app={app} delay={i * 0.04} currentTheme={theme} isStealthMode={isStealthMode} />)
                 ) : (
                   <div className="px-10 py-20 text-center">
                     <div className="text-sm font-bold uppercase tracking-widest text-g-text-variant">No matching apps found</div>
