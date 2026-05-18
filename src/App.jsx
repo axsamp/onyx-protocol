@@ -400,9 +400,9 @@ const PHRASES = [
 ];
 
 const EXPLORE_SPOTS = [
-  { name: 'Meiji Jingu', type: 'Shrine', distance: '53m • 51km', img: import.meta.env.BASE_URL + 'shizuoka.png' },
-  { name: 'Akihabara', type: 'Tech District', distance: '59m • 53km', img: import.meta.env.BASE_URL + 'tokyo_dome.png' },
-  { name: 'Shinjuku Gyoen', type: 'Garden', distance: '1h 4m • 54km', img: import.meta.env.BASE_URL + 'nagoya.png' },
+  { name: 'Meiji Jingu', type: 'Shrine', distance: '53m • 51km', img: import.meta.env.BASE_URL + 'meiji_jingu.jpg' },
+  { name: 'Akihabara', type: 'Tech District', distance: '59m • 53km', img: import.meta.env.BASE_URL + 'akihabara.jpg' },
+  { name: 'Shinjuku Gyoen', type: 'Garden', distance: '1h 4m • 54km', img: import.meta.env.BASE_URL + 'shinjuku_gyoen.jpg' },
   { name: 'Chiba Station', type: 'Urban Center', distance: '1h 29m • 89.2km', img: import.meta.env.BASE_URL + 'chiba.png' },
 ];
 
@@ -412,7 +412,7 @@ const HIGHLIGHTS = [
     subtitle: "3.2km away • World's busiest intersection",
     tag: 'Trending',
     density: 'High',
-    img: import.meta.env.BASE_URL + 'yokohama.png',
+    img: import.meta.env.BASE_URL + 'shibuya.jpg',
     link: 'https://www.google.com/maps/search/Shibuya+Crossing'
   },
   {
@@ -452,7 +452,7 @@ const HIGHLIGHTS = [
     subtitle: "Future Deployment • Historic capital",
     tag: 'Planned',
     density: 'High',
-    img: import.meta.env.BASE_URL + 'chiba.png',
+    img: import.meta.env.BASE_URL + 'kyoto.jpg',
     link: 'https://www.google.com/maps/search/Kyoto'
   }
 ];

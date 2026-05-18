@@ -18,7 +18,12 @@ export default defineConfig({
         'nagoya.png',
         'shizuoka.png',
         'tokyo_dome.png',
-        'yokohama.png'
+        'yokohama.png',
+        'meiji_jingu.jpg',
+        'akihabara.jpg',
+        'shinjuku_gyoen.jpg',
+        'shibuya.jpg',
+        'kyoto.jpg'
       ],
       manifest: {
         name: 'Onyx Protocol Hub',
