@@ -11,7 +11,15 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: [
+        'favicon.svg',
+        'icons.svg',
+        'chiba.png',
+        'nagoya.png',
+        'shizuoka.png',
+        'tokyo_dome.png',
+        'yokohama.png'
+      ],
       manifest: {
         name: 'Onyx Protocol Hub',
         short_name: 'Protocol',
