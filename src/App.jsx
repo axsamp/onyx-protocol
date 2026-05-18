@@ -1125,7 +1125,7 @@ export default function App() {
 
           {/* Subtitle & JST Time */}
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold px-3 py-1 bg-g-primary-container text-g-primary rounded-full tracking-wide">
+            <span className="text-[11px] font-bold px-3 py-1 bg-g-secondary-container text-g-on-secondary-container rounded-full tracking-wide transition-colors duration-700">
               {time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' })} JST
             </span>
             <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-g-text-variant">
@@ -1287,8 +1287,8 @@ export default function App() {
                   <div className="label-text">Essential Japanese HUD</div>
 
                   {/* Glassmorphic Badge adopting the Highlights Image Tag design */}
-                  <span className="px-3 py-1 rounded-full bg-g-primary/15 dark:bg-g-primary/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest text-g-primary border border-g-primary/20 shadow-sm flex items-center gap-1.5 select-none">
-                    <span className="w-1.5 h-1.5 rounded-full bg-g-primary animate-pulse" />
+                  <span className="px-3 py-1 rounded-full bg-g-tertiary/15 dark:bg-g-tertiary/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-widest text-g-tertiary border border-g-tertiary/20 shadow-sm flex items-center gap-1.5 select-none transition-colors duration-700">
+                    <span className="w-1.5 h-1.5 rounded-full bg-g-tertiary animate-pulse" />
                     Translate Mod
                   </span>
                 </div>
@@ -1306,7 +1306,7 @@ export default function App() {
                       <div className="space-y-2">
                         {/* Monospace Phonetic Pronunciation Badge */}
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[8px] font-mono font-bold tracking-widest text-g-primary uppercase bg-g-primary-container px-2 py-0.5 rounded-md leading-none">
+                          <span className="text-[8px] font-mono font-bold tracking-widest text-g-on-secondary-container uppercase bg-g-secondary-container px-2 py-0.5 rounded-md leading-none transition-colors duration-700">
                             {phrase.romaji}
                           </span>
                         </div>
@@ -1970,7 +1970,7 @@ export default function App() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between px-1">
                     <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em]">Suica Balance</label>
-                    <span className="text-[10px] font-mono text-g-primary">SUICA NFC</span>
+                    <span className="text-[10px] font-mono text-g-tertiary transition-colors duration-700">SUICA NFC</span>
                   </div>
                   <div className="relative flex items-center">
                     <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>

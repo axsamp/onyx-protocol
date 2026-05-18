@@ -7,6 +7,14 @@
   --color-g-surface: var(--theme-g-surface);
   --color-g-primary: var(--theme-g-primary);
   --color-g-primary-container: var(--theme-g-primary-container);
+  --color-g-secondary: var(--theme-g-secondary);
+  --color-g-secondary-container: var(--theme-g-secondary-container);
+  --color-g-on-secondary: var(--theme-g-on-secondary);
+  --color-g-on-secondary-container: var(--theme-g-on-secondary-container);
+  --color-g-tertiary: var(--theme-g-tertiary);
+  --color-g-tertiary-container: var(--theme-g-tertiary-container);
+  --color-g-on-tertiary: var(--theme-g-on-tertiary);
+  --color-g-on-tertiary-container: var(--theme-g-on-tertiary-container);
   --color-g-text: var(--theme-g-text);
   --color-g-text-variant: var(--theme-g-text-variant);
   --color-g-outline: var(--theme-g-outline);
