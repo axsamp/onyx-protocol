@@ -1350,20 +1350,16 @@ export default function App() {
                 <div className="relative z-10 flex justify-between items-end">
                   <div>
                     <div className="text-[9px] font-bold text-white/70 mb-1.5 uppercase tracking-widest flex items-center gap-1 leading-none">
-                      Suica Balance <Waves size={12} className="text-white/70 animate-pulse" />
+                      Suica Balance <Waves size={12} className="text-white/70" />
                     </div>
                     <div className="text-3xl font-display font-bold tracking-tight flex items-baseline gap-1">
                       <span className="text-xl text-white/60">¥</span>{wallet.suica.toLocaleString()}
                     </div>
                   </div>
                   <div className="text-right flex flex-col items-end">
-                    <div className="text-[9px] font-bold text-white/70 mb-2 uppercase tracking-widest leading-none">Telemetry Status</div>
-                    <div className="text-[9px] font-bold tracking-widest text-emerald-400 bg-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 border border-white/10 select-none leading-none">
-                      <span className="relative flex h-1.5 w-1.5 shrink-0">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
-                      </span>
-                      ACTIVE NFC
+                    <div className="text-[9px] font-bold text-white/70 mb-2 uppercase tracking-widest leading-none">Telemetry</div>
+                    <div className="text-[9px] font-bold tracking-widest text-white/80 bg-white/10 px-2.5 py-1 rounded-md border border-white/10 select-none leading-none">
+                      NFC ENABLED
                     </div>
                   </div>
                 </div>
