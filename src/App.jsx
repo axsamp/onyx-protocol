@@ -612,7 +612,7 @@ export default function App() {
   }, [pendingTransitPrompt]);
 
   const [isAddingExpense, setIsAddingExpense] = useState(false);
-  const [newExpense, setNewExpense] = useState({ amount: '', category: 'Food', note: '', paymentMethod: 'cash' });
+  const [newExpense, setNewExpense] = useState({ amount: '', category: 'Food', note: '', paymentMethod: 'suica' });
 
   const formRef = useRef(null);
   const inputRef = useRef(null);
@@ -743,7 +743,7 @@ export default function App() {
       return next;
     });
 
-    setNewExpense({ amount: '', category: 'Food', note: '', paymentMethod: 'cash' });
+    setNewExpense({ amount: '', category: 'Food', note: '', paymentMethod: 'suica' });
     setIsAddingExpense(false);
   };
 
@@ -1349,17 +1349,21 @@ export default function App() {
 
                 <div className="relative z-10 flex justify-between items-end">
                   <div>
-                    <div className="text-[9px] font-bold text-white/70 mb-1.5 uppercase tracking-widest leading-none">Liquid Cash</div>
+                    <div className="text-[9px] font-bold text-white/70 mb-1.5 uppercase tracking-widest flex items-center gap-1 leading-none">
+                      Suica Balance <Waves size={12} className="text-white/70 animate-pulse" />
+                    </div>
                     <div className="text-3xl font-display font-bold tracking-tight flex items-baseline gap-1">
-                      <span className="text-xl text-white/60">¥</span>{wallet.liquid.toLocaleString()}
+                      <span className="text-xl text-white/60">¥</span>{wallet.suica.toLocaleString()}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-[9px] font-bold text-white/70 mb-1.5 uppercase tracking-widest flex items-center justify-end gap-1 leading-none">
-                      Suica <Waves size={12} className="text-white/70" />
-                    </div>
-                    <div className="text-xl font-display font-bold tracking-tight flex items-baseline gap-1 justify-end">
-                      <span className="text-sm text-white/60">¥</span>{wallet.suica.toLocaleString()}
+                  <div className="text-right flex flex-col items-end">
+                    <div className="text-[9px] font-bold text-white/70 mb-2 uppercase tracking-widest leading-none">Telemetry Status</div>
+                    <div className="text-[9px] font-bold tracking-widest text-emerald-400 bg-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 border border-white/10 select-none leading-none">
+                      <span className="relative flex h-1.5 w-1.5 shrink-0">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
+                      </span>
+                      ACTIVE NFC
                     </div>
                   </div>
                 </div>
@@ -2036,23 +2040,6 @@ export default function App() {
               <div className="space-y-10">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between px-1">
-                    <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em]">Liquid Cash</label>
-                    <span className="text-[10px] font-mono text-g-primary">TOTAL CASH</span>
-                  </div>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-0 text-3xl font-medium text-g-outline">¥</span>
-                    <input
-                      type="number"
-                      value={tempWallet.liquid === 0 ? '' : tempWallet.liquid}
-                      onChange={(e) => setTempWallet({ ...tempWallet, liquid: e.target.value === '' ? 0 : parseInt(e.target.value) || 0 })}
-                      placeholder="0"
-                      className="w-full bg-transparent border-b-2 border-g-outline/20 focus:border-g-primary py-4 pl-8 text-4xl font-bold text-g-text outline-none tabular-nums transition-colors"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between px-1">
                     <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em]">Suica Balance</label>
                     <span className="text-[10px] font-mono text-g-tertiary transition-colors duration-700">SUICA NFC</span>
                   </div>
@@ -2259,21 +2246,12 @@ export default function App() {
                 {/* Payment Method Segmented Buttons (Material 3 style) */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-g-text-variant uppercase tracking-[0.2em] ml-1">Payment Method</label>
-                  <div className="grid grid-cols-2 gap-2 bg-g-aluminium/30 dark:bg-g-aluminium/10 p-1 rounded-xl">
-                    <button
-                      type="button"
-                      onClick={() => { triggerHaptic(); setNewExpense({ ...newExpense, paymentMethod: 'cash' }); }}
-                      className={cn("py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all", newExpense.paymentMethod === 'cash' ? 'bg-g-primary text-white shadow-elevation-1' : 'text-g-text-variant')}
-                    >
-                      Cash (¥{wallet.liquid.toLocaleString()})
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { triggerHaptic(); setNewExpense({ ...newExpense, paymentMethod: 'suica' }); }}
-                      className={cn("py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all", newExpense.paymentMethod === 'suica' ? 'bg-g-primary text-white shadow-elevation-1' : 'text-g-text-variant')}
-                    >
-                      Suica (¥{wallet.suica.toLocaleString()})
-                    </button>
+                  <div className="flex items-center gap-3 bg-g-tertiary/10 border border-g-tertiary/20 p-3.5 rounded-xl text-g-tertiary select-none">
+                    <Waves size={16} className="text-g-tertiary animate-pulse shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold uppercase tracking-wider">Suica Balance (¥{wallet.suica.toLocaleString()})</span>
+                      <span className="text-[9px] text-g-text-variant leading-none mt-1">Automated NFC Shortcut Sync Enabled</span>
+                    </div>
                   </div>
                 </div>
 
