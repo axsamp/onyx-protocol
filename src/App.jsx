@@ -83,24 +83,50 @@ const THEME_PALETTES = {
   },
   vermilion: {
     light: {
-      primary: '#C04836',
+      primary: '#A83827',
       onPrimary: '#FFFFFF',
       primaryContainer: '#FFDAD3',
-      onPrimaryContainer: '#410001',
+      onPrimaryContainer: '#3E0400',
+      secondary: '#775651',
+      onSecondary: '#FFFFFF',
+      secondaryContainer: '#F7D8D3',
+      onSecondaryContainer: '#2C1511',
+      tertiary: '#735A2E',
+      onTertiary: '#FFFFFF',
+      tertiaryContainer: '#FFDE9C',
+      onTertiaryContainer: '#271900',
       bg: '#FFF8F6',
-      surface: '#FFFFFF',
+      surface: '#FFF8F6',
       onSurface: '#231A18',
-      outline: '#857370'
+      onSurfaceVariant: '#534340',
+      outline: '#857370',
+      error: '#BA1A1A',
+      onError: '#FFFFFF',
+      errorContainer: '#FFDAD6',
+      onErrorContainer: '#410002'
     },
     dark: {
-      primary: '#FF8B77',
-      onPrimary: '#5C1205',
-      primaryContainer: '#5C1E15',
+      primary: '#FFB4A7',
+      onPrimary: '#650B02',
+      primaryContainer: '#862112',
       onPrimaryContainer: '#FFDAD3',
-      bg: '#140E0C',
-      surface: '#1D1513',
-      onSurface: '#ECE0DD',
-      outline: '#9C8A87'
+      secondary: '#E7BDB7',
+      onSecondary: '#442925',
+      secondaryContainer: '#5D3F3B',
+      onSecondaryContainer: '#F7D8D3',
+      tertiary: '#E3C28C',
+      onTertiary: '#402D04',
+      tertiaryContainer: '#594319',
+      onTertiaryContainer: '#FFDE9C',
+      bg: '#1A1110',
+      surface: '#1A1110',
+      onSurface: '#F1DFDA',
+      onSurfaceVariant: '#D8C2BE',
+      outline: '#A08C89',
+      error: '#FFB4AB',
+      onError: '#690005',
+      errorContainer: '#93000A',
+      onErrorContainer: '#FFDAD6'
     }
   },
   matcha: {
@@ -1417,9 +1443,9 @@ export default function App() {
                   <div className="flex items-center gap-6">
                     <button
                       onClick={() => { triggerHaptic(); setCurrentDayOffset(Math.max(0, currentDayOffset - 1)); }}
-                      className="text-g-text-variant hover:text-g-text w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple animate-[fade-in_0.3s_ease]"
+                      className="w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/30 hover:bg-g-primary-container text-g-text-variant hover:text-g-primary transition-all duration-200 ripple animate-[fade-in_0.3s_ease]"
                     >
-                      <md-icon style={{ fontSize: '20px' }}>chevron_left</md-icon>
+                      <md-icon style={{ fontSize: '20px' }} className="transition-colors duration-200">chevron_left</md-icon>
                     </button>
                     <div className="text-center min-w-[100px]">
                       <p className="text-[10px] font-bold text-g-primary uppercase tracking-[0.2em] mb-0.5">Day {currentDayOffset + 1}</p>
@@ -1427,9 +1453,9 @@ export default function App() {
                     </div>
                     <button
                       onClick={() => { triggerHaptic(); setCurrentDayOffset(currentDayOffset + 1); }}
-                      className="text-g-text-variant hover:text-g-text w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/10 ripple animate-[fade-in_0.3s_ease]"
+                      className="w-12 h-12 flex items-center justify-center rounded-full bg-g-aluminium dark:bg-g-aluminium/30 hover:bg-g-primary-container text-g-text-variant hover:text-g-primary transition-all duration-200 ripple animate-[fade-in_0.3s_ease]"
                     >
-                      <md-icon style={{ fontSize: '20px' }}>chevron_right</md-icon>
+                      <md-icon style={{ fontSize: '20px' }} className="transition-colors duration-200">chevron_right</md-icon>
                     </button>
                   </div>
                   <md-icon style={{ fontSize: '18px' }} className="text-g-text-variant">calendar_today</md-icon>
