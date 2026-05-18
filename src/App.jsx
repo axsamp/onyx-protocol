@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Wallet, MapPin, Calendar, Activity, Terminal, ShoppingBag, Search, Shield, Settings, User, ChevronDown, Phone, Waves, Check,
-  TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2
+  TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2, ArrowRight
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -400,10 +400,10 @@ const PHRASES = [
 ];
 
 const EXPLORE_SPOTS = [
-  { name: 'Meiji Jingu', type: 'Shrine', distance: '53m • 51km', img: 'https://images.unsplash.com/photo-1720783199805-bf399ed5173c?q=80&w=800&v=1' },
-  { name: 'Akihabara', type: 'Tech District', distance: '59m • 53km', img: 'https://images.unsplash.com/photo-1571497245719-ce3e7f16db1f?q=80&w=800&v=1' },
-  { name: 'Shinjuku Gyoen', type: 'Garden', distance: '1h 4m • 54km', img: 'https://images.unsplash.com/photo-1545601445-4d6a0a0565f0?q=80&w=800&v=1' },
-  { name: 'Chiba Station', type: 'Urban Center', distance: '1h 29m • 89.2km', img: import.meta.env.BASE_URL + 'chiba.png?v=2' },
+  { name: 'Meiji Jingu', type: 'Shrine', distance: '53m • 51km', img: import.meta.env.BASE_URL + 'shizuoka.png' },
+  { name: 'Akihabara', type: 'Tech District', distance: '59m • 53km', img: import.meta.env.BASE_URL + 'tokyo_dome.png' },
+  { name: 'Shinjuku Gyoen', type: 'Garden', distance: '1h 4m • 54km', img: import.meta.env.BASE_URL + 'nagoya.png' },
+  { name: 'Chiba Station', type: 'Urban Center', distance: '1h 29m • 89.2km', img: import.meta.env.BASE_URL + 'chiba.png' },
 ];
 
 const HIGHLIGHTS = [
@@ -412,7 +412,7 @@ const HIGHLIGHTS = [
     subtitle: "3.2km away • World's busiest intersection",
     tag: 'Trending',
     density: 'High',
-    img: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=1000&auto=format&fit=crop',
+    img: import.meta.env.BASE_URL + 'yokohama.png',
     link: 'https://www.google.com/maps/search/Shibuya+Crossing'
   },
   {
@@ -452,7 +452,7 @@ const HIGHLIGHTS = [
     subtitle: "Future Deployment • Historic capital",
     tag: 'Planned',
     density: 'High',
-    img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop',
+    img: import.meta.env.BASE_URL + 'chiba.png',
     link: 'https://www.google.com/maps/search/Kyoto'
   }
 ];
@@ -1249,7 +1249,7 @@ export default function App() {
                             onClick={() => triggerHaptic('medium')}
                             className="w-14 h-14 rounded-[20px] rounded-tl-[8px] bg-g-primary text-white dark:text-[#202124] flex items-center justify-center shadow-lg active:scale-90 transition-transform cursor-pointer shrink-0 ripple"
                           >
-                            <md-icon style={{ fontSize: '24px' }}>arrow_forward</md-icon>
+                            <ArrowRight size={24} className="shrink-0" />
                           </a>
                         </motion.div>
                       </AnimatePresence>
@@ -1298,7 +1298,7 @@ export default function App() {
                     <div className="text-[10px] font-bold text-white/80 mt-1 uppercase tracking-widest leading-none">Mission Funds & Transit</div>
                   </div>
                   <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
-                    <md-icon style={{ fontSize: '24px', color: 'white' }}>wallet</md-icon>
+                    <Wallet size={24} className="text-white shrink-0" />
                   </div>
                 </div>
 
