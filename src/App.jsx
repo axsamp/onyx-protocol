@@ -469,27 +469,76 @@ const AppLauncher = ({ app, delay, currentTheme, isStealthMode }) => {
     }
   }, [app.url, currentTheme, isStealthMode]);
 
+  // Render a customized holographic blueprint SVG based on the app ID
+  const renderBlueprintIcon = () => {
+    if (app.id === 'itinerary') {
+      return (
+        <svg className="w-6 h-6 text-g-primary opacity-80 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="12" r="9" strokeDasharray="3 3" />
+          <path d="M12 2v20M2 12h20" strokeWidth="0.5" strokeOpacity="0.3" />
+          <path d="M12 7l4 8-4-2-4 2 4-8z" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+        </svg>
+      );
+    }
+    if (app.id === 'stamps') {
+      return (
+        <svg className="w-6 h-6 text-g-secondary opacity-80 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="12" r="9" />
+          <circle cx="12" cy="12" r="7.5" strokeWidth="0.5" strokeDasharray="2 1" />
+          <path d="M8 15v-4a4 4 0 0 1 8 0v4" strokeLinecap="round" />
+          <path d="M6 15h12M10 9.5h4" strokeLinecap="round" />
+          <rect x="9" y="15" width="6" height="3" rx="0.5" />
+        </svg>
+      );
+    }
+    // signal / recorder
+    return (
+      <svg className="w-6 h-6 text-g-tertiary opacity-80 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="12" cy="12" r="9" strokeWidth="0.5" strokeOpacity="0.3" />
+        <path d="M4 12h3l2-6 3 12 2-9 2 5 4-2" strokeLinecap="round" strokeLinejoin="round" />
+        <line x1="12" y1="3" x2="12" y2="21" strokeWidth="0.5" strokeOpacity="0.2" />
+        <line x1="3" y1="12" x2="21" y2="12" strokeWidth="0.5" strokeOpacity="0.2" />
+      </svg>
+    );
+  };
+
+  const appDescription = {
+    itinerary: 'Tactical Travel Route & Navigation Command',
+    stamps: 'Eki-Stamp Capture Ledger & Collection HUD',
+    signal: 'High-Fidelity Signal Acoustic Capture Monitor'
+  }[app.id] || 'Deployment ready utility module';
+
   return (
     <motion.a
       href={launchUrl}
       onPointerDown={() => triggerHaptic('medium')}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25, delay: delay, ease: "easeOut" }}
-      className="group flex items-center justify-between py-4 px-5 hover:bg-g-aluminium transition-colors duration-200 relative rounded-2xl mx-1 bg-g-surface border border-g-outline/10 shadow-sm mb-3 will-change-[opacity]"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
+      transition={{ duration: 0.35, delay: delay, ease: [0.16, 1, 0.3, 1] }}
+      className="group flex items-center gap-4 py-4 px-5 hover:bg-g-aluminium/40 dark:hover:bg-g-aluminium/10 transition-all duration-300 relative rounded-2xl mx-1 bg-g-surface border border-g-outline/10 hover:border-g-primary/30 shadow-sm hover:shadow-elevation-1 mb-3.5 will-change-[transform,opacity] select-none"
     >
-      <div className="flex flex-col gap-1 pl-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold text-g-primary uppercase tracking-widest bg-g-primary-container px-2 py-0.5 rounded-md">ID: {app.node}</span>
-          <span className="text-[10px] font-medium text-g-text-variant">{app.version}</span>
-        </div>
-        <span className="text-xl font-bold text-g-text tracking-tight mt-0.5">{app.name}</span>
+      {/* Dynamic Holographic Blueprint Icon Container */}
+      <div className="w-12 h-12 rounded-xl bg-g-aluminium/30 dark:bg-g-aluminium/10 flex items-center justify-center border border-g-outline/15 group-hover:border-g-primary/20 relative overflow-hidden transition-all duration-300 shrink-0 shadow-inner">
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {renderBlueprintIcon()}
       </div>
-      <div className="pr-2">
-        <div className="w-10 h-10 rounded-full bg-g-primary-container flex items-center justify-center group-hover:bg-g-primary group-hover:text-white transition-colors text-g-primary">
-          <md-icon style={{ fontSize: '18px' }}>arrow_forward</md-icon>
+
+      {/* Card Info Details */}
+      <div className="flex-1 flex flex-col min-w-0 pr-1.5">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[9px] font-black text-g-primary uppercase tracking-[0.2em] leading-none">NODE {app.node}</span>
+          <span className="w-1 h-1 rounded-full bg-g-outline/40" />
+          <span className="text-[9px] font-bold text-g-text-variant uppercase tracking-widest leading-none">{app.version}</span>
         </div>
+        <span className="text-base font-black text-g-text tracking-tight mt-1.5 group-hover:text-g-primary transition-colors leading-none">{app.name}</span>
+        <span className="text-[10px] font-medium text-g-text-variant truncate mt-2 leading-none">{appDescription}</span>
+      </div>
+
+      {/* Arrow Launch Terminal */}
+      <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-g-aluminium/20 dark:bg-g-aluminium/5 group-hover:bg-g-primary group-hover:text-white transition-all duration-300 border border-g-outline/10 group-hover:border-g-primary/10">
+        <md-icon style={{ fontSize: '13px', '--md-icon-weight': '700' }} className="group-hover:translate-x-0.5 transition-transform">arrow_forward</md-icon>
       </div>
     </motion.a>
   );
