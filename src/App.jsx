@@ -1040,7 +1040,7 @@ export default function App() {
             >
               {/* Geofence Transit Prompt Card */}
               <AnimatePresence mode="popLayout">
-                {pendingTransitPrompt && renderTransitPrompt()}
+                {renderTransitPrompt()}
               </AnimatePresence>
 
               {/* Recommended Section - Highly Expressive Carousel */}
@@ -1292,7 +1292,7 @@ export default function App() {
             >
               {/* Geofence Transit Prompt Card */}
               <AnimatePresence mode="popLayout">
-                {pendingTransitPrompt && renderTransitPrompt()}
+                {renderTransitPrompt()}
               </AnimatePresence>
 
               {/* Daily Allowance Command Panel */}
