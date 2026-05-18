@@ -400,7 +400,7 @@ const PHRASES = [
 ];
 
 const EXPLORE_SPOTS = [
-  { name: 'Kamakura Buddha', type: 'National Treasure', distance: '15m • 7.2km', img: import.meta.env.BASE_URL + 'kamakura.jpg' },
+  { name: 'Kamakura Buddha', type: 'National Treasure', distance: '15m • 7.2km', img: import.meta.env.BASE_URL + 'kamakura.png' },
   { name: 'Meiji Jingu', type: 'Shrine', distance: '53m • 51km', img: import.meta.env.BASE_URL + 'meiji_jingu.jpg' },
   { name: 'Akihabara', type: 'Tech District', distance: '59m • 53km', img: import.meta.env.BASE_URL + 'akihabara.jpg' },
   { name: 'Shinjuku Gyoen', type: 'Garden', distance: '1h 4m • 54km', img: import.meta.env.BASE_URL + 'shinjuku_gyoen.jpg' },

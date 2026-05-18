@@ -24,7 +24,7 @@ export default defineConfig({
         'shinjuku_gyoen.jpg',
         'shibuya.jpg',
         'kyoto.jpg',
-        'kamakura.jpg'
+        'kamakura.png'
       ],
       manifest: {
         name: 'Onyx Protocol Hub',
