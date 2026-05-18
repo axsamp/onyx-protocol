@@ -11,6 +11,71 @@
   <meta name="theme-color" content="#000000" />
   <link rel="apple-touch-icon" href="/pwa-192x192.png" />
   <title>Japan Explorer | Material OS</title>
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('onyx_theme') || 'cobalt';
+        const isStealth = localStorage.getItem('onyx_stealth_mode') === 'true';
+        const palettes = {
+          cobalt: {
+            light: { primary: '#0B57D0', onPrimary: '#FFFFFF', primaryContainer: '#D3E3FD', onPrimaryContainer: '#041E49', bg: '#F8FAFC', surface: '#FFFFFF', onSurface: '#1F1F1F', outline: '#74777F', text: '#1F1F1F', textVar: '#444746', aluminium: '#E8EAED' },
+            dark: { primary: '#A8C7FA', onPrimary: '#062E70', primaryContainer: '#0842A0', onPrimaryContainer: '#D3E3FD', bg: '#0F141C', surface: '#1F1F1F', onSurface: '#E3E2E6', outline: '#8C9099', text: '#E8EAED', textVar: '#9AA0A6', aluminium: '#282A2D' }
+          },
+          vermilion: {
+            light: { primary: '#C04836', onPrimary: '#FFFFFF', primaryContainer: '#FFDAD3', onPrimaryContainer: '#410001', bg: '#FFF8F6', surface: '#FFFFFF', onSurface: '#231A18', outline: '#857370', text: '#231A18', textVar: '#444746', aluminium: '#E8EAED' },
+            dark: { primary: '#FF8B77', onPrimary: '#5C1205', primaryContainer: '#5C1E15', onPrimaryContainer: '#FFDAD3', bg: '#140E0C', surface: '#1D1513', onSurface: '#ECE0DD', outline: '#9C8A87', text: '#ECE0DD', textVar: '#9AA0A6', aluminium: '#282A2D' }
+          },
+          matcha: {
+            light: { primary: '#4C662B', onPrimary: '#FFFFFF', primaryContainer: '#CDEDA3', onPrimaryContainer: '#102000', bg: '#F8FAF2', surface: '#FFFFFF', onSurface: '#1A1C16', outline: '#74796A', text: '#1A1C16', textVar: '#444746', aluminium: '#E8EAED' },
+            dark: { primary: '#B2D189', onPrimary: '#1F3700', primaryContainer: '#354E16', onPrimaryContainer: '#CDEDA3', bg: '#11140E', surface: '#1A1D16', onSurface: '#E3E3DA', outline: '#8E9285', text: '#E3E3DA', textVar: '#9AA0A6', aluminium: '#282A2D' }
+          },
+          sakura: {
+            light: { primary: '#5B5891', onPrimary: '#FFFFFF', primaryContainer: '#E3DFFF', onPrimaryContainer: '#434078', bg: '#FAF8FC', surface: '#FFFFFF', onSurface: '#1C1A22', outline: '#787680', text: '#1C1A22', textVar: '#444746', aluminium: '#E8EAED' },
+            dark: { primary: '#C4C0FF', onPrimary: '#2D2960', primaryContainer: '#434078', onPrimaryContainer: '#E3DFFF', bg: '#131218', surface: '#1C1B22', onSurface: '#E6E1E9', outline: '#928F99', text: '#E6E1E9', textVar: '#9AA0A6', aluminium: '#282A2D' }
+          },
+          yuzu: {
+            light: { primary: '#7E5700', onPrimary: '#FFFFFF', primaryContainer: '#FFE086', onPrimaryContainer: '#281900', bg: '#FFFBF6', surface: '#FFFFFF', onSurface: '#201B12', outline: '#7D7667', text: '#201B12', textVar: '#444746', aluminium: '#E8EAED' },
+            dark: { primary: '#FABD00', onPrimary: '#422C00', primaryContainer: '#5B3D00', onPrimaryContainer: '#FFE086', bg: '#17130B', surface: '#1F190D', onSurface: '#EBE1D4', outline: '#979080', text: '#EBE1D4', textVar: '#9AA0A6', aluminium: '#282A2D' }
+          },
+          titanium: {
+            light: { primary: '#5A626A', onPrimary: '#FFFFFF', primaryContainer: '#E2E7EC', onPrimaryContainer: '#171D22', bg: '#F1F3F5', surface: '#F8F9FA', onSurface: '#1A1D20', outline: '#73777F', text: '#1A1D20', textVar: '#43474B', aluminium: '#E8EAED' },
+            dark: { primary: '#CFD4DA', onPrimary: '#252B30', primaryContainer: '#3E464D', onPrimaryContainer: '#E2E7EC', bg: '#121517', surface: '#1A1D20', onSurface: '#E2E7EC', outline: '#8C9196', text: '#E2E7EC', textVar: '#C3CAD1', aluminium: '#282A2D' }
+          },
+          abyss: {
+            light: { primary: '#006C5B', onPrimary: '#FFFFFF', primaryContainer: '#59FCE1', onPrimaryContainer: '#00201A', bg: '#F4FEFA', surface: '#F4FEFA', onSurface: '#161D1B', outline: '#6F7977', text: '#161D1B', textVar: '#3F4947', aluminium: '#E8EAED' },
+            dark: { primary: '#33DFCA', onPrimary: '#00382E', primaryContainer: '#005044', onPrimaryContainer: '#59FCE1', bg: '#161D1B', surface: '#161D1B', onSurface: '#E0EFEA', outline: '#899390', text: '#E0EFEA', textVar: '#BEC9C5', aluminium: '#282A2D' }
+          }
+        };
+        const safeTheme = palettes[savedTheme] ? savedTheme : 'cobalt';
+        const colors = palettes[safeTheme][isStealth ? 'dark' : 'light'];
+        const root = document.documentElement;
+        root.style.setProperty('--theme-g-primary', colors.primary);
+        root.style.setProperty('--theme-g-on-primary', colors.onPrimary);
+        root.style.setProperty('--theme-g-primary-container', colors.primaryContainer);
+        root.style.setProperty('--theme-g-on-primary-container', colors.onPrimaryContainer);
+        root.style.setProperty('--theme-g-secondary', colors.secondary || colors.primary);
+        root.style.setProperty('--theme-g-on-secondary', colors.onSecondary || colors.onPrimary);
+        root.style.setProperty('--theme-g-secondary-container', colors.secondaryContainer || colors.primaryContainer);
+        root.style.setProperty('--theme-g-on-secondary-container', colors.onSecondaryContainer || colors.onPrimaryContainer);
+        root.style.setProperty('--theme-g-tertiary', colors.tertiary || colors.primary);
+        root.style.setProperty('--theme-g-on-tertiary', colors.onTertiary || colors.onPrimary);
+        root.style.setProperty('--theme-g-tertiary-container', colors.tertiaryContainer || colors.primaryContainer);
+        root.style.setProperty('--theme-g-on-tertiary-container', colors.onTertiaryContainer || colors.onPrimaryContainer);
+        root.style.setProperty('--theme-g-bg', colors.bg);
+        root.style.setProperty('--theme-g-surface', colors.surface);
+        root.style.setProperty('--theme-g-on-surface', colors.onSurface);
+        root.style.setProperty('--theme-g-outline', colors.outline);
+        root.style.setProperty('--theme-g-text', colors.text);
+        root.style.setProperty('--theme-g-text-variant', colors.textVar);
+        root.style.setProperty('--theme-g-aluminium', colors.aluminium);
+        if (isStealth) {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Outfit:wght@400;500;700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">

@@ -184,6 +184,102 @@ const THEME_PALETTES = {
       onSurface: '#EBE1D4',
       outline: '#979080'
     }
+  },
+  titanium: {
+    light: {
+      primary: '#5A626A',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#E2E7EC',
+      onPrimaryContainer: '#171D22',
+      secondary: '#5C6065',
+      onSecondary: '#FFFFFF',
+      secondaryContainer: '#E8EBEE',
+      onSecondaryContainer: '#1B1E21',
+      tertiary: '#4A607A',
+      onTertiary: '#FFFFFF',
+      tertiaryContainer: '#D5E3F5',
+      onTertiaryContainer: '#0A1C2E',
+      bg: '#F1F3F5',
+      surface: '#F8F9FA',
+      onSurface: '#1A1D20',
+      onSurfaceVariant: '#43474B',
+      outline: '#73777F',
+      error: '#BA1A1A',
+      onError: '#FFFFFF',
+      errorContainer: '#FFDAD6',
+      onErrorContainer: '#410002'
+    },
+    dark: {
+      primary: '#CFD4DA',
+      onPrimary: '#252B30',
+      primaryContainer: '#3E464D',
+      onPrimaryContainer: '#E2E7EC',
+      secondary: '#C2C7CC',
+      onSecondary: '#2C3135',
+      secondaryContainer: '#444B50',
+      onSecondaryContainer: '#E0E5EA',
+      tertiary: '#9FC5E8',
+      onTertiary: '#0B314B',
+      tertiaryContainer: '#224863',
+      onTertiaryContainer: '#D5E3F5',
+      bg: '#121517',
+      surface: '#1A1D20',
+      onSurface: '#E2E7EC',
+      onSurfaceVariant: '#C3CAD1',
+      outline: '#8C9196',
+      error: '#FFB4AB',
+      onError: '#690005',
+      errorContainer: '#93000A',
+      onErrorContainer: '#FFDAD6'
+    }
+  },
+  abyss: {
+    light: {
+      primary: '#006C5B',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#59FCE1',
+      onPrimaryContainer: '#00201A',
+      secondary: '#4A635F',
+      onSecondary: '#FFFFFF',
+      secondaryContainer: '#CCE8E2',
+      onSecondaryContainer: '#05201C',
+      tertiary: '#455E91',
+      onTertiary: '#FFFFFF',
+      tertiaryContainer: '#D8E2FF',
+      onTertiaryContainer: '#001A43',
+      bg: '#F4FEFA',
+      surface: '#F4FEFA',
+      onSurface: '#161D1B',
+      onSurfaceVariant: '#3F4947',
+      outline: '#6F7977',
+      error: '#BA1A1A',
+      onError: '#FFFFFF',
+      errorContainer: '#FFDAD6',
+      onErrorContainer: '#410002'
+    },
+    dark: {
+      primary: '#33DFCA',
+      onPrimary: '#00382E',
+      primaryContainer: '#005044',
+      onPrimaryContainer: '#59FCE1',
+      secondary: '#B0CCC6',
+      onSecondary: '#1C3531',
+      secondaryContainer: '#334B47',
+      onSecondaryContainer: '#CCE8E2',
+      tertiary: '#B4C5FF',
+      onTertiary: '#112F60',
+      tertiaryContainer: '#2C4678',
+      onTertiaryContainer: '#D8E2FF',
+      bg: '#161D1B',
+      surface: '#161D1B',
+      onSurface: '#E0EFEA',
+      onSurfaceVariant: '#BEC9C5',
+      outline: '#899390',
+      error: '#FFB4AB',
+      onError: '#690005',
+      errorContainer: '#93000A',
+      onErrorContainer: '#FFDAD6'
+    }
   }
 };
 
@@ -351,7 +447,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [isLauncherOpen, setIsLauncherOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-  const [isStealthMode, setIsStealthMode] = useState(false);
+  const [isStealthMode, setIsStealthMode] = useState(() => {
+    return localStorage.getItem('onyx_stealth_mode') === 'true';
+  });
   const [highlightIndex, setHighlightIndex] = useState(0);
   const [fullscreenPhrase, setFullscreenPhrase] = useState(null);
   const [isTransitLogged, setIsTransitLogged] = useState(false);
@@ -403,7 +501,8 @@ export default function App() {
   }, [lastKnownNode]);
 
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('onyx_theme') || 'cobalt';
+    const saved = localStorage.getItem('onyx_theme');
+    return (saved && THEME_PALETTES[saved]) ? saved : 'cobalt';
   });
 
   useEffect(() => {
@@ -411,7 +510,8 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
-    const colors = THEME_PALETTES[theme][isStealthMode ? 'dark' : 'light'];
+    const safeTheme = THEME_PALETTES[theme] ? theme : 'cobalt';
+    const colors = THEME_PALETTES[safeTheme][isStealthMode ? 'dark' : 'light'];
     const root = document.documentElement;
     root.style.setProperty('--theme-g-primary', colors.primary);
     root.style.setProperty('--theme-g-on-primary', colors.onPrimary);
@@ -429,6 +529,12 @@ export default function App() {
     root.style.setProperty('--theme-g-surface', colors.surface);
     root.style.setProperty('--theme-g-on-surface', colors.onSurface);
     root.style.setProperty('--theme-g-outline', colors.outline);
+    root.style.setProperty('--theme-g-text', colors.onSurface || (isStealthMode ? '#E8EAED' : '#1F1F1F'));
+    root.style.setProperty('--theme-g-text-variant', colors.onSurfaceVariant || (isStealthMode ? '#9AA0A6' : '#444746'));
+    root.style.setProperty('--theme-g-error', colors.error || (isStealthMode ? '#FFB4AB' : '#BA1A1A'));
+    root.style.setProperty('--theme-g-on-error', colors.onError || (isStealthMode ? '#690005' : '#FFFFFF'));
+    root.style.setProperty('--theme-g-error-container', colors.errorContainer || (isStealthMode ? '#93000A' : '#FFDAD6'));
+    root.style.setProperty('--theme-g-on-error-container', colors.onErrorContainer || (isStealthMode ? '#FFDAD6' : '#410002'));
   }, [theme, isStealthMode]);
 
   useEffect(() => {
@@ -868,6 +974,7 @@ export default function App() {
   const [tempWallet, setTempWallet] = useState(wallet);
 
   useEffect(() => {
+    localStorage.setItem('onyx_stealth_mode', isStealthMode);
     if (isStealthMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -1472,7 +1579,7 @@ export default function App() {
                         <div className="text-sm font-medium text-g-text-variant">Select interface profile</div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-5 gap-1.5 pt-1.5">
+                    <div className="grid grid-cols-4 gap-1.5 pt-1.5">
                       <button
                         onClick={() => { triggerHaptic('medium'); setTheme('cobalt'); }}
                         className={cn(
@@ -1532,6 +1639,30 @@ export default function App() {
                       >
                         <div className="w-3.5 h-3.5 rounded-full bg-[#7E5700]" />
                         Yuzu
+                      </button>
+                      <button
+                        onClick={() => { triggerHaptic('medium'); setTheme('titanium'); }}
+                        className={cn(
+                          "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
+                          theme === 'titanium'
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm"
+                            : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
+                        )}
+                      >
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#5A626A]" />
+                        Titanium
+                      </button>
+                      <button
+                        onClick={() => { triggerHaptic('medium'); setTheme('abyss'); }}
+                        className={cn(
+                          "py-2 px-0.5 rounded-xl border flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-tighter transition-all duration-300 ripple",
+                          theme === 'abyss'
+                            ? "bg-g-primary-container border-g-primary text-g-primary shadow-sm"
+                            : "bg-g-aluminium/20 dark:bg-g-aluminium/5 border-g-outline/10 text-g-text-variant hover:bg-g-aluminium/30"
+                        )}
+                      >
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#00FFAA]" />
+                        Abyss
                       </button>
                     </div>
                   </div>

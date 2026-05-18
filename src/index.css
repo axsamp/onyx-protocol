@@ -11,6 +11,10 @@
   --color-g-text-variant: var(--theme-g-text-variant);
   --color-g-outline: var(--theme-g-outline);
   --color-g-aluminium: var(--theme-g-aluminium);
+  --color-g-error: var(--theme-g-error);
+  --color-g-on-error: var(--theme-g-on-error);
+  --color-g-error-container: var(--theme-g-error-container);
+  --color-g-on-error-container: var(--theme-g-on-error-container);
 
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Outfit', sans-serif;
@@ -47,6 +51,10 @@
     --theme-g-on-surface: #1F1F1F;
     --theme-g-outline: #C4C7C5;
     --theme-g-aluminium: #E8EAED;
+    --theme-g-error: #BA1A1A;
+    --theme-g-on-error: #FFFFFF;
+    --theme-g-error-container: #FFDAD6;
+    --theme-g-on-error-container: #410002;
 
     /* Official @material/web M3 design token mappings */
     --md-sys-color-primary: var(--theme-g-primary);
@@ -57,6 +65,10 @@
     --md-sys-color-surface: var(--theme-g-surface);
     --md-sys-color-on-surface: var(--theme-g-on-surface);
     --md-sys-color-outline: var(--theme-g-outline);
+    --md-sys-color-error: var(--theme-g-error);
+    --md-sys-color-on-error: var(--theme-g-on-error);
+    --md-sys-color-error-container: var(--theme-g-error-container);
+    --md-sys-color-on-error-container: var(--theme-g-on-error-container);
   }
 
   .dark {
@@ -71,6 +83,10 @@
     --theme-g-on-surface: #E8EAED;
     --theme-g-outline: #5F6368;
     --theme-g-aluminium: #282A2D;
+    --theme-g-error: #FFB4AB;
+    --theme-g-on-error: #690005;
+    --theme-g-error-container: #93000A;
+    --theme-g-on-error-container: #FFDAD6;
   }
 
   body {
