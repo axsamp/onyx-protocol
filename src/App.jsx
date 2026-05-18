@@ -766,6 +766,50 @@ export default function App() {
     });
   }, []);
 
+  // Suica Apple Shortcut Sync listener (100% Offline Sync via URL Query Parameters)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const amountParam = params.get('suica_amount');
+    const merchantParam = params.get('suica_merchant');
+
+    if (amountParam) {
+      const amount = parseInt(amountParam, 10);
+      if (!isNaN(amount) && amount > 0) {
+        triggerHaptic('heavy');
+        
+        // 1. Deduct from wallet suica balance
+        setWallet(prev => {
+          const next = { ...prev };
+          next.suica = Math.max(0, next.suica - amount);
+          return next;
+        });
+
+        // 2. Add to ledger expenses under 'Transit'
+        const merchantName = merchantParam ? decodeURIComponent(merchantParam).replace(/_/g, ' ') : 'Suica Contactless';
+        const expense = {
+          id: Date.now(),
+          date: currentTripDayDate,
+          amount: amount,
+          category: 'Transit',
+          note: `Suica: ${merchantName}`,
+          paymentMethod: 'suica'
+        };
+
+        setExpenses(prev => [expense, ...prev]);
+
+        // 3. Silently clear query parameters from the address bar to prevent double charges on refresh
+        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+
+        // 4. Trigger the ultra-satisfying success HUD animation
+        setIsTransitLogged(true);
+        setTimeout(() => {
+          setIsTransitLogged(false);
+        }, 2200);
+      }
+    }
+  }, [currentTripDayDate]);
+
   const [customFareInput, setCustomFareInput] = useState('');
 
   // Sync custom fare input with the active prompt fare
@@ -813,10 +857,6 @@ export default function App() {
   };
 
   const renderTransitPrompt = () => {
-    if (!pendingTransitPrompt) return null;
-    const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
-    const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
-
     // 🎭 If logged successfully, morph layout instantly into a compact, gorgeous "OK! [Check]" badge!
     if (isTransitLogged) {
       return (
@@ -842,6 +882,10 @@ export default function App() {
         </motion.div>
       );
     }
+
+    if (!pendingTransitPrompt) return null;
+    const fromName = MISSION_NODES[pendingTransitPrompt.from]?.name || pendingTransitPrompt.from;
+    const toName = MISSION_NODES[pendingTransitPrompt.to]?.name || pendingTransitPrompt.to;
 
     return (
       <motion.div
