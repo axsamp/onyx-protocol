@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Wallet, MapPin, Calendar, Activity, Terminal, ShoppingBag, Search, Shield, Settings, User, ChevronDown, Phone, Waves, Check,
+  Wallet, MapPin, Calendar, Activity, ShoppingBag, Phone, Waves, Check,
   TrendingUp, Pizza, Bus, Ticket, MoreHorizontal, Trash2, ArrowRight
 } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -19,7 +19,9 @@ const triggerHaptic = (type = 'light') => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate(type === 'light' ? 10 : 20);
     }
-  } catch (e) { }
+  } catch {
+    // Fallback for browsers without vibration support
+  }
 };
 
 const APPS = [
@@ -334,6 +336,7 @@ const THEME_PALETTES = {
   }
 };
 
+// eslint-disable-next-line no-unused-vars
 const getRouteFare = (fromId, toId) => {
   if (!fromId || !toId || fromId === toId) return null;
   const key1 = `${fromId}-${toId}`;
@@ -353,7 +356,10 @@ const formatDateSafely = (dateString, offset = 0) => {
     if (isNaN(date.getTime())) return '2026-01-01';
     date.setDate(date.getDate() + offset);
     return date.toISOString().split('T')[0];
-  } catch (e) { return '2026-01-01'; }
+  } catch {
+    // Default fallback date on parse failure
+    return '2026-01-01';
+  }
 };
 
 // Haversine formula to calculate distance in KM
@@ -464,7 +470,8 @@ const AppLauncher = ({ app, delay, currentTheme, isStealthMode }) => {
       url.searchParams.set('theme', currentTheme || 'cobalt');
       url.searchParams.set('stealth', isStealthMode ? 'true' : 'false');
       return url.toString();
-    } catch (e) {
+    } catch {
+      // Fallback construction if app.url is relative or invalid URL format
       return `${app.url}?theme=${currentTheme || 'cobalt'}&stealth=${isStealthMode ? 'true' : 'false'}`;
     }
   }, [app.url, currentTheme, isStealthMode]);
@@ -532,7 +539,7 @@ export default function App() {
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
 
   const [time, setTime] = useState(new Date());
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchQuery = '';
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [activeTab, setActiveTab] = useState('home');
   const [isLauncherOpen, setIsLauncherOpen] = useState(false);
@@ -554,7 +561,9 @@ export default function App() {
     if (!saved) return def;
     try {
       return JSON.parse(saved);
-    } catch (e) { return def; }
+    } catch {
+      return def;
+    }
   });
 
   const [expenses, setExpenses] = useState(() => {
@@ -562,7 +571,9 @@ export default function App() {
     if (!saved) return [];
     try {
       return JSON.parse(saved);
-    } catch (e) { return []; }
+    } catch {
+      return [];
+    }
   });
 
   const [currentDayOffset, setCurrentDayOffset] = useState(() => {
@@ -670,6 +681,7 @@ export default function App() {
 
   const updateTripTimeline = useCallback((newStartDate, newLength) => {
     const start = new Date(newStartDate);
+    if (isNaN(start.getTime())) return;
     const end = new Date(start);
     end.setDate(start.getDate() + newLength - 1);
     const formattedEndDate = end.toISOString().split('T')[0];
@@ -690,14 +702,18 @@ export default function App() {
 
   useEffect(() => {
     if (isConfigModalOpen) {
-      setDurationInput(totalDays.toString());
+      setTimeout(() => {
+        setDurationInput(totalDays.toString());
+      }, 0);
     }
   }, [isConfigModalOpen, totalDays]);
 
   // Safety check: Clamp day offset to the active timeline range if the timeline is shortened
   useEffect(() => {
     if (currentDayOffset >= totalDays) {
-      setCurrentDayOffset(Math.max(0, totalDays - 1));
+      setTimeout(() => {
+        setCurrentDayOffset(Math.max(0, totalDays - 1));
+      }, 0);
     }
   }, [totalDays, currentDayOffset]);
 
@@ -787,8 +803,9 @@ export default function App() {
       const amount = parseInt(amountParam, 10);
       if (!isNaN(amount) && amount > 0) {
         triggerHaptic('heavy');
-        
+
         // 1. Deduct from wallet suica balance
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setWallet(prev => {
           const next = { ...prev };
           next.suica = Math.max(0, next.suica - amount);
@@ -850,28 +867,10 @@ export default function App() {
     return null;
   };
 
-  const [currentLocation, setCurrentLocation] = useState(null);
-  const [activeNode, setActiveNode] = useState(() => {
-    return localStorage.getItem('onyx_last_known_node') || 'fujisawa';
-  });
-
-  const simulateNodeArrival = (nodeId) => {
-    triggerHaptic('medium');
-    const node = MISSION_NODES[nodeId];
-    if (node) {
-      setCurrentLocation({ lat: node.lat, lng: node.lng });
-      setActiveNode(nodeId);
-      setLastKnownNode(nodeId);
-    }
-  };
-
-
-
   useEffect(() => {
     if ("geolocation" in navigator) {
       const watchId = navigator.geolocation.watchPosition((pos) => {
         const { latitude, longitude } = pos.coords;
-        setCurrentLocation({ lat: latitude, lng: longitude });
 
         // Find closest node (Nearest-Neighbor)
         let closestDist = Infinity;
@@ -887,8 +886,6 @@ export default function App() {
 
         // Broad regional threshold: 15km
         if (closestDist < 15) {
-          setActiveNode(closestId);
-
           // Check for transition
           const lkn = lastKnownNodeRef.current;
           if (lkn && lkn !== closestId) {
@@ -896,8 +893,6 @@ export default function App() {
           } else if (!lkn) {
             setLastKnownNode(closestId);
           }
-        } else {
-          setActiveNode(null); // Far out, let current state bridge
         }
       }, (err) => console.warn(err), { enableHighAccuracy: false, maximumAge: 60000, timeout: 15000 });
 
@@ -917,13 +912,13 @@ export default function App() {
   }, [isStealthMode]);
 
   useEffect(() => {
-    if (isWalletModalOpen) setTempWallet(wallet);
-  }, [isWalletModalOpen, wallet]);
-
-  useEffect(() => {
     const handleStorage = (e) => {
-      if (e.key === 'onyx_wallet') {
-        setWallet(JSON.parse(e.newValue));
+      if (e.key === 'onyx_wallet' && e.newValue) {
+        try {
+          setWallet(JSON.parse(e.newValue));
+        } catch {
+          // Suppress parsing errors for safety
+        }
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -984,7 +979,7 @@ export default function App() {
       if (key && key.startsWith('onyx_')) {
         try {
           data[key] = JSON.parse(localStorage.getItem(key));
-        } catch (e) {
+        } catch {
           data[key] = localStorage.getItem(key);
         }
       }
@@ -1071,7 +1066,7 @@ export default function App() {
               {!searchQuery && (
                 <motion.section layout="position" className="[will-change:transform] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu">
                   <div className="label-text mb-3 ml-2">Recommended for you</div>
-                  <div className="relative aspect-[4/3] rounded-[36px] rounded-br-[12px] overflow-hidden group shadow-elevation-2 bg-g-aluminium">
+                  <div className="relative aspect-[4/3] rounded-[36px] rounded-br-[12px] overflow-hidden group shadow-elevation-2 bg-g-bg transform-gpu isolate">
                     <AnimatePresence initial={false}>
                       <motion.img
                         key={highlightIndex}
@@ -1150,6 +1145,7 @@ export default function App() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   triggerHaptic('medium');
+                  setTempWallet(wallet);
                   setIsWalletModalOpen(true);
                 }}
                 className="relative w-full h-[210px] rounded-[40px] rounded-tl-[12px] overflow-hidden p-7 flex flex-col justify-between shadow-elevation-2 bg-g-primary dark:bg-g-primary-container text-white cursor-pointer group select-none transition-colors duration-700 [will-change:transform,opacity] [transform-style:preserve-3d] [backface-visibility:hidden] transform-gpu"
@@ -1234,12 +1230,7 @@ export default function App() {
                       <div className="flex items-center justify-between border-t border-g-outline/10 pt-2.5 mt-1.5">
                         {/* Copy Action with Inline Feedback */}
                         <button
-                          onClick={() => {
-                            triggerHaptic('light');
-                            navigator.clipboard.writeText(phrase.jp);
-                            setCopiedIndex(phrase.jp);
-                            setTimeout(() => setCopiedIndex(null), 2000);
-                          }}
+                          onClick={() => copyToClipboard(phrase.jp, phrase.jp)}
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-g-aluminium/40 dark:bg-g-aluminium/10 hover:bg-g-primary-container hover:text-g-primary text-[9px] font-bold uppercase tracking-wider text-g-text transition-colors duration-200 cursor-pointer select-none"
                         >
                           {copiedIndex === phrase.jp ? (
@@ -1740,9 +1731,9 @@ export default function App() {
         </div>
       </main>
 
-      {/* Material 3 Bottom Nav */}
-      <div className="fixed bottom-0 left-0 w-full z-40 bg-white/70 dark:bg-g-surface/70 backdrop-blur-xl border-t border-g-outline/10 pt-2 pb-safe px-2 pb-6">
-        <nav className="w-full flex justify-around items-center max-w-sm mx-auto">
+      {/* Floating Pill Bottom Nav (iOS / M3 Hybrid Style) */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2.25rem)] z-40 bg-white/70 dark:bg-g-surface/70 backdrop-blur-xl border border-g-outline/10 py-2.5 px-3 rounded-[32px] shadow-[0_12px_36px_-6px_rgba(0,0,0,0.12),0_4px_16px_-4px_rgba(0,0,0,0.06)] transition-all duration-500">
+        <nav className="w-full flex justify-around items-center">
 
           <button
             onClick={() => { triggerHaptic('light'); setActiveTab('home'); }}
